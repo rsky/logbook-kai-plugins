@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox prefHeight="300.0" prefWidth="400.0" styleClass="configWindow" stylesheets="@pushbullet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="logbook.pushbullet.gui.PushbulletConfigController">
+    <VBox spacing="10.0" styleClass="header">
+        <BorderPane prefHeight="40.0" prefWidth="400.0">
+            <left>
+                <Label text="アクセストークン" BorderPane.alignment="CENTER" />
+            </left>
+            <center>
+                <TextField fx:id="accessToken" BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </BorderPane.margin>
+                </TextField>
+            </center>
+            <right>
+                <Button mnemonicParsing="false" onAction="#load" text="更新" BorderPane.alignment="CENTER" />
+            </right>
+        </BorderPane>
+        <CheckBox fx:id="notifyMissionCompleted" text="遠征完了を通知する" />
+        <CheckBox fx:id="notifyNdockCompleted" text="入渠完了を通知する" />
+    </VBox>
+    <TitledPane animated="false" text="端末">
+        <ListView fx:id="deviceListView" prefHeight="0.0" prefWidth="400.0" />
+    </TitledPane>
+    <TitledPane animated="false" text="チャンネル">
+        <ListView fx:id="channelListView" prefHeight="0.0" prefWidth="400.0" />
+    </TitledPane>
+    <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="400.0" spacing="10.0" styleClass="footer">
+        <Button mnemonicParsing="false" onAction="#ok" text="OK" />
+        <Button mnemonicParsing="false" onAction="#cancel" text="キャンセル" />
+    </HBox>
+</VBox>
