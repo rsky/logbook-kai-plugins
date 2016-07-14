@@ -1,9 +1,11 @@
 package pushbullet.service;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Value;
 import pushbullet.bean.Channel;
 import pushbullet.bean.Device;
 
+@Value
 public class PushParameter {
     private String type;
 
@@ -17,25 +19,12 @@ public class PushParameter {
     @SerializedName("channel_tag")
     private String channelTag;
 
-    private PushParameter() {
-    }
-
     public static PushParameter noteToDevice(Device device, String title, String body) {
-        PushParameter param = new PushParameter();
-        param.type = PushType.NOTE;
-        param.title = title;
-        param.body = body;
-        param.deviceIdentity = device.getIdentity();
-        return param;
+        return new PushParameter(PushType.NOTE, title, body, device.getIdentity(), null);
     }
 
     public static PushParameter noteToChannel(Channel channel, String title, String body) {
-        PushParameter param = new PushParameter();
-        param.type = PushType.NOTE;
-        param.title = title;
-        param.body = body;
-        param.channelTag = channel.getTag();
-        return param;
+        return new PushParameter(PushType.NOTE, title, body, null, channel.getTag());
     }
 
     private static class PushType {

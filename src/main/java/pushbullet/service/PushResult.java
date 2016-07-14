@@ -1,15 +1,15 @@
 package pushbullet.service;
 
+import lombok.Value;
+
 import java.util.List;
 
+@Value
 public class PushResult {
     private List<SimplePushResult> pushes;
 
-    public List<SimplePushResult> getPushes() {
-        return pushes;
-    }
-
-    class SimplePushResult {
-        public String iden;
+    @Value
+    public class SimplePushResult {
+        private String iden;
     }
 }

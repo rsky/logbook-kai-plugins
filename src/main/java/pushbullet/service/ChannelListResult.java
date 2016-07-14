@@ -1,13 +1,11 @@
 package pushbullet.service;
 
+import lombok.Value;
 import pushbullet.bean.Channel;
 
 import java.util.List;
 
-public class ChannelListResult {
+@Value
+public  class ChannelListResult {
     private List<Channel> channels;
-
-    public List<Channel> getChannels() {
-        return channels;
-    }
 }
