@@ -1,6 +1,7 @@
 package pushbullet.bean;
 
 import logbook.internal.Config;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -10,7 +11,9 @@ import java.util.stream.Stream;
 /**
  * 端末のコレクション
  */
+@Data
 public class DeviceCollection implements Serializable {
+
     private static final long serialVersionUID = -8854590875317234076L;
 
     /**
@@ -29,24 +32,6 @@ public class DeviceCollection implements Serializable {
      */
     public static DeviceCollection get() {
         return Config.getDefault().get(DeviceCollection.class, DeviceCollection::new);
-    }
-
-    /**
-     * 端末を取得します
-     *
-     * @return 端末
-     */
-    public Map<String, Device> getDeviceMap() {
-        return this.deviceMap;
-    }
-
-    /**
-     * 端末を設定します
-     *
-     * @param deviceMap 端末
-     */
-    public void setDeviceMap(Map<String, Device> deviceMap) {
-        this.deviceMap = deviceMap;
     }
 
     public Stream<Device> stream() {
