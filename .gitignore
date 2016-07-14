@@ -107,3 +107,8 @@ Session.vim
 *~
 
 
+### https://raw.github.com/github/gitignore/0aeefb48c0ac885a516fb92f7f5bfd7e85ce7a37/maven.gitignore
+
+target/
+
+
