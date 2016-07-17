@@ -2,45 +2,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <name>logbook-kai-plugins</name>
-    <artifactId>logbook-kai-plugins</artifactId>
     <groupId>logbook-kai-plugins</groupId>
+    <artifactId>plugins</artifactId>
     <version>0.1.0</version>
+    <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <retrofit2.version>2.1.0</retrofit2.version>
-        <rxjavafx.version>0.1.1</rxjavafx.version>
-        <lombok.version>1.16.8</lombok.version>
+        <lombok.version>1.16.10</lombok.version>
+        <lombok-plugin.version>1.16.8.0</lombok-plugin.version>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>${lombok-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
-        <dependency>
-            <groupId>logbook-kai</groupId>
-            <artifactId>logbook-kai</artifactId>
-            <version>0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/logbook-kai.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>retrofit</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>converter-gson</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>adapter-rxjava</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex</groupId>
-            <artifactId>rxjavafx</artifactId>
-            <version>${rxjavafx.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -48,4 +38,8 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <modules>
+        <module>commons</module>
+        <module>pushbullet</module>
+    </modules>
 </project>
