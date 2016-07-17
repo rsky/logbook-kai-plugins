@@ -6,7 +6,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceFactory {
-    private static final String BASE_URL = "https://service.pushbullet.com/v2/";
+    private static final String BASE_URL = "https://api.pushbullet.com/v2/";
 
     public static PushbulletService create(String accessToken) {
         return buildRetrofit(accessToken).create(PushbulletService.class);
