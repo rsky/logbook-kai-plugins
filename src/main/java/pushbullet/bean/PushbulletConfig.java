@@ -1,7 +1,8 @@
 package pushbullet.bean;
 
-import logbook.internal.Config;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import pushbullet.ConfigLoader;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * Pushbulletの設定
  */
 @Data
+@NoArgsConstructor
 public class PushbulletConfig implements Serializable {
 
     private static final long serialVersionUID = -317595360788883807L;
@@ -38,6 +40,6 @@ public class PushbulletConfig implements Serializable {
      * @return {@link PushbulletConfig}
      */
     public static PushbulletConfig get() {
-        return Config.getDefault().get(PushbulletConfig.class, PushbulletConfig::new);
+        return ConfigLoader.load(PushbulletConfig.class, PushbulletConfig::new);
     }
 }

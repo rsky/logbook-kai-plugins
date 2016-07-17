@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * チャンネル情報と送信の可否
  */
 @Data
+@NoArgsConstructor
 public class Channel implements Serializable {
 
     private static final long serialVersionUID = 408581662007793999L;

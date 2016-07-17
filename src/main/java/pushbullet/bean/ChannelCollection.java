@@ -1,7 +1,8 @@
 package pushbullet.bean;
 
-import logbook.internal.Config;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import pushbullet.ConfigLoader;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
  * チャンネルのコレクション
  */
 @Data
+@NoArgsConstructor
 public class ChannelCollection implements Serializable {
 
     private static final long serialVersionUID = 4563418961786537941L;
@@ -31,7 +33,7 @@ public class ChannelCollection implements Serializable {
      * @return {@link ChannelCollection}
      */
     public static ChannelCollection get() {
-        return Config.getDefault().get(ChannelCollection.class, ChannelCollection::new);
+        return ConfigLoader.load(ChannelCollection.class, ChannelCollection::new);
     }
 
     public Stream<Channel> stream() {

@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * 端末情報と送信の可否
  */
 @Data
+@NoArgsConstructor
 public class Device implements Serializable {
 
     private static final long serialVersionUID = 8039039160708225609L;
