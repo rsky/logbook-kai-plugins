@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <name>logbook-kai-plugin-pushbullet</name>
+    <name>Pushbullet Plugin</name>
     <artifactId>pushbullet</artifactId>
     <version>0.1.0</version>
     <parent>
@@ -11,6 +11,7 @@
         <relativePath>..</relativePath>
     </parent>
     <properties>
+        <license>MIT</license>
         <retrofit2.version>2.1.0</retrofit2.version>
         <rxjavafx.version>0.1.1</rxjavafx.version>
     </properties>
@@ -28,6 +29,14 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <archive>
+                        <manifestEntries>
+                            <Bundle-Name>${project.name}</Bundle-Name>
+                            <Bundle-Version>${project.version}</Bundle-Version>
+                            <Bundle-Vendor>${project.parent.organization.name}</Bundle-Vendor>
+                            <Bundle-License>${license}</Bundle-License>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
                 <executions>
                     <execution>
@@ -38,6 +47,19 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Bundle-Name>${project.name}</Bundle-Name>
+                            <Bundle-Version>${project.version}</Bundle-Version>
+                            <Bundle-Vendor>${project.parent.organization.name}</Bundle-Vendor>
+                            <Bundle-License>${license}</Bundle-License>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
