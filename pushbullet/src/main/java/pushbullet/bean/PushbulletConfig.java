@@ -2,7 +2,7 @@ package pushbullet.bean;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pushbullet.ConfigLoader;
+import pushbullet.util.ConfigLoader;
 
 import java.io.Serializable;
 

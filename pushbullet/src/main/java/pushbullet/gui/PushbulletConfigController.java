@@ -14,9 +14,9 @@ import logbook.internal.ThreadManager;
 import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pushbullet.api.PushbulletService;
+import pushbullet.api.ServiceFactory;
 import pushbullet.bean.*;
-import pushbullet.service.PushbulletService;
-import pushbullet.service.ServiceFactory;
 import rx.Observable;
 import rx.schedulers.JavaFxScheduler;
 import rx.schedulers.Schedulers;
@@ -105,6 +105,7 @@ public class PushbulletConfigController extends WindowController {
     /**
      * 初期化
      */
+    @SuppressWarnings("unused")
     @FXML
     void initialize() {
         PushbulletConfig config = PushbulletConfig.get();
@@ -141,7 +142,7 @@ public class PushbulletConfigController extends WindowController {
      * @param event ActionEvent
      */
     @FXML
-    void load(ActionEvent event) {
+    void load(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         String accessToken = this.accessToken.getText();
         if (accessToken.isEmpty()) {
             return;
@@ -173,7 +174,7 @@ public class PushbulletConfigController extends WindowController {
      * @param event ActionEvent
      */
     @FXML
-    void cancel(ActionEvent event) {
+    void cancel(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         getWindow().close();
     }
 
@@ -183,7 +184,7 @@ public class PushbulletConfigController extends WindowController {
      * @param event ActionEvent
      */
     @FXML
-    void ok(ActionEvent event) {
+    void ok(@SuppressWarnings("UnusedParameters") ActionEvent event) {
         PushbulletConfig config = PushbulletConfig.get();
         config.setAccessToken(accessToken.getText());
         config.setNotifyMissionCompleted(notifyMissionCompleted.isSelected());

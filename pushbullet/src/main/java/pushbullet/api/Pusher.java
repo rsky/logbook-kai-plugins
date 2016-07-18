@@ -1,4 +1,4 @@
-package pushbullet;
+package pushbullet.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,9 +6,6 @@ import pushbullet.bean.Channel;
 import pushbullet.bean.ChannelCollection;
 import pushbullet.bean.Device;
 import pushbullet.bean.DeviceCollection;
-import pushbullet.service.PushParameter;
-import pushbullet.service.PushbulletService;
-import pushbullet.service.ServiceFactory;
 import rx.schedulers.JavaFxScheduler;
 import rx.schedulers.Schedulers;
 

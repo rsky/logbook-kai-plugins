@@ -1,4 +1,4 @@
-package pushbullet.service;
+package pushbullet.api;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
