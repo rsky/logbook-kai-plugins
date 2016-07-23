@@ -14,9 +14,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PushbulletConfigMenu implements MainExtMenu {
+    private static NotificationController notificationController = null;
+
     @Override
     public MenuItem getContent() {
-        MenuItem item = new MenuItem("Pushbullet...");
+        if (notificationController == null) {
+            notificationController = new NotificationController();
+            notificationController.start();
+        }
+
+        MenuItem item = new MenuItem("Pushbullet");
         item.setOnAction(e -> {
             try {
                 FXMLLoader loader = new FXMLLoader(PluginContainer.getInstance().getClassLoader()
