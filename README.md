@@ -7,6 +7,11 @@ sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirota
 
 航海日誌に[Pushbullet](https://www.pushbullet.com/)を使って遠征・入渠の完了をプッシュ通知する機能を追加します。  
 
+### インストール方法
+
+[Releases](https://github.com/rsky/logbook-kai-plugins/releases)より **pushbullet.jar** をダウンロードして航海日誌の **plugins** フォルダに入れ、航海日誌を再起動してください。
+
+
 ### 設定方法
 
 1. 「その他」メニュー内の「Pusubullet」よりPushbulletの設定ウインドウを開きます。
