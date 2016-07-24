@@ -161,7 +161,7 @@ class NotificationController {
             // 前回の通知からの経過時間
             Duration course = Duration.ofMillis(System.currentTimeMillis() - timeStamp);
             // リマインド間隔
-            Duration interval = Duration.ofSeconds(getAppConfig().getRemind());
+            Duration interval = Duration.ofSeconds(AppConfig.get().getRemind());
             if (course.compareTo(interval) >= 0) {
                 if (timeStamp == 0L) {
                     return true;
@@ -182,15 +182,6 @@ class NotificationController {
         if (accessToken != null) {
             new Pusher(accessToken).pushToSelectedTargets(title, message);
         }
-    }
-
-    /**
-     * AppConfigを取得する
-     *
-     * @return AppConfig
-     */
-    private AppConfig getAppConfig() {
-       return ConfigLoader.load(AppConfig.class, AppConfig::new);
     }
 
     private static class LoggerHolder {
