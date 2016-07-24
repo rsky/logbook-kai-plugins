@@ -14,15 +14,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PushbulletConfigMenu implements MainExtMenu {
-    private static NotificationController notificationController = null;
+    private static NotificationController notificationController = new NotificationController();
+
+    static {
+        notificationController.start();
+    }
 
     @Override
     public MenuItem getContent() {
-        if (notificationController == null) {
-            notificationController = new NotificationController();
-            notificationController.start();
-        }
-
         MenuItem item = new MenuItem("Pushbullet");
         item.setOnAction(e -> {
             try {
