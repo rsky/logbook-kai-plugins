@@ -14,9 +14,9 @@ sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirota
 
 ### 設定方法
 
-1. 「その他」メニュー内の「Pusubullet」よりPushbulletの設定ウインドウを開きます。
+1. 「その他」メニュー内の「Pushbullet」よりPushbulletの設定ウインドウを開きます。
 2. Pushbulletの管理画面で取得したアクセストークンを入力し、「更新」ボタンを押します。
-3. 登録させている端末およびチャンネルのリストが表示されるので、プッシュ通知したい対象をチェックして「OK」を押せば設定完了です。
+3. 登録されている端末およびチャンネルのリストが表示されるので、プッシュ通知したい対象をチェックして「OK」を押せば設定完了です。
 
 ![Pushbullet設定画面](./img/logbook-kai-pushbullet.png)
 
