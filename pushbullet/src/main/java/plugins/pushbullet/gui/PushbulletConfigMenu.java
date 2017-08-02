@@ -26,7 +26,7 @@ public class PushbulletConfigMenu implements MainExtMenu {
         item.setOnAction(e -> {
             try {
                 FXMLLoader loader = new FXMLLoader(PluginContainer.getInstance().getClassLoader()
-                        .getResource("pushbullet/gui/pushbullet_config.fxml"));
+                        .getResource("plugins/pushbullet/gui/pushbullet_config.fxml"));
                 loader.setClassLoader(this.getClass().getClassLoader());
                 Stage stage = new Stage();
                 Parent root = loader.load();
