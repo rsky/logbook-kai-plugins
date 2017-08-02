@@ -19,4 +19,7 @@
             <systemPath>${project.basedir}/../lib/logbook-kai.jar</systemPath>
         </dependency>
     </dependencies>
+    <build>
+        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+    </build>
 </project>

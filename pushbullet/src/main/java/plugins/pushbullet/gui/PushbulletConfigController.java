@@ -1,4 +1,4 @@
-package pushbullet.gui;
+package plugins.pushbullet.gui;
 
 import io.reactivex.Observable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
@@ -17,9 +17,9 @@ import logbook.internal.ThreadManager;
 import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pushbullet.api.PushbulletService;
-import pushbullet.api.ServiceFactory;
-import pushbullet.bean.*;
+import plugins.pushbullet.api.PushbulletService;
+import plugins.pushbullet.api.ServiceFactory;
+import plugins.pushbullet.bean.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

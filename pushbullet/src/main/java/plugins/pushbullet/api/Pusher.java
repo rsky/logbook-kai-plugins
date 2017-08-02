@@ -1,13 +1,13 @@
-package pushbullet.api;
+package plugins.pushbullet.api;
 
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pushbullet.bean.Channel;
-import pushbullet.bean.ChannelCollection;
-import pushbullet.bean.Device;
-import pushbullet.bean.DeviceCollection;
+import plugins.pushbullet.bean.Channel;
+import plugins.pushbullet.bean.ChannelCollection;
+import plugins.pushbullet.bean.Device;
+import plugins.pushbullet.bean.DeviceCollection;
 
 public class Pusher {
     private String accessToken;

@@ -1,4 +1,4 @@
-package pushbullet.gui;
+package plugins.pushbullet.gui;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,8 +8,8 @@ import logbook.bean.*;
 import logbook.internal.Ships;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pushbullet.api.Pusher;
-import pushbullet.bean.PushbulletConfig;
+import plugins.pushbullet.api.Pusher;
+import plugins.pushbullet.bean.PushbulletConfig;
 
 import java.time.Duration;
 import java.util.HashMap;

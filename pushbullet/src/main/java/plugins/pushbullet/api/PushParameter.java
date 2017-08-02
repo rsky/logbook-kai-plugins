@@ -1,9 +1,9 @@
-package pushbullet.api;
+package plugins.pushbullet.api;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Value;
-import pushbullet.bean.Channel;
-import pushbullet.bean.Device;
+import plugins.pushbullet.bean.Channel;
+import plugins.pushbullet.bean.Device;
 
 @Value
 class PushParameter {

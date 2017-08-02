@@ -1,7 +1,7 @@
-package pushbullet.api.entity;
+package plugins.pushbullet.api.entity;
 
 import lombok.Value;
-import pushbullet.bean.Channel;
+import plugins.pushbullet.bean.Channel;
 
 import java.util.List;
 

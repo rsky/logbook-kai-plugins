@@ -1,4 +1,4 @@
-package pushbullet.api;
+package plugins.pushbullet.api;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -6,7 +6,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceFactory {
-    private static final String BASE_URL = "https://api.pushbullet.com/v2/";
+    private static final String BASE_URL = "https://api.plugins.pushbullet.com/v2/";
 
     public static PushbulletService create(String accessToken) {
         return createRetrofit(accessToken).create(PushbulletService.class);

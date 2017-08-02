@@ -1,4 +1,4 @@
-package pushbullet.api.entity;
+package plugins.pushbullet.api.entity;
 
 import lombok.Value;
 

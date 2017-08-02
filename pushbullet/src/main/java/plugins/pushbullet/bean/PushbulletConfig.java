@@ -1,8 +1,8 @@
-package pushbullet.bean;
+package plugins.pushbullet.bean;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pushbullet.util.ConfigLoader;
+import plugins.util.ConfigLoader;
 
 import java.io.Serializable;
 

@@ -1,6 +1,5 @@
-package pushbullet.bean;
+package plugins.pushbullet.bean;
 
-import com.google.gson.annotations.SerializedName;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import lombok.AccessLevel;
@@ -11,19 +10,18 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * 端末情報と送信の可否
+ * チャンネル情報と送信の可否
  */
 @Data
 @NoArgsConstructor
-public class Device implements Serializable {
+public class Channel implements Serializable {
 
-    private static final long serialVersionUID = 8039039160708225609L;
+    private static final long serialVersionUID = 408581662007793999L;
 
     @Getter(AccessLevel.NONE)
     private final BooleanProperty selected = new SimpleBooleanProperty(false);
-    @SerializedName("iden")
-    private String identity;
-    private String nickname;
+    private String tag;
+    private String name;
     private boolean active;
 
     /**
@@ -55,9 +53,9 @@ public class Device implements Serializable {
 
     @Override
     public String toString() {
-        if (nickname != null && !nickname.isEmpty()) {
-            return nickname;
+        if (name != null && !name.isEmpty()) {
+            return name;
         }
-        return String.format("<%s>", identity);
+        return String.format("<%s>", tag);
     }
 }

@@ -1,4 +1,4 @@
-package pushbullet.util;
+package plugins.util;
 
 import logbook.internal.Config;
 

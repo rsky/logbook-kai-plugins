@@ -1,4 +1,4 @@
-package pushbullet.gui;
+package plugins.pushbullet.gui;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

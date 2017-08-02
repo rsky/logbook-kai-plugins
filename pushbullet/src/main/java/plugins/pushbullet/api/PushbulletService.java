@@ -1,9 +1,9 @@
-package pushbullet.api;
+package plugins.pushbullet.api;
 
 import io.reactivex.Single;
-import pushbullet.api.entity.Channels;
-import pushbullet.api.entity.Devices;
-import pushbullet.api.entity.Pushes;
+import plugins.pushbullet.api.entity.Channels;
+import plugins.pushbullet.api.entity.Devices;
+import plugins.pushbullet.api.entity.Pushes;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
