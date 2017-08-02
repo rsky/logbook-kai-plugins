@@ -1,5 +1,8 @@
 package pushbullet.gui;
 
+import io.reactivex.Observable;
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import io.reactivex.schedulers.Schedulers;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -17,9 +20,6 @@ import org.apache.logging.log4j.Logger;
 import pushbullet.api.PushbulletService;
 import pushbullet.api.ServiceFactory;
 import pushbullet.bean.*;
-import rx.Observable;
-import rx.schedulers.JavaFxScheduler;
-import rx.schedulers.Schedulers;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -152,8 +152,8 @@ public class PushbulletConfigController extends WindowController {
         devices.clear();
         service.getDevices()
                 .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.getInstance())
-                .flatMap(response -> Observable.from(response.getDevices()))
+                .observeOn(JavaFxScheduler.platform())
+                .flatMapObservable(response -> Observable.fromIterable(response.getDevices()))
                 .filter(Device::isActive)
                 .map(this::markDeviceSelected)
                 .subscribe(this::addDevice, LoggerHolder.LOG::error);
@@ -161,8 +161,8 @@ public class PushbulletConfigController extends WindowController {
         channels.clear();
         service.getChannels()
                 .subscribeOn(Schedulers.io())
-                .observeOn(JavaFxScheduler.getInstance())
-                .flatMap(response -> Observable.from(response.getChannels()))
+                .observeOn(JavaFxScheduler.platform())
+                .flatMapObservable(response -> Observable.fromIterable(response.getChannels()))
                 .filter(Channel::isActive)
                 .map(this::markChannelSelected)
                 .subscribe(this::addChannel, LoggerHolder.LOG::error);

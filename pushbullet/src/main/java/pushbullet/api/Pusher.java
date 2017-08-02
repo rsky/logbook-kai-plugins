@@ -1,13 +1,13 @@
 package pushbullet.api;
 
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import io.reactivex.schedulers.Schedulers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pushbullet.bean.Channel;
 import pushbullet.bean.ChannelCollection;
 import pushbullet.bean.Device;
 import pushbullet.bean.DeviceCollection;
-import rx.schedulers.JavaFxScheduler;
-import rx.schedulers.Schedulers;
 
 public class Pusher {
     private String accessToken;
@@ -31,7 +31,7 @@ public class Pusher {
                 .filter(Device::isSelected)
                 .forEach(device -> service.push(PushParameter.noteToDevice(device, title, message))
                         .subscribeOn(Schedulers.io())
-                        .observeOn(JavaFxScheduler.getInstance())
+                        .observeOn(JavaFxScheduler.platform())
                         .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder.LOG::error));
 
         ChannelCollection.get()
@@ -40,7 +40,7 @@ public class Pusher {
                 .filter(Channel::isSelected)
                 .forEach(channel -> service.push(PushParameter.noteToChannel(channel, title, message))
                         .subscribeOn(Schedulers.io())
-                        .observeOn(JavaFxScheduler.getInstance())
+                        .observeOn(JavaFxScheduler.platform())
                         .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder.LOG::error));
     }
 

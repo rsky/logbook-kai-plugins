@@ -32,7 +32,7 @@ sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirota
 #### [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
 
 * Apache License 2.0
-* **ライセンス全文 :** [https://github.com/ReactiveX/RxJavaFX/blob/0.x/LICENSE](https://github.com/ReactiveX/RxJavaFX/blob/0.x/LICENSE)
+* **ライセンス全文 :** [https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE)
 
 #### [Lombok](https://projectlombok.org/)
 

@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pushbullet.api.Pusher;
 import pushbullet.bean.PushbulletConfig;
-import pushbullet.util.ConfigLoader;
 
 import java.time.Duration;
 import java.util.HashMap;
