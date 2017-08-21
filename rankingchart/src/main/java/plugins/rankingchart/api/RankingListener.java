@@ -1,47 +1,167 @@
 package plugins.rankingchart.api;
 
 import logbook.api.APIListenerSpi;
+import logbook.internal.Config;
+import logbook.internal.ThreadManager;
 import logbook.proxy.RequestMetaData;
 import logbook.proxy.ResponseMetaData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import plugins.rankingchart.bean.RankingChartConfig;
+import plugins.rankingchart.bean.RankingListItem;
+import plugins.rankingchart.bean.RankingRow;
+import plugins.rankingchart.util.Calculator;
 
-import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonWriter;
-import javax.json.JsonWriterFactory;
-import javax.json.stream.JsonGenerator;
-import java.io.StringWriter;
+import javax.json.JsonValue;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Map;
 
 public class RankingListener implements APIListenerSpi {
+
     /** 日付書式 */
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /** タイムゾーン */
     private static final ZoneId JST = ZoneId.of("Asia/Tokyo");
 
+    /** 提督ID */
+    private int memberId = 0;
+
+    /** 提督ニックネーム */
+    private String nickname;
+
+    /** 最終戦果 */
+    private RankingRow lastRanking;
+
     @Override
     public void accept(JsonObject jsonObject, RequestMetaData requestMetaData, ResponseMetaData responseMetaData) {
-        LoggerHolder.LOG.info(requestMetaData.getRequestURI());
-        /*
-        Map<String, Boolean> config = Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true);
-        JsonWriterFactory jwf = Json.createWriterFactory(config);
-        StringWriter sw = new StringWriter();
-        try (JsonWriter jsonWriter = jwf.createWriter(sw)) {
-            jsonWriter.writeObject(jsonObject);
+        final String uri = requestMetaData.getRequestURI();
+
+        try {
+            if ((memberId == 0 || nickname == null) && uri.startsWith("/kcsapi/api_get_member")) {
+                storeMemberId(jsonObject);
+            }
+
+            if (memberId > 0 && uri.startsWith("/kcsapi/api_req_ranking/mxltvkpyuklh")) {
+                logRanking(jsonObject);
+            }
+        } catch (Exception e) {
+            LoggerHolder.LOG.error(e);
+        }
+    }
+
+    private void logRanking(JsonObject jsonObject) {
+        final JsonObject data = getData(jsonObject);
+        if (data == null) {
+            return;
         }
 
-        LoggerHolder.LOG.info(sw.toString());
-        */
+        final JsonArray list = data.getJsonArray("api_list");
+        if (list == null) {
+            return;
+        }
+
+        final String dateTimeStr = rankingDateTimeString();
+        if (lastRanking == null || !lastRanking.date.equals(dateTimeStr)) {
+            lastRanking = RankingRow.withDate(dateTimeStr);
+        }
+
+        final RankingChartConfig config = RankingChartConfig.get();
+        final int userRateFactor = config.getUserRateFactor();
+        final long lastObfuscatedRate = config.getLastObfuscatedRate();
+        boolean rankingUpdated = false;
+        boolean configUpdated = false;
+
+        for (JsonValue value : list) {
+            if (value instanceof JsonObject) {
+                final RankingListItem item = new RankingListItem((JsonObject) value);
+                final int rankNo = item.getNo();
+                final int rate = Calculator.calcRate(item.getNo(), item.getObfuscatedRate(), userRateFactor);
+
+                if (rate != Calculator.NO_RATE) {
+                    switch (rankNo) {
+                        case 1:
+                            lastRanking.rank1 = rate;
+                            rankingUpdated = true;
+                            break;
+                        case 5:
+                            lastRanking.rank5 = rate;
+                            rankingUpdated = true;
+                            break;
+                        case 20:
+                            lastRanking.rank20 = rate;
+                            rankingUpdated = true;
+                            break;
+                        case 100:
+                            lastRanking.rank100 = rate;
+                            rankingUpdated = true;
+                            break;
+                        case 500:
+                            lastRanking.rank500 = rate;
+                            rankingUpdated = true;
+                            break;
+                    }
+
+                    if (nickname != null && nickname.equals(item.getNickname())) {
+                        lastRanking.rankNo = rankNo;
+                        lastRanking.rate = rate;
+                        rankingUpdated = true;
+                    }
+                }
+
+                if (nickname != null && nickname.equals(item.getNickname())) {
+                    final long obfuscatedRate = item.getObfuscatedRate();
+                    if (obfuscatedRate != lastObfuscatedRate) {
+                        config.setLastRankNo(rankNo);
+                        config.setLastObfuscatedRate(obfuscatedRate);
+                        configUpdated = true;
+                    }
+                }
+            }
+        }
+
+        if (rankingUpdated) {
+            LoggerHolder.LOG.debug(String.format("%s,%d,%d,%d,%d,%d,%d,%d",
+                    lastRanking.date, lastRanking.rankNo, lastRanking.rate,
+                    lastRanking.rank1, lastRanking.rank5,
+                    lastRanking.rank20, lastRanking.rank100, lastRanking.rank500));
+        }
+
+        if (configUpdated) {
+            ThreadManager.getExecutorService().execute(Config.getDefault()::store);
+        }
+    }
+
+    private void storeMemberId(JsonObject jsonObject) {
+        JsonObject data = getData(jsonObject);
+        if (data == null) {
+            return;
+        }
+
+        if (data.containsKey("api_member_id")) {
+            memberId = data.getInt("api_member_id");
+            LoggerHolder.LOG.debug(String.format("member_id: %d", memberId));
+        }
+
+        if (data.containsKey("api_nickname")) {
+            nickname = data.getString("api_nickname");
+            LoggerHolder.LOG.debug(String.format("nickname: %s", nickname));
+        }
+    }
+
+    private JsonObject getData(JsonObject jsonObject) {
+        if (jsonObject.getInt("api_result") != 1) {
+            return null;
+        }
+
+        return jsonObject.getJsonObject("api_data");
     }
 
     /**
-     * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を"yyyy-MM-dd HH:mm"形式の文字列として取得します
+     * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を"yyyy-MM-dd HH:00"形式の文字列として取得します
      *
      * @return ランキングが確定した日付/時間
      */
@@ -58,7 +178,7 @@ public class RankingListener implements APIListenerSpi {
             // 15時以降→15時
             date = now.withHour(15);
         }
-        return DATE_FORMAT.format(date);
+        return DATE_FORMAT.format(date.withMinute(0));
     }
 
     private static class LoggerHolder {
