@@ -25,6 +25,7 @@
     <modules>
         <module>commons</module>
         <module>pushbullet</module>
+        <module>rankingchart</module>
     </modules>
     <dependencies>
         <dependency>

@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <name>Pushbullet Plugin</name>
-    <artifactId>pushbullet</artifactId>
-    <version>1.0.0</version>
+    <name>Ranking Chart Plugin</name>
+    <artifactId>rankingchart</artifactId>
+    <version>0.0.1</version>
     <parent>
         <groupId>logbook-kai-plugins</groupId>
         <artifactId>plugins</artifactId>
@@ -12,8 +12,7 @@
     </parent>
     <properties>
         <license>MIT</license>
-        <retrofit2.version>2.3.0</retrofit2.version>
-        <rxjavafx.version>2.0.2</rxjavafx.version>
+        <orangesignalcsv.version>2.2.1</orangesignalcsv.version>
     </properties>
     <dependencies>
         <dependency>
@@ -23,24 +22,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>retrofit</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>converter-gson</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.retrofit2</groupId>
-            <artifactId>adapter-rxjava2</artifactId>
-            <version>${retrofit2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex</groupId>
-            <artifactId>rxjavafx</artifactId>
-            <version>${rxjavafx.version}</version>
+            <groupId>com.orangesignal</groupId>
+            <artifactId>orangesignal-csv</artifactId>
+            <version>${orangesignalcsv.version}</version>
         </dependency>
     </dependencies>
     <build>

@@ -17,6 +17,7 @@ public class PushbulletConfigMenu implements MainExtMenu {
     private static NotificationController notificationController = new NotificationController();
 
     static {
+        // TODO: logbook.plugin.lifecycle.StartUp で行う
         notificationController.start();
     }
 
