@@ -13,17 +13,17 @@ public class RankingChartConfig {
     /**
      * ユーザーごとの戦果係数
      */
-    private int userRateFactor = 0;
+    int userRateFactor = 0;
 
     /**
      * 自分の最終戦果
      */
-    private int lastRankNo = 0;
+    int lastRankNo = 0;
 
     /**
      * 自分の最終戦果(難読化)
      */
-    private long lastObfuscatedRate = 0;
+    long lastObfuscatedRate = 0;
 
     /**
      * アプリケーションのデフォルト設定ディレクトリから{@link RankingChartConfig}を取得します、

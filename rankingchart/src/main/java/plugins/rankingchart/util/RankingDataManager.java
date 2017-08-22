@@ -2,7 +2,7 @@ package plugins.rankingchart.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import plugins.rankingchart.bean.RankingRow;
+import plugins.rankingchart.bean.RankingLogItem;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,6 +18,9 @@ public class RankingDataManager {
 
     private String url;
 
+    /**
+     * @return デフォルトのRankingDataManager
+     */
     public static RankingDataManager getDefault() {
         if (DEFAULT == null) {
             try {
@@ -38,6 +41,9 @@ public class RankingDataManager {
         return DriverManager.getConnection(url);
     }
 
+    /**
+     * テーブルがなければ作成する
+     */
     public void createTable() {
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
@@ -57,36 +63,43 @@ public class RankingDataManager {
         }
     }
 
-    public void update(RankingRow row) {
-        //noinspection SqlNoDataSourceInspection,SqlResolve
+    /**
+     * ランキング情報を登録する
+     * @param ranking ランキング情報
+     */
+    public void update(RankingLogItem ranking) {
+        //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
         String sql = "REPLACE INTO ranking (published_at, rank_no, rate, rank1, rank5, rank20, rank100, rank500)" +
                 " values (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setTimestamp(1, Timestamp.from(row.getDateTime().toInstant()));
-            statement.setInt(2, row.getRankNo());
-            statement.setInt(3, row.getRate());
-            statement.setInt(4, row.getRank1());
-            statement.setInt(5, row.getRank5());
-            statement.setInt(6, row.getRank20());
-            statement.setInt(7, row.getRank100());
-            statement.setInt(8, row.getRank500());
+            statement.setTimestamp(1, Timestamp.from(ranking.getDateTime().toInstant()));
+            statement.setInt(2, ranking.getRankNo());
+            statement.setInt(3, ranking.getRate());
+            statement.setInt(4, ranking.getRank1());
+            statement.setInt(5, ranking.getRank5());
+            statement.setInt(6, ranking.getRank20());
+            statement.setInt(7, ranking.getRank100());
+            statement.setInt(8, ranking.getRank500());
             statement.execute();
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);
         }
     }
 
-    public List<RankingRow> loadAll() {
-        List<RankingRow> list = new ArrayList<>();
-        //noinspection SqlNoDataSourceInspection,SqlResolve
+    /**
+     * @return 全期間のランキング情報を日付で昇順にソートしたリスト
+     */
+    public List<RankingLogItem> loadAll() {
+        List<RankingLogItem> list = new ArrayList<>();
+        //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
         String sql = "SELECT * FROM ranking ORDER BY published_at";
         Calendar calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
-                list.add(convertToRow(resultSet, calendar));
+                list.add(convertResult(resultSet, calendar));
             }
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);
@@ -94,15 +107,18 @@ public class RankingDataManager {
         return list;
     }
 
-    public RankingRow getLatest() {
-        //noinspection SqlNoDataSourceInspection,SqlResolve
+    /**
+     * @return 直近のランキング情報
+     */
+    public RankingLogItem getLatest() {
+        //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
         String sql = "SELECT * FROM ranking ORDER BY published_at DESC LIMIT 1";
         Calendar calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {
-                return convertToRow(resultSet, calendar);
+                return convertResult(resultSet, calendar);
             }
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);
@@ -110,9 +126,9 @@ public class RankingDataManager {
         return null;
     }
 
-    private RankingRow convertToRow(ResultSet resultSet, Calendar calendar) throws SQLException {
+    private RankingLogItem convertResult(ResultSet resultSet, Calendar calendar) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp("published_at", calendar);
-        RankingRow row = RankingRow.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
+        RankingLogItem row = RankingLogItem.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
         row.setRankNo(resultSet.getInt("rank_no"));
         row.setRate(resultSet.getInt("rate"));
         row.setRank1(resultSet.getInt("rank1"));

@@ -6,15 +6,15 @@ import javax.json.JsonObject;
 
 @Value
 public class RankingListItem {
-    private int no;
-    private String nickname;
-    private int flag;
-    private int rank;
-    private String comment;
-    private long obfuscatedMedals;
-    private long obfuscatedRate;
+    int no;
+    String nickname;
+    int flag;
+    int rank;
+    String comment;
+    long obfuscatedMedals;
+    long obfuscatedRate;
 
-    public RankingListItem(final JsonObject jo) {
+    public RankingListItem(JsonObject jo) {
         no = jo.getInt("api_mxltvkpyuklh");
         nickname = jo.getString("api_mtjmdcwtvhdr");
         flag = jo.getInt("api_pbgkfylkbjuy");

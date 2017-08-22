@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 
 @CsvEntity
 @Data
-public class RankingRow {
+public class RankingLogItem {
     @CsvColumn(name = "日時")
     ZonedDateTime dateTime;
 
@@ -33,8 +33,8 @@ public class RankingRow {
     @CsvColumn(name = "順位")
     int rankNo;
 
-    public static RankingRow withDateTime(ZonedDateTime date) {
-        RankingRow row = new RankingRow();
+    public static RankingLogItem withDateTime(ZonedDateTime date) {
+        RankingLogItem row = new RankingLogItem();
         row.dateTime = date;
         return row;
     }

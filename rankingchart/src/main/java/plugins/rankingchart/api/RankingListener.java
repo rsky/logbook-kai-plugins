@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.rankingchart.bean.RankingChartConfig;
 import plugins.rankingchart.bean.RankingListItem;
-import plugins.rankingchart.bean.RankingRow;
+import plugins.rankingchart.bean.RankingLogItem;
 import plugins.rankingchart.util.Calculator;
 import plugins.rankingchart.util.DateTimeUtil;
 import plugins.rankingchart.util.RankingDataManager;
@@ -27,15 +27,15 @@ public class RankingListener implements APIListenerSpi {
     /** 提督ニックネーム */
     private String nickname;
 
-    /** 最終戦果 */
-    private RankingRow latestRanking;
+    /** 現在の戦果 */
+    private RankingLogItem ranking;
 
     @Override
     public void accept(JsonObject jsonObject, RequestMetaData requestMetaData, ResponseMetaData responseMetaData) {
         final String uri = requestMetaData.getRequestURI();
         try {
             if ((memberId == 0 || nickname == null) && uri.equals("/kcsapi/api_get_member/record")) {
-                storeMemberId(jsonObject);
+                storeMemberInfo(jsonObject);
             }
 
             if (memberId > 0 && uri.equals("/kcsapi/api_req_ranking/mxltvkpyuklh")) {
@@ -46,6 +46,10 @@ public class RankingListener implements APIListenerSpi {
         }
     }
 
+    /**
+     * ランキングをデータベースに記録する
+     * @param jsonObject APIレスポンス
+     */
     private void logRanking(JsonObject jsonObject) {
         final JsonValue data = getData(jsonObject);
         if (!(data instanceof JsonObject)) {
@@ -57,14 +61,14 @@ public class RankingListener implements APIListenerSpi {
             return;
         }
 
-        if (latestRanking == null) {
-            //csvManager.load();
-            latestRanking = RankingDataManager.getDefault().getLatest();
+        if (ranking == null) {
+            ranking = RankingDataManager.getDefault().getLatest();
         }
 
         final ZonedDateTime dateTime = DateTimeUtil.getRankingDateTime();
-        if (latestRanking == null || !latestRanking.getDateTime().equals(dateTime)) {
-            latestRanking = RankingRow.withDateTime(dateTime);
+        // 基準となる日時が変わっていたら現在のランキングも新しい日時で作り直す
+        if (ranking == null || !ranking.getDateTime().equals(dateTime)) {
+            ranking = RankingLogItem.withDateTime(dateTime);
         }
 
         final RankingChartConfig config = RankingChartConfig.get();
@@ -74,55 +78,64 @@ public class RankingListener implements APIListenerSpi {
         boolean configUpdated = false;
 
         for (JsonValue value : list) {
+            final RankingListItem item;
             if (value instanceof JsonObject) {
-                final RankingListItem item = new RankingListItem((JsonObject) value);
-                final int rankNo = item.getNo();
-                final int rate = Calculator.calcRate(item.getNo(), item.getObfuscatedRate(), userRateFactor);
+                item = new RankingListItem((JsonObject) value);
+            } else {
+                // 実際はここには到達しないが便宜上
+                break;
+            }
 
-                if (rate != Calculator.NO_RATE) {
-                    switch (rankNo) {
-                        case 1:
-                            latestRanking.setRank1(rate);
-                            rankingUpdated = true;
-                            break;
-                        case 5:
-                            latestRanking.setRank5(rate);
-                            rankingUpdated = true;
-                            break;
-                        case 20:
-                            latestRanking.setRank20(rate);
-                            rankingUpdated = true;
-                            break;
-                        case 100:
-                            latestRanking.setRank100(rate);
-                            rankingUpdated = true;
-                            break;
-                        case 500:
-                            latestRanking.setRank500(rate);
-                            rankingUpdated = true;
-                            break;
-                    }
+            final int rankNo = item.getNo();
+            final int rate = Calculator.calcRate(item.getNo(), item.getObfuscatedRate(), userRateFactor);
 
-                    if (nickname != null && nickname.equals(item.getNickname())) {
-                        latestRanking.setRankNo(rankNo);
-                        latestRanking.setRate(rate);
+            // 戦果係数がセットされており、戦果のデコードに成功した場合
+            if (rate != Calculator.NO_RATE) {
+                // 1位とランキングボーダーの戦果が含まれていれば更新する
+                switch (rankNo) {
+                    case 1:
+                        ranking.setRank1(rate);
                         rankingUpdated = true;
-                    }
+                        break;
+                    case 5:
+                        ranking.setRank5(rate);
+                        rankingUpdated = true;
+                        break;
+                    case 20:
+                        ranking.setRank20(rate);
+                        rankingUpdated = true;
+                        break;
+                    case 100:
+                        ranking.setRank100(rate);
+                        rankingUpdated = true;
+                        break;
+                    case 500:
+                        ranking.setRank500(rate);
+                        rankingUpdated = true;
+                        break;
                 }
 
+                // 自分の戦果が含まれていれば更新する
                 if (nickname != null && nickname.equals(item.getNickname())) {
-                    final long obfuscatedRate = item.getObfuscatedRate();
-                    if (rankNo != config.getLastRankNo() || obfuscatedRate != lastObfuscatedRate) {
-                        config.setLastRankNo(rankNo);
-                        config.setLastObfuscatedRate(obfuscatedRate);
-                        configUpdated = true;
-                    }
+                    ranking.setRankNo(rankNo);
+                    ranking.setRate(rate);
+                    rankingUpdated = true;
+                }
+            }
+
+            // 戦果係数を導出するために自分の順位と難読化された戦果を保存する
+            if (nickname != null && nickname.equals(item.getNickname())) {
+                final long obfuscatedRate = item.getObfuscatedRate();
+                if (rankNo != config.getLastRankNo() || obfuscatedRate != lastObfuscatedRate) {
+                    config.setLastRankNo(rankNo);
+                    config.setLastObfuscatedRate(obfuscatedRate);
+                    configUpdated = true;
                 }
             }
         }
 
         if (rankingUpdated) {
-            RankingDataManager.getDefault().update(latestRanking);
+            RankingDataManager.getDefault().update(ranking);
         }
 
         if (configUpdated) {
@@ -130,7 +143,11 @@ public class RankingListener implements APIListenerSpi {
         }
     }
 
-    private void storeMemberId(JsonObject jsonObject) {
+    /**
+     * 自分の戦果を特定するのに必要なニックネーム等の情報を取得・保持する
+     * @param jsonObject APIレスポンス
+     */
+    private void storeMemberInfo(JsonObject jsonObject) {
         final JsonValue data = getData(jsonObject);
         if (!(data instanceof JsonObject)) {
             return;
@@ -147,6 +164,11 @@ public class RankingListener implements APIListenerSpi {
         }
     }
 
+    /**
+     * APIリザルトからapi_dataフィールドの値を抜き出す
+     * @param jsonObject APIレスポンス
+     * @return APIレスポンスのapi_dataフィールド（レスポンスデータ本体）
+     */
     private JsonValue getData(JsonObject jsonObject) {
         if (jsonObject.getInt("api_result") != 1) {
             return null;

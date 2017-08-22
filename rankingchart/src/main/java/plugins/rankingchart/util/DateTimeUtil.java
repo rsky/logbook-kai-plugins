@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class DateTimeUtil {
@@ -11,7 +12,7 @@ public class DateTimeUtil {
     private static final ZoneId JST = ZoneId.of("Asia/Tokyo");
 
     /**
-     * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を取得します
+     * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を取得する
      *
      * @return ランキングが確定した日付/時間
      */
@@ -31,11 +32,20 @@ public class DateTimeUtil {
         return date.withMinute(0).withSecond(0).withNano(0);
     }
 
+    /**
+     * SQLのタイムスタンプをJSTの日時に変換する
+     *
+     * @param timestamp タイムスタンプ
+     * @return JSTの日時
+     */
     public static ZonedDateTime dateTimeFromTimestamp(Timestamp timestamp) {
         return timestamp.toInstant().atZone(JST);
     }
 
+    /**
+     * @return グレゴリオ暦・JSTのカレンダー
+     */
     public static Calendar getCalender() {
-        return Calendar.getInstance(TimeZone.getTimeZone(JST));
+        return GregorianCalendar.getInstance(TimeZone.getTimeZone(JST));
     }
 }
