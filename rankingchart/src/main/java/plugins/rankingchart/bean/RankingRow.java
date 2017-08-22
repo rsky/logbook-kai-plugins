@@ -4,11 +4,13 @@ import com.orangesignal.csv.annotation.CsvColumn;
 import com.orangesignal.csv.annotation.CsvEntity;
 import lombok.Data;
 
+import java.time.ZonedDateTime;
+
 @CsvEntity
 @Data
 public class RankingRow {
     @CsvColumn(name = "日時")
-    String date;
+    ZonedDateTime dateTime;
 
     @CsvColumn(name = "1位")
     int rank1;
@@ -31,9 +33,9 @@ public class RankingRow {
     @CsvColumn(name = "順位")
     int rankNo;
 
-    public static RankingRow withDate(String date) {
+    public static RankingRow withDateTime(ZonedDateTime date) {
         RankingRow row = new RankingRow();
-        row.date = date;
+        row.dateTime = date;
         return row;
     }
 }

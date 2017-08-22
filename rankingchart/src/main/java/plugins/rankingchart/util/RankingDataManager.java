@@ -6,6 +6,7 @@ import plugins.rankingchart.bean.RankingRow;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class RankingDataManager {
@@ -42,7 +43,7 @@ public class RankingDataManager {
              Statement statement = connection.createStatement()) {
             //noinspection SqlNoDataSourceInspection
             statement.execute("CREATE TABLE IF NOT EXISTS ranking (\n" +
-                    "  published_at TEXT PRYMARY KEY,\n" +
+                    "  published_at TIMESTAMP PRYMARY KEY,\n" +
                     "  rank_no INTEGER,\n" +
                     "  rate INTEGER,\n" +
                     "  rank1 INTEGER,\n" +
@@ -62,7 +63,7 @@ public class RankingDataManager {
                 " values (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, row.getDate());
+            statement.setTimestamp(1, Timestamp.from(row.getDateTime().toInstant()));
             statement.setInt(2, row.getRankNo());
             statement.setInt(3, row.getRate());
             statement.setInt(4, row.getRank1());
@@ -80,11 +81,12 @@ public class RankingDataManager {
         List<RankingRow> list = new ArrayList<>();
         //noinspection SqlNoDataSourceInspection,SqlResolve
         String sql = "SELECT * FROM ranking ORDER BY published_at";
+        Calendar calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
-                list.add(convertToRow(resultSet));
+                list.add(convertToRow(resultSet, calendar));
             }
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);
@@ -95,11 +97,12 @@ public class RankingDataManager {
     public RankingRow getLatest() {
         //noinspection SqlNoDataSourceInspection,SqlResolve
         String sql = "SELECT * FROM ranking ORDER BY published_at DESC LIMIT 1";
+        Calendar calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {
-                return convertToRow(resultSet);
+                return convertToRow(resultSet, calendar);
             }
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);
@@ -107,8 +110,9 @@ public class RankingDataManager {
         return null;
     }
 
-    private RankingRow convertToRow(ResultSet resultSet) throws SQLException {
-        RankingRow row = RankingRow.withDate(resultSet.getString("published_at"));
+    private RankingRow convertToRow(ResultSet resultSet, Calendar calendar) throws SQLException {
+        Timestamp timestamp = resultSet.getTimestamp("published_at", calendar);
+        RankingRow row = RankingRow.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
         row.setRankNo(resultSet.getInt("rank_no"));
         row.setRate(resultSet.getInt("rate"));
         row.setRank1(resultSet.getInt("rank1"));

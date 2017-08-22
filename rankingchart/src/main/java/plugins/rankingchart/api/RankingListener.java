@@ -11,22 +11,15 @@ import plugins.rankingchart.bean.RankingChartConfig;
 import plugins.rankingchart.bean.RankingListItem;
 import plugins.rankingchart.bean.RankingRow;
 import plugins.rankingchart.util.Calculator;
+import plugins.rankingchart.util.DateTimeUtil;
 import plugins.rankingchart.util.RankingDataManager;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class RankingListener implements APIListenerSpi {
-
-    /** 日付書式 */
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-    /** タイムゾーン */
-    private static final ZoneId JST = ZoneId.of("Asia/Tokyo");
 
     /** 提督ID */
     private int memberId = 0;
@@ -69,9 +62,9 @@ public class RankingListener implements APIListenerSpi {
             latestRanking = RankingDataManager.getDefault().getLatest();
         }
 
-        final String dateTimeStr = rankingDateTimeString();
-        if (latestRanking == null || !latestRanking.getDate().equals(dateTimeStr)) {
-            latestRanking = RankingRow.withDate(dateTimeStr);
+        final ZonedDateTime dateTime = DateTimeUtil.getRankingDateTime();
+        if (latestRanking == null || !latestRanking.getDateTime().equals(dateTime)) {
+            latestRanking = RankingRow.withDateTime(dateTime);
         }
 
         final RankingChartConfig config = RankingChartConfig.get();
@@ -160,27 +153,6 @@ public class RankingListener implements APIListenerSpi {
         }
 
         return jsonObject.get("api_data");
-    }
-
-    /**
-     * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を"yyyy-MM-dd HH:00"形式の文字列として取得します
-     *
-     * @return ランキングが確定した日付/時間
-     */
-    private static String rankingDateTimeString() {
-        ZonedDateTime now = ZonedDateTime.now(JST);
-        ZonedDateTime date;
-        if (now.getHour() < 3) {
-            // 3時まで→前日の15時
-            date = now.minusDays(1).withHour(15);
-        } else if (now.getHour() < 15) {
-            // 15時まで→当日の3時
-            date = now.withHour(3);
-        } else {
-            // 15時以降→15時
-            date = now.withHour(15);
-        }
-        return DATE_FORMAT.format(date.withMinute(0));
     }
 
     private static class LoggerHolder {
