@@ -11,7 +11,7 @@ import plugins.rankingchart.bean.RankingChartConfig;
 import plugins.rankingchart.bean.RankingListItem;
 import plugins.rankingchart.bean.RankingRow;
 import plugins.rankingchart.util.Calculator;
-import plugins.rankingchart.util.RankingCsvManager;
+import plugins.rankingchart.util.RankingDataManager;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -33,9 +33,6 @@ public class RankingListener implements APIListenerSpi {
 
     /** 提督ニックネーム */
     private String nickname;
-
-    /** ランキングデータマネージャ */
-    private RankingCsvManager csvManager = new RankingCsvManager();
 
     /** 最終戦果 */
     private RankingRow latestRanking;
@@ -69,11 +66,11 @@ public class RankingListener implements APIListenerSpi {
 
         if (latestRanking == null) {
             //csvManager.load();
-            latestRanking = csvManager.getLatest();
+            latestRanking = RankingDataManager.getDefault().getLatest();
         }
 
         final String dateTimeStr = rankingDateTimeString();
-        if (latestRanking == null || !latestRanking.date.equals(dateTimeStr)) {
+        if (latestRanking == null || !latestRanking.getDate().equals(dateTimeStr)) {
             latestRanking = RankingRow.withDate(dateTimeStr);
         }
 
@@ -92,30 +89,30 @@ public class RankingListener implements APIListenerSpi {
                 if (rate != Calculator.NO_RATE) {
                     switch (rankNo) {
                         case 1:
-                            latestRanking.rank1 = rate;
+                            latestRanking.setRank1(rate);
                             rankingUpdated = true;
                             break;
                         case 5:
-                            latestRanking.rank5 = rate;
+                            latestRanking.setRank5(rate);
                             rankingUpdated = true;
                             break;
                         case 20:
-                            latestRanking.rank20 = rate;
+                            latestRanking.setRank20(rate);
                             rankingUpdated = true;
                             break;
                         case 100:
-                            latestRanking.rank100 = rate;
+                            latestRanking.setRank100(rate);
                             rankingUpdated = true;
                             break;
                         case 500:
-                            latestRanking.rank500 = rate;
+                            latestRanking.setRank500(rate);
                             rankingUpdated = true;
                             break;
                     }
 
                     if (nickname != null && nickname.equals(item.getNickname())) {
-                        latestRanking.rankNo = rankNo;
-                        latestRanking.rate = rate;
+                        latestRanking.setRankNo(rankNo);
+                        latestRanking.setRate(rate);
                         rankingUpdated = true;
                     }
                 }
@@ -132,11 +129,7 @@ public class RankingListener implements APIListenerSpi {
         }
 
         if (rankingUpdated) {
-            csvManager.updateLatest(latestRanking);
-            LoggerHolder.LOG.debug(String.format("%s,%d,%d,%d,%d,%d,%d,%d",
-                    latestRanking.date, latestRanking.rank1, latestRanking.rank5,
-                    latestRanking.rank20, latestRanking.rank100, latestRanking.rank500,
-                    latestRanking.rate, latestRanking.rankNo));
+            RankingDataManager.getDefault().update(latestRanking);
         }
 
         if (configUpdated) {
@@ -154,12 +147,10 @@ public class RankingListener implements APIListenerSpi {
 
         if (obj.containsKey("api_member_id")) {
             memberId = obj.getInt("api_member_id");
-            LoggerHolder.LOG.debug(String.format("member_id: %d", memberId));
         }
 
         if (obj.containsKey("api_nickname")) {
             nickname = obj.getString("api_nickname");
-            LoggerHolder.LOG.debug(String.format("nickname: %s", nickname));
         }
     }
 
