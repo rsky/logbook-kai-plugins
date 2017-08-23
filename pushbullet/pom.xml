@@ -14,6 +14,7 @@
         <license>MIT</license>
         <retrofit2.version>2.3.0</retrofit2.version>
         <rxjavafx.version>2.0.2</rxjavafx.version>
+        <reactivestreams.version>1.0.1</reactivestreams.version>
     </properties>
     <dependencies>
         <dependency>
@@ -41,6 +42,11 @@
             <groupId>io.reactivex</groupId>
             <artifactId>rxjavafx</artifactId>
             <version>${rxjavafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+            <version>${reactivestreams.version}</version>
         </dependency>
     </dependencies>
     <build>

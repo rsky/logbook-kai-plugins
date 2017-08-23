@@ -1,11 +1,11 @@
 package plugins.pushbullet.gui;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
+import io.reactivex.Flowable;
+import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import logbook.Messages;
 import logbook.bean.*;
 import logbook.internal.Ships;
+import logbook.plugin.lifecycle.StartUp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.pushbullet.api.Pusher;
@@ -14,12 +14,13 @@ import plugins.pushbullet.bean.PushbulletConfig;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * プッシュ通知コントローラ
  * 大半のコードはlogbook-kai本体のMainControllerからコピーしています
  */
-class NotificationController {
+public class NotificationController implements StartUp {
 
     /** 通知 */
     private static final Duration NOTIFY = Duration.ofMinutes(1);
@@ -29,24 +30,18 @@ class NotificationController {
     /** 入渠通知のタイムスタンプ */
     private Map<Integer, Long> timeStampNdock = new HashMap<>();
 
-    /**
-     * 通知開始
-     */
-    void start() {
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.getKeyFrames().add(new KeyFrame(
-                javafx.util.Duration.seconds(1),
-                this::update));
-        timeline.play();
+    @Override
+    public void run() {
+        // 起動時には通知を飛ばさないように1分待ってから監視を始める
+        Flowable.interval(60, 1, TimeUnit.SECONDS)
+                .observeOn(JavaFxScheduler.platform())
+                .subscribe(l -> update(), e -> LoggerHolder.LOG.error(e.getMessage(), e));
     }
 
     /**
      * 通知の更新
-     *
-     * @param e ActionEvent
      */
-    private void update(ActionEvent e) {
+    private void update() {
         try {
             PushbulletConfig config = PushbulletConfig.get();
             if (config.isNotifyMissionCompleted()) {
@@ -57,8 +52,8 @@ class NotificationController {
                 // 入渠ドックの通知
                 checkNotifyNdock();
             }
-        } catch (Exception ex) {
-            LoggerHolder.LOG.error("設定の初期化に失敗しました", ex);
+        } catch (Exception e) {
+            LoggerHolder.LOG.error("設定の初期化に失敗しました", e);
         }
     }
 

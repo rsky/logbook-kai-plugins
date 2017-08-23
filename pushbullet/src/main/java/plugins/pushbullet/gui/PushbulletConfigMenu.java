@@ -14,13 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PushbulletConfigMenu implements MainExtMenu {
-    private static NotificationController notificationController = new NotificationController();
-
-    static {
-        // TODO: logbook.plugin.lifecycle.StartUp で行う
-        notificationController.start();
-    }
-
     @Override
     public MenuItem getContent() {
         MenuItem item = new MenuItem("Pushbullet");
