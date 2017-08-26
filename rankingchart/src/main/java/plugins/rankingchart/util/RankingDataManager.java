@@ -49,7 +49,7 @@ public class RankingDataManager {
              Statement statement = connection.createStatement()) {
             //noinspection SqlNoDataSourceInspection
             statement.execute("CREATE TABLE IF NOT EXISTS ranking (\n" +
-                    "  published_at TIMESTAMP PRIMARY KEY,\n" +
+                    "  published_at INTEGER PRIMARY KEY,\n" +
                     "  rank_no INTEGER,\n" +
                     "  rate INTEGER,\n" +
                     "  rank1 INTEGER,\n" +
