@@ -154,11 +154,13 @@ public class RankingChartController extends WindowController {
         series.clear();
         rows.clear();
 
-        if (items != null) {
+        if (items != null && items.size() > 0) {
             // 0時を基準とし、大目盛は1日単位
             ZonedDateTime beginningOfDay = period.getFrom().withHour(0);
             xAxis.setTickUnit(24 * 60 * 60);
             xAxis.setTickLabelFormatter(new TimeDeltaStringConverter(beginningOfDay));
+            // 常にゼロを基準
+            yAxis.setForceZeroInRange(true);
 
             series.setFrom(beginningOfDay);
             items.forEach(series::add);

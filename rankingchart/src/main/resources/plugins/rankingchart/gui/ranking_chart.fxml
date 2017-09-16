@@ -49,14 +49,14 @@
         </VBox>
         <TableView fx:id="table">
             <columns>
-                <TableColumn fx:id="date" prefWidth="140.0" text="日付" />
-                <TableColumn fx:id="rank1" prefWidth="75.0" text="1位" />
-                <TableColumn fx:id="rank5" prefWidth="75.0" text="5位" />
-                <TableColumn fx:id="rank20" prefWidth="75.0" text="20位" />
-                <TableColumn fx:id="rank100" prefWidth="75.0" text="100位" />
-                <TableColumn fx:id="rank500" prefWidth="75.0" text="500位" />
-                <TableColumn fx:id="rate" prefWidth="75.0" text="戦果" />
-                <TableColumn fx:id="rankNo" prefWidth="75.0" text="順位" />
+                <TableColumn fx:id="date" sortable="false" prefWidth="140.0" text="日付" />
+                <TableColumn fx:id="rank1" sortable="false" prefWidth="75.0" text="1位" />
+                <TableColumn fx:id="rank5" sortable="false" prefWidth="75.0" text="5位" />
+                <TableColumn fx:id="rank20" sortable="false" prefWidth="75.0" text="20位" />
+                <TableColumn fx:id="rank100" sortable="false" prefWidth="75.0" text="100位" />
+                <TableColumn fx:id="rank500" sortable="false" prefWidth="75.0" text="500位" />
+                <TableColumn fx:id="rate" sortable="false" prefWidth="75.0" text="戦果" />
+                <TableColumn fx:id="rankNo" sortable="false" prefWidth="75.0" text="順位" />
             </columns>
         </TableView>
     </SplitPane>
