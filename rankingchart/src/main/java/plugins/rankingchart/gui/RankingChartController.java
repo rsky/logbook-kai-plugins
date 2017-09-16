@@ -11,6 +11,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.util.StringConverter;
 import logbook.internal.gui.WindowController;
 import plugins.rankingchart.bean.RankingChartSeries;
@@ -20,6 +22,7 @@ import plugins.rankingchart.util.DateTimeUtil;
 import plugins.rankingchart.util.RankingDataManager;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -185,6 +188,24 @@ public class RankingChartController extends WindowController {
                     .collect(Collectors.toList())
             );
         }
+    }
+
+
+    @FXML
+    void copy(@SuppressWarnings("unused") ActionEvent event) {
+        RankingTableRow item = table.getSelectionModel().getSelectedItem();
+        ClipboardContent content = new ClipboardContent();
+        content.putString(String.join("\t", Arrays.asList(
+                item.getDate(),
+                item.getRank1().replace(",", ""),
+                item.getRank5().replace(",", ""),
+                item.getRank20().replace(",", ""),
+                item.getRank100().replace(",", ""),
+                item.getRank500().replace(",", ""),
+                item.getRate().replace(",", ""),
+                item.getRankNo().replace(",", "")
+        )));
+        Clipboard.getSystemClipboard().setContent(content);
     }
 
     private ObservableList<RankingPeriod> rankingPeriodsObservable() {

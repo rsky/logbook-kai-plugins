@@ -14,6 +14,8 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import java.net.URL?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ContextMenu?>
 <VBox xmlns="http://javafx.com/javafx/8.0.121"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="plugins.rankingchart.gui.RankingChartController"
@@ -58,6 +60,13 @@
                 <TableColumn fx:id="rate" sortable="false" prefWidth="75.0" text="戦果" />
                 <TableColumn fx:id="rankNo" sortable="false" prefWidth="75.0" text="順位" />
             </columns>
+            <contextMenu>
+                <ContextMenu>
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#copy" text="クリップボードにコピー" />
+                    </items>
+                </ContextMenu>
+            </contextMenu>
         </TableView>
     </SplitPane>
 </VBox>
