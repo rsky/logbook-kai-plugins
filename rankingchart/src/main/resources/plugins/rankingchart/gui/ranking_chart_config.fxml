@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="plugins.rankingchart.gui.RankingChartConfigController"
+          prefHeight="400.0" prefWidth="300.0" hgap="8" vgap="8">
+    <stylesheets>
+        <URL value="@global.css"/>
+        <URL value="@ranking_chart_config.css"/>
+    </stylesheets>
+    <padding>
+        <Insets top="25" right="25" bottom="10" left="25"/>
+    </padding>
+
+    <Label text="順位:"
+           GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+    <TextField fx:id="rankNo"
+               GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+    <Label text="仮戦果:"
+           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+    <TextField fx:id="rate1"
+               GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+    <Label text="実戦果:"
+           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+    <TextField fx:id="rate2"
+               GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+    <Label text="戦果係数:"
+           GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+
+    <TextField fx:id="factor"
+               GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+    <Button fx:id="button" text="戦果係数を更新" onAction="#calc"
+            GridPane.halignment="RIGHT"  GridPane.columnSpan="2"
+            GridPane.columnIndex="0" GridPane.rowIndex="4" />
+
+</GridPane>

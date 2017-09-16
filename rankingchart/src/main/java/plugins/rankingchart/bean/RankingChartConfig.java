@@ -11,17 +11,17 @@ import plugins.util.ConfigLoader;
 @NoArgsConstructor
 public class RankingChartConfig {
     /**
-     * ユーザーごとの戦果係数
+     * 戦果係数
      */
     int userRateFactor = 0;
 
     /**
-     * 自分の最終戦果
+     * 順位
      */
     int lastRankNo = 0;
 
     /**
-     * 自分の最終戦果(難読化)
+     * 難読化された戦果
      */
     long lastObfuscatedRate = 0;
 

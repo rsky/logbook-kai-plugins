@@ -4,17 +4,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import logbook.bean.AppConfig;
+import logbook.bean.WindowLocation;
 import logbook.internal.gui.WindowController;
+import logbook.plugin.PluginContainer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import plugins.rankingchart.bean.RankingChartSeries;
 import plugins.rankingchart.bean.RankingLogItem;
 import plugins.rankingchart.bean.RankingTableRow;
@@ -208,6 +214,40 @@ public class RankingChartController extends WindowController {
         Clipboard.getSystemClipboard().setContent(content);
     }
 
+    @FXML
+    void showConfig(@SuppressWarnings("unused") ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(PluginContainer.getInstance().getClassLoader()
+                    .getResource("plugins/rankingchart/gui/ranking_chart_config.fxml"));
+            loader.setClassLoader(this.getClass().getClassLoader());
+            Stage stage = new Stage();
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+
+            WindowController controller = loader.getController();
+            controller.setWindow(stage);
+
+            stage.initOwner(getWindow().getOwner());
+            stage.setTitle("戦果チャート設定");
+            stage.setOnCloseRequest(event1 -> {
+                if (!event1.isConsumed()) {
+                    AppConfig.get()
+                            .getWindowLocationMap()
+                            .put(controller.getClass().getCanonicalName(), controller.getWindowLocation());
+                }
+            });
+            WindowLocation location = AppConfig.get()
+                    .getWindowLocationMap()
+                    .get(controller.getClass().getCanonicalName());
+            if (location != null) {
+                controller.setWindowLocation(location);
+            }
+            stage.show();
+        } catch (Exception ex) {
+            LoggerHolder.LOG.error("設定の初期化に失敗しました", ex);
+        }
+    }
+
     private ObservableList<RankingPeriod> rankingPeriodsObservable() {
         LinkedHashMap<String, RankingPeriod> map = new LinkedHashMap<>();
 
@@ -280,5 +320,12 @@ public class RankingChartController extends WindowController {
         public Number fromString(String string) {
             throw new UnsupportedOperationException();
         }
+    }
+
+    private static class LoggerHolder {
+        /**
+         * ロガー
+         */
+        private static final Logger LOG = LogManager.getLogger(RankingChartMenu.class);
     }
 }
