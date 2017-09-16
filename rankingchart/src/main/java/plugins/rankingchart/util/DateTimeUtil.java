@@ -14,7 +14,7 @@ public class DateTimeUtil {
     private static final ZoneId JST = ZoneId.of("Asia/Tokyo");
 
     /** 年月のフォーマット */
-    private static final DateTimeFormatter FORMATTER_MONTH = DateTimeFormatter.ofPattern("yyyy-MM");
+    private static final DateTimeFormatter FORMATTER_MONTH = DateTimeFormatter.ofPattern("yyyy年M月");
 
     /** 日付のフォーマット */
     private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("M月d日");
