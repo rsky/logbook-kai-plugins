@@ -4,12 +4,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.StringConverter;
 import logbook.internal.gui.WindowController;
+import plugins.rankingchart.bean.RankingChartSeries;
 import plugins.rankingchart.bean.RankingLogItem;
 import plugins.rankingchart.bean.RankingTableRow;
 import plugins.rankingchart.util.DateTimeUtil;
@@ -24,6 +28,9 @@ public class RankingChartController extends WindowController {
     /** 全期間のデータ */
     private List<RankingLogItem> allItems;
 
+    /** チャート表示用データ */
+    private RankingChartSeries series;
+
     /** テーブル表示用データ */
     private ObservableList<RankingTableRow> rows;
 
@@ -31,26 +38,41 @@ public class RankingChartController extends WindowController {
     @FXML
     private ChoiceBox<RankingPeriod> period;
 
+    /** ランキング1位戦果 */
     @FXML
-    private CheckBox rank1CheckBox;
+    private CheckBox rank1Check;
 
+    /** ランキング5位戦果 */
     @FXML
-    private CheckBox rank5CheckBox;
+    private CheckBox rank5Check;
 
+    /** ランキング220位戦果 */
     @FXML
-    private CheckBox rank20CheckBox;
+    private CheckBox rank20Check;
 
+    /** ランキング100位戦果 */
     @FXML
-    private CheckBox rank100CheckBox;
+    private CheckBox rank100Check;
 
+    /** ランキング500位戦果 */
     @FXML
-    private CheckBox rank500CheckBox;
+    private CheckBox rank500Check;
 
+    /** 自分の戦果 */
     @FXML
-    private CheckBox rateCheckBox;
+    private CheckBox rateCheck;
 
+    /** 戦果チャート */
     @FXML
-    private CheckBox rankNoCheckBox;
+    private LineChart<Number, Number> chart;
+
+    /** 戦果チャートX軸 */
+    @FXML
+    private NumberAxis xAxis;
+
+    /** 戦果チャートY軸 */
+    @FXML
+    private NumberAxis yAxis;
 
     /** テーブル */
     @FXML
@@ -80,17 +102,21 @@ public class RankingChartController extends WindowController {
     @FXML
     private TableColumn<RankingTableRow, String> rank500;
 
-    /** マイ戦果列 */
+    /** 自分の戦果列 */
     @FXML
     private TableColumn<RankingTableRow, String> rate;
 
-    /** マイランク列 */
+    /** 自分の順位列 */
     @FXML
     private TableColumn<RankingTableRow, String> rankNo;
 
     @FXML
     void initialize() {
         allItems = RankingDataManager.getDefault().loadAll();
+
+        series = new RankingChartSeries();
+        chart.setData(series.rankingSeriesObservable());
+
         rows = FXCollections.observableArrayList();
         table.setItems(rows);
 
@@ -103,7 +129,7 @@ public class RankingChartController extends WindowController {
         rate.setCellValueFactory(new PropertyValueFactory<>("rate"));
         rankNo.setCellValueFactory(new PropertyValueFactory<>("rankNo"));
 
-        ObservableList<RankingPeriod> periods = getMonthList();
+        ObservableList<RankingPeriod> periods = rankingPeriodsObservable();
         period.setItems(periods);
         if (periods.size() > 0) {
             period.setValue(periods.get(0));
@@ -111,25 +137,41 @@ public class RankingChartController extends WindowController {
     }
 
     @FXML
-    void change(ActionEvent event) {
-    }
-
-    @FXML
-    void changePeriod(ActionEvent event) {
+    void change(@SuppressWarnings("unused") ActionEvent event) {
         final RankingPeriod period = this.period.getValue();
-        rows.clear();
+        List<RankingLogItem> items = null;
+
         if (period != null) {
-            rows.addAll(allItems
+            final ZonedDateTime from = period.getFrom();
+            final ZonedDateTime to = period.getTo();
+            items = allItems
                     .stream()
-                    .filter(item -> !item.getDateTime().isBefore(period.getFrom()))
-                    .filter(item -> !item.getDateTime().isAfter(period.getTo()))
+                    .filter(item -> !item.getDateTime().isBefore(from))
+                    .filter(item -> !item.getDateTime().isAfter(to))
+                    .collect(Collectors.toList());
+        }
+
+        series.clear();
+        rows.clear();
+
+        if (items != null) {
+            // 0時を基準とし、大目盛は1日単位
+            ZonedDateTime beginningOfDay = period.getFrom().withHour(0);
+            xAxis.setTickUnit(24 * 60 * 60);
+            xAxis.setTickLabelFormatter(new TimeDeltaStringConverter(beginningOfDay));
+
+            series.setFrom(beginningOfDay);
+            items.forEach(series::add);
+
+            rows.addAll(items
+                    .stream()
                     .map(RankingTableRow::new)
                     .collect(Collectors.toList())
             );
         }
     }
 
-    private ObservableList<RankingPeriod> getMonthList() {
+    private ObservableList<RankingPeriod> rankingPeriodsObservable() {
         LinkedHashMap<String, RankingPeriod> map = new LinkedHashMap<>();
 
         for (RankingLogItem item : allItems) {
@@ -145,6 +187,9 @@ public class RankingChartController extends WindowController {
         return FXCollections.observableArrayList(map.values());
     }
 
+    /**
+     * ランキング期間
+     */
     private static class RankingPeriod {
         final private String name;
         private ZonedDateTime from;
@@ -176,6 +221,27 @@ public class RankingChartController extends WindowController {
 
         ZonedDateTime getTo() {
             return to;
+        }
+    }
+
+    /**
+     * チャートのX軸(日付)ラベル用コンバーター
+     */
+    private static class TimeDeltaStringConverter extends StringConverter<Number> {
+        private final long epoch;
+
+        TimeDeltaStringConverter(ZonedDateTime from) {
+            epoch = from.toEpochSecond();
+        }
+
+        @Override
+        public String toString(Number delta) {
+            return DateTimeUtil.formatDate(DateTimeUtil.dateTimeFromEpoch(epoch + delta.longValue()));
+        }
+
+        @Override
+        public Number fromString(String string) {
+            throw new UnsupportedOperationException();
         }
     }
 }

@@ -20,7 +20,7 @@ public class RankingChartMenu implements MainExtMenu {
         item.setOnAction(e -> {
             try {
                 FXMLLoader loader = new FXMLLoader(PluginContainer.getInstance().getClassLoader()
-                        .getResource("plugins/rankingchart/gui/rankingchart.fxml"));
+                        .getResource("plugins/rankingchart/gui/ranking_chart.fxml"));
                 loader.setClassLoader(this.getClass().getClassLoader());
                 Stage stage = new Stage();
                 Parent root = loader.load();

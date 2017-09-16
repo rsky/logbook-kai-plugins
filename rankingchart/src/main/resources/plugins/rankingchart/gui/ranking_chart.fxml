@@ -13,11 +13,14 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
+<?import java.net.URL?>
 <VBox xmlns="http://javafx.com/javafx/8.0.121"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="plugins.rankingchart.gui.RankingChartController"
       prefHeight="650.0" prefWidth="750.0">
     <stylesheets>
+        <URL value="@global.css"/>
+        <URL value="@ranking_chart.css"/>
     </stylesheets>
     <SplitPane dividerPositions="0.8" orientation="VERTICAL">
         <VBox>
@@ -26,19 +29,18 @@
                     <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                 </padding>
                 <Label text="期間" />
-                <ChoiceBox fx:id="period" prefWidth="100.0" onAction="#changePeriod" />
+                <ChoiceBox fx:id="period" prefWidth="100.0" onAction="#change" />
                 <Region prefHeight="10.0" prefWidth="10.0" />
-                <CheckBox fx:id="rank1CheckBox" mnemonicParsing="false" onAction="#change" selected="true" text="1位" />
-                <CheckBox fx:id="rank5CheckBox" mnemonicParsing="false" onAction="#change" selected="true" text="5位" />
-                <CheckBox fx:id="rank20CheckBox" mnemonicParsing="false" onAction="#change" selected="true" text="20位" />
-                <CheckBox fx:id="rank100CheckBox" mnemonicParsing="false" onAction="#change" selected="true" text="100位" />
-                <CheckBox fx:id="rank500CheckBox" mnemonicParsing="false" onAction="#change" selected="true" text="500位" />
-                <CheckBox fx:id="rateCheckBox" mnemonicParsing="false" onAction="#change" selected="true" text="戦果" />
-                <CheckBox fx:id="rankNoCheckBox" mnemonicParsing="false" onAction="#change" text="順位" />
+                <CheckBox fx:id="rank1Check" mnemonicParsing="false" onAction="#change" selected="true" text="1位" />
+                <CheckBox fx:id="rank5Check" mnemonicParsing="false" onAction="#change" selected="true" text="5位" />
+                <CheckBox fx:id="rank20Check" mnemonicParsing="false" onAction="#change" selected="true" text="20位" />
+                <CheckBox fx:id="rank100Check" mnemonicParsing="false" onAction="#change" selected="true" text="100位" />
+                <CheckBox fx:id="rank500Check" mnemonicParsing="false" onAction="#change" selected="true" text="500位" />
+                <CheckBox fx:id="rateCheck" mnemonicParsing="false" onAction="#change" selected="true" text="自分" />
             </FlowPane>
             <LineChart fx:id="chart" animated="false" createSymbols="false" VBox.vgrow="ALWAYS">
                 <xAxis>
-                    <NumberAxis side="BOTTOM" fx:id="xAxis" />
+                    <NumberAxis fx:id="xAxis" side="BOTTOM" />
                 </xAxis>
                 <yAxis>
                     <NumberAxis fx:id="yAxis" side="LEFT" />

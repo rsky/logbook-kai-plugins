@@ -1,6 +1,7 @@
 package plugins.rankingchart.util;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +15,9 @@ public class DateTimeUtil {
 
     /** 年月のフォーマット */
     private static final DateTimeFormatter FORMATTER_MONTH = DateTimeFormatter.ofPattern("yyyy-MM");
+
+    /** 日付のフォーマット */
+    private static final DateTimeFormatter FORMATTER_DATE = DateTimeFormatter.ofPattern("M月d日");
 
     /** 日時のフォーマット */
     private static final DateTimeFormatter FORMATTER_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -50,6 +54,16 @@ public class DateTimeUtil {
     }
 
     /**
+     * エポック秒を日時に変換する
+     *
+     * @param epoch エポック秒
+     * @return JSTの日時
+     */
+    public static ZonedDateTime dateTimeFromEpoch(long epoch) {
+        return Instant.ofEpochSecond(epoch).atZone(JST);
+    }
+
+    /**
      * @return グレゴリオ暦・JSTのカレンダー
      */
     public static Calendar getCalender() {
@@ -62,6 +76,14 @@ public class DateTimeUtil {
      */
     public static String formatMonth(ZonedDateTime dateTime) {
         return FORMATTER_MONTH.format(dateTime);
+    }
+
+    /**
+     * @param dateTime 日時
+     * @return 日付をフォーマットした文字列
+     */
+    public static String formatDate(ZonedDateTime dateTime) {
+        return FORMATTER_DATE.format(dateTime);
     }
 
     /**

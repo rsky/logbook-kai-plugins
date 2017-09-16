@@ -25,10 +25,10 @@ public class RankingTableRow {
     /** ランキング500位戦果 */
     private StringProperty rank500;
 
-    /** マイ戦果 */
+    /** 自分の戦果 */
     private StringProperty rate;
 
-    /** マイランク */
+    /** 自分の順位 */
     private StringProperty rankNo;
 
     public RankingTableRow(RankingLogItem item) {
