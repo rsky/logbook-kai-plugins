@@ -8,7 +8,7 @@ import logbook.proxy.ResponseMetaData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.rankingchart.bean.RankingChartConfig;
-import plugins.rankingchart.bean.RankingListItem;
+import plugins.rankingchart.bean.RankingEntry;
 import plugins.rankingchart.bean.RankingLogItem;
 import plugins.rankingchart.util.Calculator;
 import plugins.rankingchart.util.DateTimeUtil;
@@ -78,9 +78,9 @@ public class RankingListener implements APIListenerSpi {
         boolean configUpdated = false;
 
         for (JsonValue value : list) {
-            final RankingListItem item;
+            final RankingEntry item;
             if (value instanceof JsonObject) {
-                item = new RankingListItem((JsonObject) value);
+                item = new RankingEntry((JsonObject) value);
             } else {
                 // 実際はここには到達しないが便宜上
                 break;

@@ -5,7 +5,7 @@ import lombok.Value;
 import javax.json.JsonObject;
 
 @Value
-public class RankingListItem {
+public class RankingEntry {
     int no;
     String nickname;
     int flag;
@@ -14,7 +14,7 @@ public class RankingListItem {
     long obfuscatedMedals;
     long obfuscatedRate;
 
-    public RankingListItem(JsonObject jo) {
+    public RankingEntry(JsonObject jo) {
         no = jo.getInt("api_mxltvkpyuklh");
         nickname = jo.getString("api_mtjmdcwtvhdr");
         flag = jo.getInt("api_pbgkfylkbjuy");
