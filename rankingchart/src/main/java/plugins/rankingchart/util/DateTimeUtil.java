@@ -3,6 +3,7 @@ package plugins.rankingchart.util;
 import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -10,6 +11,12 @@ import java.util.TimeZone;
 public class DateTimeUtil {
     /** タイムゾーン */
     private static final ZoneId JST = ZoneId.of("Asia/Tokyo");
+
+    /** 年月のフォーマット */
+    private static final DateTimeFormatter FORMATTER_MONTH = DateTimeFormatter.ofPattern("yyyy-MM");
+
+    /** 日時のフォーマット */
+    private static final DateTimeFormatter FORMATTER_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /**
      * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を取得する
@@ -47,5 +54,21 @@ public class DateTimeUtil {
      */
     public static Calendar getCalender() {
         return GregorianCalendar.getInstance(TimeZone.getTimeZone(JST));
+    }
+
+    /**
+     * @param dateTime 日時
+     * @return 年月をフォーマットした文字列
+     */
+    public static String formatMonth(ZonedDateTime dateTime) {
+        return FORMATTER_MONTH.format(dateTime);
+    }
+
+    /**
+     * @param dateTime 日時
+     * @return 日時をフォーマットした文字列
+     */
+    public static String formatDateTime(ZonedDateTime dateTime) {
+        return FORMATTER_DATETIME.format(dateTime);
     }
 }

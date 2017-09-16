@@ -110,7 +110,7 @@ public class RankingDataManager {
     public List<RankingLogItem> loadAll() {
         List<RankingLogItem> list = new ArrayList<>();
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
-        String sql = "SELECT * FROM ranking ORDER BY published_at";
+        String sql = "SELECT * FROM ranking ORDER BY published_at DESC";
         Calendar calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
