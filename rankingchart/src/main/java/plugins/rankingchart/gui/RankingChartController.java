@@ -112,14 +112,26 @@ public class RankingChartController extends WindowController {
 
     @FXML
     void initialize() {
+        // データ一括読み込み
         allItems = RankingDataManager.getDefault().loadAll();
 
+        // チャートを初期化
         series = new RankingChartSeries();
         chart.setData(series.rankingSeriesObservable());
 
+        // チャートの表示項目をチェックボックスにバインド
+        series.rank1EnabledProperty().bind(rank1Check.selectedProperty());
+        series.rank5EnabledProperty().bind(rank5Check.selectedProperty());
+        series.rank20EnabledProperty().bind(rank20Check.selectedProperty());
+        series.rank100EnabledProperty().bind(rank100Check.selectedProperty());
+        series.rank500EnabledProperty().bind(rank500Check.selectedProperty());
+        series.rateEnabledProperty().bind(rateCheck.selectedProperty());
+
+        // テーブルを初期化
         rows = FXCollections.observableArrayList();
         table.setItems(rows);
 
+        // テーブルのセルをデータのプロパティにバインド
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
         rank1.setCellValueFactory(new PropertyValueFactory<>("rank1"));
         rank5.setCellValueFactory(new PropertyValueFactory<>("rank5"));
@@ -129,6 +141,7 @@ public class RankingChartController extends WindowController {
         rate.setCellValueFactory(new PropertyValueFactory<>("rate"));
         rankNo.setCellValueFactory(new PropertyValueFactory<>("rankNo"));
 
+        // 表示期間を初期化
         ObservableList<RankingPeriod> periods = rankingPeriodsObservable();
         period.setItems(periods);
         if (periods.size() > 0) {
@@ -160,6 +173,7 @@ public class RankingChartController extends WindowController {
             xAxis.setTickUnit(24 * 60 * 60);
             xAxis.setTickLabelFormatter(new TimeDeltaStringConverter(beginningOfDay));
             // 常にゼロを基準
+            xAxis.setForceZeroInRange(true);
             yAxis.setForceZeroInRange(true);
 
             series.setFrom(beginningOfDay);
