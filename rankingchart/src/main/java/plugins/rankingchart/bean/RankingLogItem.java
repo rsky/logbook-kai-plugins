@@ -13,25 +13,25 @@ public class RankingLogItem {
     ZonedDateTime dateTime;
 
     @CsvColumn(name = "1位")
-    int rank1;
+    Integer rank1;
 
     @CsvColumn(name = "5位")
-    int rank5;
+    Integer rank5;
 
     @CsvColumn(name = "20位")
-    int rank20;
+    Integer rank20;
 
     @CsvColumn(name = "100位")
-    int rank100;
+    Integer rank100;
 
     @CsvColumn(name = "500位")
-    int rank500;
+    Integer rank500;
 
     @CsvColumn(name = "戦果")
-    int rate;
+    Integer rate;
 
     @CsvColumn(name = "順位")
-    int rankNo;
+    Integer rankNo;
 
     public static RankingLogItem withDateTime(ZonedDateTime date) {
         RankingLogItem row = new RankingLogItem();

@@ -74,16 +74,33 @@ public class RankingDataManager {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setTimestamp(1, Timestamp.from(ranking.getDateTime().toInstant()));
-            statement.setInt(2, ranking.getRankNo());
-            statement.setInt(3, ranking.getRate());
-            statement.setInt(4, ranking.getRank1());
-            statement.setInt(5, ranking.getRank5());
-            statement.setInt(6, ranking.getRank20());
-            statement.setInt(7, ranking.getRank100());
-            statement.setInt(8, ranking.getRank500());
+            setIntOrNull(statement, 2, ranking.getRankNo());
+            setIntOrNull(statement, 3, ranking.getRate());
+            setIntOrNull(statement, 4, ranking.getRank1());
+            setIntOrNull(statement, 5, ranking.getRank5());
+            setIntOrNull(statement, 6, ranking.getRank20());
+            setIntOrNull(statement, 7, ranking.getRank100());
+            setIntOrNull(statement, 8, ranking.getRank500());
             statement.execute();
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);
+        }
+    }
+
+    private void setIntOrNull(PreparedStatement statement, int parameterIndex, Integer value) throws SQLException {
+        if (value == null) {
+            statement.setNull(parameterIndex, Types.NULL);
+        } else {
+            statement.setInt(parameterIndex, value);
+        }
+    }
+
+    private Integer getIntOrNull(ResultSet resultSet, String columnLabel) throws SQLException {
+        int value = resultSet.getInt(columnLabel);
+        if (resultSet.wasNull()) {
+            return null;
+        } else {
+            return value;
         }
     }
 
@@ -129,13 +146,13 @@ public class RankingDataManager {
     private RankingLogItem convertResult(ResultSet resultSet, Calendar calendar) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp("published_at", calendar);
         RankingLogItem row = RankingLogItem.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
-        row.setRankNo(resultSet.getInt("rank_no"));
-        row.setRate(resultSet.getInt("rate"));
-        row.setRank1(resultSet.getInt("rank1"));
-        row.setRank5(resultSet.getInt("rank5"));
-        row.setRank20(resultSet.getInt("rank20"));
-        row.setRank100(resultSet.getInt("rank100"));
-        row.setRank500(resultSet.getInt("rank500"));
+        row.setRankNo(getIntOrNull(resultSet, "rank_no"));
+        row.setRate(getIntOrNull(resultSet, "rate"));
+        row.setRank1(getIntOrNull(resultSet, "rank1"));
+        row.setRank5(getIntOrNull(resultSet, "rank5"));
+        row.setRank20(getIntOrNull(resultSet, "rank20"));
+        row.setRank100(getIntOrNull(resultSet, "rank100"));
+        row.setRank500(getIntOrNull(resultSet, "rank500"));
         return row;
     }
 

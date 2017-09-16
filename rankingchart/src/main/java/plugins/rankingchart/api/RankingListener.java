@@ -72,7 +72,7 @@ public class RankingListener implements APIListenerSpi {
         }
 
         final RankingChartConfig config = RankingChartConfig.get();
-        final int userRateFactor = /*config.getUserRateFactor()*/ 26;
+        int userRateFactor = config.getUserRateFactor();
         final long lastObfuscatedRate = config.getLastObfuscatedRate();
         boolean rankingUpdated = false;
         boolean configUpdated = false;
