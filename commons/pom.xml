@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <name>logbook-kai-plugin-commons</name>
     <artifactId>commons</artifactId>
-    <version>17.9.4</version>
+    <version>17.9.5</version>
     <parent>
         <groupId>logbook-kai-plugins</groupId>
         <artifactId>plugins</artifactId>
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>logbook-kai</groupId>
             <artifactId>logbook-kai</artifactId>
-            <version>17.9.4</version>
+            <version>17.9.5</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/../lib/logbook-kai.jar</systemPath>
         </dependency>
