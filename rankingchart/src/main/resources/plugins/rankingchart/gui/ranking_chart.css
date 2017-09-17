@@ -3,10 +3,18 @@
 }
 
 .default-color5.chart-line-symbol {
-    -fx-background-color: #333333, white;
+    -fx-background-color: #666666, white;
 }
 
 .default-color5.chart-series-line {
-    -fx-stroke: #333333;
+    -fx-stroke: #666666;
     -fx-stroke-width: 2px;
+}
+
+.table-cell {
+    -fx-alignment: CENTER-RIGHT;
+}
+
+.table-cell#dateCol {
+    -fx-alignment: CENTER-LEFT;
 }

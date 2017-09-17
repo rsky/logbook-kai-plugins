@@ -22,7 +22,7 @@
                     <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                 </padding>
                 <Label text="期間" />
-                <ChoiceBox fx:id="period" prefWidth="100.0" onAction="#change" />
+                <ChoiceBox fx:id="periodChoice" prefWidth="100.0" onAction="#change" />
                 <CheckBox fx:id="rank1Check" mnemonicParsing="false" onAction="#change" selected="true" text="1位" />
                 <CheckBox fx:id="rank5Check" mnemonicParsing="false" onAction="#change" selected="true" text="5位" />
                 <CheckBox fx:id="rank20Check" mnemonicParsing="false" onAction="#change" selected="true" text="20位" />
@@ -42,14 +42,14 @@
         </VBox>
         <TableView fx:id="table">
             <columns>
-                <TableColumn fx:id="date" sortable="false" prefWidth="140.0" text="日付" />
-                <TableColumn fx:id="rank1" sortable="false" prefWidth="75.0" text="1位" />
-                <TableColumn fx:id="rank5" sortable="false" prefWidth="75.0" text="5位" />
-                <TableColumn fx:id="rank20" sortable="false" prefWidth="75.0" text="20位" />
-                <TableColumn fx:id="rank100" sortable="false" prefWidth="75.0" text="100位" />
-                <TableColumn fx:id="rank500" sortable="false" prefWidth="75.0" text="500位" />
-                <TableColumn fx:id="rate" sortable="false" prefWidth="75.0" text="戦果" />
-                <TableColumn fx:id="rankNo" sortable="false" prefWidth="75.0" text="順位" />
+                <TableColumn fx:id="dateCol" prefWidth="140.0" text="日付" />
+                <TableColumn fx:id="rank1Col" sortable="false" prefWidth="70.0" text="1位" />
+                <TableColumn fx:id="rank5Col" sortable="false" prefWidth="70.0" text="5位" />
+                <TableColumn fx:id="rank20Col" sortable="false" prefWidth="70.0" text="20位" />
+                <TableColumn fx:id="rank100Col" sortable="false" prefWidth="70.0" text="100位" />
+                <TableColumn fx:id="rank500Col" sortable="false" prefWidth="70.0" text="500位" />
+                <TableColumn fx:id="rateCol" sortable="false" prefWidth="70.0" text="戦果" />
+                <TableColumn fx:id="rankNoCol" sortable="false" prefWidth="70.0" text="順位" />
             </columns>
             <contextMenu>
                 <ContextMenu>

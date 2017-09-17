@@ -9,7 +9,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -29,6 +32,7 @@ import plugins.rankingchart.util.RankingDataManager;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +49,7 @@ public class RankingChartController extends WindowController {
 
     /** 期間 */
     @FXML
-    private ChoiceBox<RankingPeriod> period;
+    private ChoiceBox<RankingPeriod> periodChoice;
 
     /** ランキング1位戦果 */
     @FXML
@@ -89,35 +93,35 @@ public class RankingChartController extends WindowController {
 
     /** 日付列 */
     @FXML
-    private TableColumn<RankingTableRow, String> date;
+    private TableColumn<RankingTableRow, String> dateCol;
 
     /** ランキング1位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank1;
+    private TableColumn<RankingTableRow, String> rank1Col;
 
     /** ランキング5位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank5;
+    private TableColumn<RankingTableRow, String> rank5Col;
 
     /** ランキング20位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank20;
+    private TableColumn<RankingTableRow, String> rank20Col;
 
     /** ランキング100位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank100;
+    private TableColumn<RankingTableRow, String> rank100Col;
 
     /** ランキング500位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank500;
+    private TableColumn<RankingTableRow, String> rank500Col;
 
     /** 自分の戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rate;
+    private TableColumn<RankingTableRow, String> rateCol;
 
     /** 自分の順位列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rankNo;
+    private TableColumn<RankingTableRow, String> rankNoCol;
 
     @FXML
     void initialize() {
@@ -139,28 +143,29 @@ public class RankingChartController extends WindowController {
         // テーブルを初期化
         rows = FXCollections.observableArrayList();
         table.setItems(rows);
+        dateCol.setComparator(new DateTimeColComparator());
 
         // テーブルのセルをデータのプロパティにバインド
-        date.setCellValueFactory(new PropertyValueFactory<>("date"));
-        rank1.setCellValueFactory(new PropertyValueFactory<>("rank1"));
-        rank5.setCellValueFactory(new PropertyValueFactory<>("rank5"));
-        rank20.setCellValueFactory(new PropertyValueFactory<>("rank20"));
-        rank100.setCellValueFactory(new PropertyValueFactory<>("rank100"));
-        rank500.setCellValueFactory(new PropertyValueFactory<>("rank500"));
-        rate.setCellValueFactory(new PropertyValueFactory<>("rate"));
-        rankNo.setCellValueFactory(new PropertyValueFactory<>("rankNo"));
+        dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
+        rank1Col.setCellValueFactory(new PropertyValueFactory<>("rank1"));
+        rank5Col.setCellValueFactory(new PropertyValueFactory<>("rank5"));
+        rank20Col.setCellValueFactory(new PropertyValueFactory<>("rank20"));
+        rank100Col.setCellValueFactory(new PropertyValueFactory<>("rank100"));
+        rank500Col.setCellValueFactory(new PropertyValueFactory<>("rank500"));
+        rateCol.setCellValueFactory(new PropertyValueFactory<>("rate"));
+        rankNoCol.setCellValueFactory(new PropertyValueFactory<>("rankNo"));
 
         // 表示期間を初期化
         ObservableList<RankingPeriod> periods = rankingPeriodsObservable();
-        period.setItems(periods);
+        periodChoice.setItems(periods);
         if (periods.size() > 0) {
-            period.setValue(periods.get(0));
+            periodChoice.setValue(periods.get(0));
         }
     }
 
     @FXML
     void change(@SuppressWarnings("unused") ActionEvent event) {
-        final RankingPeriod period = this.period.getValue();
+        final RankingPeriod period = periodChoice.getValue();
         List<RankingLogItem> items = null;
 
         if (period != null) {
@@ -319,6 +324,18 @@ public class RankingChartController extends WindowController {
         @Override
         public Number fromString(String string) {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * 日付列ソート用Comparator
+     */
+    private static class DateTimeColComparator implements Comparator<String> {
+        @Override
+        public int compare(String o1, String o2) {
+            ZonedDateTime dt1 = DateTimeUtil.dateTimeFromString(o1);
+            ZonedDateTime dt2 = DateTimeUtil.dateTimeFromString(o2);
+            return dt1.compareTo(dt2);
         }
     }
 

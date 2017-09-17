@@ -2,6 +2,7 @@ package plugins.rankingchart.util;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -61,6 +62,16 @@ public class DateTimeUtil {
      */
     public static ZonedDateTime dateTimeFromEpoch(long epoch) {
         return Instant.ofEpochSecond(epoch).atZone(JST);
+    }
+
+    /**
+     * 日時文字列を日時に変換する
+     *
+     * @param text 日時文字列
+     * @return JSTの日時
+     */
+    public static ZonedDateTime dateTimeFromString(String text) {
+        return LocalDateTime.parse(text, FORMATTER_DATETIME).atZone(JST);
     }
 
     /**

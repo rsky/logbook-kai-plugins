@@ -1,7 +1,1 @@
-
-.label {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333333;
-    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
-}
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
