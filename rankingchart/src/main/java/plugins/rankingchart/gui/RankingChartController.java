@@ -31,8 +31,6 @@ import plugins.rankingchart.util.DateTimeUtil;
 import plugins.rankingchart.util.RankingDataManager;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,7 +141,11 @@ public class RankingChartController extends WindowController {
         // テーブルを初期化
         rows = FXCollections.observableArrayList();
         table.setItems(rows);
-        dateCol.setComparator(new DateTimeColComparator());
+        dateCol.setComparator((o1, o2) -> {
+            ZonedDateTime dt1 = DateTimeUtil.dateTimeFromString(o1);
+            ZonedDateTime dt2 = DateTimeUtil.dateTimeFromString(o2);
+            return dt1.compareTo(dt2);
+        });
 
         // テーブルのセルをデータのプロパティにバインド
         dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -315,18 +317,6 @@ public class RankingChartController extends WindowController {
         @Override
         public Number fromString(String string) {
             throw new UnsupportedOperationException();
-        }
-    }
-
-    /**
-     * 日付列ソート用Comparator
-     */
-    private static class DateTimeColComparator implements Comparator<String> {
-        @Override
-        public int compare(String o1, String o2) {
-            ZonedDateTime dt1 = DateTimeUtil.dateTimeFromString(o1);
-            ZonedDateTime dt2 = DateTimeUtil.dateTimeFromString(o2);
-            return dt1.compareTo(dt2);
         }
     }
 
