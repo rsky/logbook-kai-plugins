@@ -15,18 +15,23 @@ import plugins.rankingchart.util.Calculator;
 public class RankingChartConfigController extends WindowController {
     private RankingChartConfig config;
 
+    /** 順位 */
     @FXML
     private TextField rankNo;
 
+    /** 仮戦果 */
     @FXML
     private TextField rate1;
 
+    /** 実戦果 */
     @FXML
     private TextField rate2;
 
+    /** 戦果係数 */
     @FXML
     private TextField factor;
 
+    /** 戦果係数の更新ボタン */
     @FXML
     private Button button;
 
@@ -54,9 +59,7 @@ public class RankingChartConfigController extends WindowController {
     void calc(@SuppressWarnings("unused") ActionEvent event) {
         String actualRateStr = rate2.getText();
         if (actualRateStr.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING,
-                    "実戦果を入力してください", ButtonType.OK);
-            alert.show();
+            showAlert(Alert.AlertType.WARNING, "実戦果を入力してください");
             return;
         }
 
@@ -64,9 +67,7 @@ public class RankingChartConfigController extends WindowController {
         try {
             actualRate = Integer.valueOf(actualRateStr);
         } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING,
-                    "実戦果を正しく入力してください", ButtonType.OK);
-            alert.show();
+            showAlert(Alert.AlertType.WARNING, "実戦果を正しく入力してください");
             return;
         }
 
@@ -76,18 +77,20 @@ public class RankingChartConfigController extends WindowController {
         if (userRateFactor > 0) {
             factor.setText(String.valueOf(userRateFactor));
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    String.format("戦果係数は%dです", userRateFactor), ButtonType.OK);
-            alert.show();
+            showAlert(Alert.AlertType.INFORMATION, String.format("戦果係数は%dです", userRateFactor));
 
             // 戦果係数を更新・保存
             RankingChartConfig currentConfig = RankingChartConfig.get();
             currentConfig.setUserRateFactor(userRateFactor);
             ThreadManager.getExecutorService().execute(Config.getDefault()::store);
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "戦果係数の計算に失敗しました", ButtonType.OK);
-            alert.show();
+            showAlert(Alert.AlertType.ERROR, "戦果係数の計算に失敗しました");
         }
+    }
+
+    private void showAlert(Alert.AlertType alertType, String contentText) {
+        Alert alert = new Alert(alertType, contentText, ButtonType.OK);
+        alert.initOwner(getWindow().getOwner());
+        alert.show();
     }
 }
