@@ -5,6 +5,8 @@ import javafx.beans.property.StringProperty;
 import plugins.rankingchart.util.DateTimeUtil;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Arrays;
 
 public class RankingTableRow {
     /** 日付 */
@@ -59,67 +61,62 @@ public class RankingTableRow {
         rankNo = new SimpleStringProperty(value == null ? "" : format.format(value));
     }
 
-    public String getDate() {
-        return date.get();
+    @Override
+    public String toString() {
+        NumberFormat format = NumberFormat.getNumberInstance();
+        return String.join("\t", Arrays.asList(
+                getDate(),
+                unFormatNumber(format, getRank1()),
+                unFormatNumber(format, getRank5()),
+                unFormatNumber(format, getRank20()),
+                unFormatNumber(format, getRank100()),
+                unFormatNumber(format, getRank500()),
+                unFormatNumber(format, getRate()),
+                unFormatNumber(format, getRankNo())
+        ));
     }
 
-    public void setDate(String date) {
-        this.date.set(date);
+    private String unFormatNumber(NumberFormat format, String text) {
+        if (text.isEmpty()) {
+            return "";
+        } else {
+            try {
+                return format.parse(text).toString();
+            } catch (ParseException e) {
+                return "";
+            }
+        }
+    }
+
+    public String getDate() {
+        return date.get();
     }
 
     public String getRank1() {
         return rank1.get();
     }
 
-    public void setRank1(String rank1) {
-        this.rank1.set(rank1);
-    }
-
     public String getRank5() {
         return rank5.get();
-    }
-
-    public void setRank5(String rank5) {
-        this.rank5.set(rank5);
     }
 
     public String getRank20() {
         return rank20.get();
     }
 
-    public void setRank20(String rank20) {
-        this.rank20.set(rank20);
-    }
-
     public String getRank100() {
         return rank100.get();
-    }
-
-    public void setRank100(String rank100) {
-        this.rank100.set(rank100);
     }
 
     public String getRank500() {
         return rank500.get();
     }
 
-    public void setRank500(String rank500) {
-        this.rank500.set(rank500);
-    }
-
     public String getRate() {
         return rate.get();
     }
 
-    public void setRate(String rate) {
-        this.rate.set(rate);
-    }
-
     public String getRankNo() {
         return rankNo.get();
-    }
-
-    public void setRankNo(String rankNo) {
-        this.rankNo.set(rankNo);
     }
 }

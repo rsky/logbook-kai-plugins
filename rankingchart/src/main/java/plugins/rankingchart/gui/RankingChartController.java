@@ -206,16 +206,7 @@ public class RankingChartController extends WindowController {
     void copy(@SuppressWarnings("unused") ActionEvent event) {
         RankingTableRow item = table.getSelectionModel().getSelectedItem();
         ClipboardContent content = new ClipboardContent();
-        content.putString(String.join("\t", Arrays.asList(
-                item.getDate(),
-                item.getRank1().replace(",", ""),
-                item.getRank5().replace(",", ""),
-                item.getRank20().replace(",", ""),
-                item.getRank100().replace(",", ""),
-                item.getRank500().replace(",", ""),
-                item.getRate().replace(",", ""),
-                item.getRankNo().replace(",", "")
-        )));
+        content.putString(item.toString());
         Clipboard.getSystemClipboard().setContent(content);
     }
 
