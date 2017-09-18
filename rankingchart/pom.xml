@@ -12,7 +12,6 @@
     </parent>
     <properties>
         <license>MIT</license>
-        <orangesignalcsv.version>2.2.1</orangesignalcsv.version>
         <sqlite.version>3.20.0</sqlite.version>
     </properties>
     <dependencies>
@@ -21,11 +20,6 @@
             <artifactId>commons</artifactId>
             <version>17.9.5</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.orangesignal</groupId>
-            <artifactId>orangesignal-csv</artifactId>
-            <version>${orangesignalcsv.version}</version>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
