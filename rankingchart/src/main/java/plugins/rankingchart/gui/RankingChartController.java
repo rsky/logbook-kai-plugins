@@ -13,6 +13,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +25,9 @@ import plugins.rankingchart.util.DateTimeUtil;
 import plugins.rankingchart.util.RankingDataManager;
 import plugins.util.StageUtil;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -202,8 +206,43 @@ public class RankingChartController extends WindowController {
     void copy(@SuppressWarnings("unused") ActionEvent event) {
         RankingTableRow item = table.getSelectionModel().getSelectedItem();
         ClipboardContent content = new ClipboardContent();
-        content.putString(item.toString());
+        content.putString(item.toTSV());
         Clipboard.getSystemClipboard().setContent(content);
+    }
+
+    @FXML
+    void save(@SuppressWarnings("unused") ActionEvent event) {
+        FileChooser chooser = new FileChooser();
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
+        chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
+
+        File file = chooser.showSaveDialog(getWindow());
+        if (file != null){
+            saveCSV(file);
+        }
+    }
+
+    private void saveCSV(File file) {
+        StringBuffer sb = new StringBuffer();
+
+        table.getItems().sorted((r1, r2) -> {
+            ZonedDateTime dt1 = DateTimeUtil.dateTimeFromString(r1.getDate());
+            ZonedDateTime dt2 = DateTimeUtil.dateTimeFromString(r2.getDate());
+            return dt1.compareTo(dt2);
+        }).forEach(row -> {
+            // ラムダ式の中でIOExceptionをハンドリングしたくないし、
+            // そこまでメモリを使うわけでもないのでFileWriterを使わずに
+            // いったんStringBufferにCSVを書き出している。
+            sb.append(row.toCSV());
+            sb.append("\r\n");
+        });
+
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("日付,1位,5位,20位,100位,500位,戦果,順位\r\n");
+            writer.write(sb.toString());
+        } catch (IOException e) {
+            LoggerHolder.LOG.error("CSVを保存できませんでした", e);
+        }
     }
 
     @FXML
@@ -261,6 +300,10 @@ public class RankingChartController extends WindowController {
 
         @Override
         public String toString() {
+            return name;
+        }
+
+        String getName() {
             return name;
         }
 

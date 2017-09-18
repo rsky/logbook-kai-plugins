@@ -55,6 +55,7 @@
                 <ContextMenu>
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#copy" text="クリップボードにコピー" />
+                        <MenuItem mnemonicParsing="false" onAction="#save" text="CSVとして保存" />
                     </items>
                 </ContextMenu>
             </contextMenu>

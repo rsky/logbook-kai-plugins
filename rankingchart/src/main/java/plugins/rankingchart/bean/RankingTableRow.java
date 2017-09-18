@@ -63,8 +63,20 @@ public class RankingTableRow {
 
     @Override
     public String toString() {
+        return toTSV();
+    }
+
+    public String toCSV() {
+        return toStringWithDelimiter(",");
+    }
+
+    public String toTSV() {
+        return toStringWithDelimiter("\t");
+    }
+
+    private String toStringWithDelimiter(String delimiter) {
         NumberFormat format = NumberFormat.getNumberInstance();
-        return String.join("\t", Arrays.asList(
+        return String.join(delimiter, Arrays.asList(
                 getDate(),
                 unFormatNumber(format, getRank1()),
                 unFormatNumber(format, getRank5()),

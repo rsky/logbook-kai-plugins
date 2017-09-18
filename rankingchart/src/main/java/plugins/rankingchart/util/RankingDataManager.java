@@ -105,7 +105,7 @@ public class RankingDataManager {
     }
 
     /**
-     * @return 全期間のランキング情報を日付で昇順にソートしたリスト
+     * @return 全期間のランキング情報を日付で降順にソートしたリスト
      */
     public List<RankingLogItem> loadAll() {
         List<RankingLogItem> list = new ArrayList<>();
