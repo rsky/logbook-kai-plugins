@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import plugins.rankingchart.bean.RankingLogItem;
 
 import java.sql.*;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -69,7 +70,8 @@ public class RankingDataManager {
      */
     public void update(RankingLogItem ranking) {
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
-        String sql = "REPLACE INTO ranking (published_at, rank_no, rate, rank1, rank5, rank20, rank100, rank500)" +
+        String sql = "REPLACE INTO ranking" +
+                " (published_at, rank_no, rate, rank1, rank5, rank20, rank100, rank500)" +
                 " values (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -117,6 +119,33 @@ public class RankingDataManager {
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
                 list.add(convertResult(resultSet, calendar));
+            }
+        } catch (SQLException e) {
+            LoggerHolder.LOG.error(e.getMessage(), e);
+        }
+        return list;
+    }
+
+    /**
+     * @param from 開始日時
+     * @param to 終了日時
+     * @return 指定期間[from, to]のランキング情報を日付で降順にソートしたリスト
+     */
+    public List<RankingLogItem> load(ZonedDateTime from, ZonedDateTime to) {
+        List<RankingLogItem> list = new ArrayList<>();
+        //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
+        String sql = "SELECT * FROM ranking" +
+                " WHERE published_at >= ? AND published_at <= ?" +
+                " ORDER BY published_at DESC";
+        Calendar calendar = DateTimeUtil.getCalender();
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setTimestamp(1, Timestamp.from(from.toInstant()));
+            statement.setTimestamp(2, Timestamp.from(to.toInstant()));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    list.add(convertResult(resultSet, calendar));
+                }
             }
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);

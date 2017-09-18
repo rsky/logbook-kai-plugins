@@ -31,12 +31,8 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RankingChartController extends WindowController {
-    /** 全期間のデータ */
-    private List<RankingLogItem> allItems;
-
     /** チャート表示用データ */
     private RankingChartSeries series;
 
@@ -121,9 +117,6 @@ public class RankingChartController extends WindowController {
 
     @FXML
     void initialize() {
-        // データ一括読み込み
-        allItems = RankingDataManager.getDefault().loadAll();
-
         // チャートを初期化
         series = new RankingChartSeries();
         chart.setData(series.rankingSeriesObservable());
@@ -169,13 +162,7 @@ public class RankingChartController extends WindowController {
         List<RankingLogItem> items = null;
 
         if (period != null) {
-            final ZonedDateTime from = period.getFrom();
-            final ZonedDateTime to = period.getTo();
-            items = allItems
-                    .stream()
-                    .filter(item -> !item.getDateTime().isBefore(from))
-                    .filter(item -> !item.getDateTime().isAfter(to))
-                    .collect(Collectors.toList());
+            items = RankingDataManager.getDefault().load(period.getFrom(), period.getTo());
         }
 
         series.clear();
@@ -183,21 +170,18 @@ public class RankingChartController extends WindowController {
 
         if (items != null && items.size() > 0) {
             // 0時を基準とし、大目盛は1日単位
-            ZonedDateTime beginningOfDay = period.getFrom().withHour(0);
+            ZonedDateTime baseTime = period.getFrom().withHour(0);
             xAxis.setTickUnit(24 * 60 * 60);
-            xAxis.setTickLabelFormatter(new TimeDeltaStringConverter(beginningOfDay));
+            xAxis.setTickLabelFormatter(new TimeDeltaStringConverter(baseTime));
             // 常にゼロを基準
             xAxis.setForceZeroInRange(true);
             yAxis.setForceZeroInRange(true);
 
-            series.setFrom(beginningOfDay);
-            items.forEach(series::add);
-
-            rows.addAll(items
-                    .stream()
-                    .map(RankingTableRow::new)
-                    .collect(Collectors.toList())
-            );
+            series.setFrom(baseTime);
+            items.forEach(item -> {
+                series.add(item);
+                rows.add(new RankingTableRow(item));
+            });
         }
     }
 
@@ -261,6 +245,7 @@ public class RankingChartController extends WindowController {
 
     private ObservableList<RankingPeriod> rankingPeriodsObservable() {
         LinkedHashMap<String, RankingPeriod> map = new LinkedHashMap<>();
+        List<RankingLogItem> allItems = RankingDataManager.getDefault().loadAll();
 
         for (RankingLogItem item : allItems) {
             String monthStr = DateTimeUtil.formatMonth(item.getDateTime());
