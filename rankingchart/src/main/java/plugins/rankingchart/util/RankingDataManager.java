@@ -22,7 +22,7 @@ public class RankingDataManager {
     /**
      * @return デフォルトのRankingDataManager
      */
-    public static RankingDataManager getDefault() {
+    public static synchronized RankingDataManager getDefault() {
         if (DEFAULT == null) {
             try {
                 Class.forName(DEFAULT_DRIVER);
