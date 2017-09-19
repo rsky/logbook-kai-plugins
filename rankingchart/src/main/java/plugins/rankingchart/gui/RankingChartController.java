@@ -2,25 +2,21 @@ package plugins.rankingchart.gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.rankingchart.bean.RankingChartSeries;
 import plugins.rankingchart.bean.RankingLogItem;
-import plugins.rankingchart.bean.RankingTableRow;
 import plugins.rankingchart.util.DateTimeUtil;
 import plugins.rankingchart.util.RankingDataManager;
 import plugins.util.StageUtil;
@@ -28,16 +24,18 @@ import plugins.util.StageUtil;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RankingChartController extends WindowController {
     /** チャート表示用データ */
-    private RankingChartSeries series;
+    private RankingChartSeries series = new RankingChartSeries();
 
     /** テーブル表示用データ */
-    private ObservableList<RankingTableRow> rows;
+    private ObservableList<RankingLogItem> rows = FXCollections.observableArrayList();
 
     /** 期間 */
     @FXML
@@ -81,44 +79,43 @@ public class RankingChartController extends WindowController {
 
     /** テーブル */
     @FXML
-    private TableView<RankingTableRow> table;
+    private TableView<RankingLogItem> table;
 
     /** 日付列 */
     @FXML
-    private TableColumn<RankingTableRow, String> dateCol;
+    private TableColumn<RankingLogItem, ZonedDateTime> dateCol;
 
     /** ランキング1位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank1Col;
+    private TableColumn<RankingLogItem, Number> rank1Col;
 
     /** ランキング5位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank5Col;
+    private TableColumn<RankingLogItem, Number> rank5Col;
 
     /** ランキング20位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank20Col;
+    private TableColumn<RankingLogItem, Number> rank20Col;
 
     /** ランキング100位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank100Col;
+    private TableColumn<RankingLogItem, Number> rank100Col;
 
     /** ランキング500位戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rank500Col;
+    private TableColumn<RankingLogItem, Number> rank500Col;
 
     /** 自分の戦果列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rateCol;
+    private TableColumn<RankingLogItem, Number> rateCol;
 
     /** 自分の順位列 */
     @FXML
-    private TableColumn<RankingTableRow, String> rankNoCol;
+    private TableColumn<RankingLogItem, Number> rankNoCol;
 
     @FXML
     void initialize() {
         // チャートを初期化
-        series = new RankingChartSeries();
         chart.setData(series.rankingSeriesObservable());
 
         // チャートの表示項目をチェックボックスにバインド
@@ -129,17 +126,19 @@ public class RankingChartController extends WindowController {
         series.rank500EnabledProperty().bind(rank500Check.selectedProperty());
         series.rateEnabledProperty().bind(rateCheck.selectedProperty());
 
-        // テーブルを初期化
-        rows = FXCollections.observableArrayList();
-        table.setItems(rows);
-        dateCol.setComparator((o1, o2) -> {
-            ZonedDateTime dt1 = DateTimeUtil.dateTimeFromString(o1);
-            ZonedDateTime dt2 = DateTimeUtil.dateTimeFromString(o2);
-            return dt1.compareTo(dt2);
-        });
+        // テーブルセルのファクトリをセット
+        dateCol.setCellFactory(new DateTimeFormatCellFactory());
+        NumberFormatCellFactory numberFormatCellFactory = new NumberFormatCellFactory();
+        rank1Col.setCellFactory(numberFormatCellFactory);
+        rank5Col.setCellFactory(numberFormatCellFactory);
+        rank20Col.setCellFactory(numberFormatCellFactory);
+        rank100Col.setCellFactory(numberFormatCellFactory);
+        rank500Col.setCellFactory(numberFormatCellFactory);
+        rateCol.setCellFactory(numberFormatCellFactory);
+        rankNoCol.setCellFactory(numberFormatCellFactory);
 
         // テーブルのセルをデータのプロパティにバインド
-        dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
+        dateCol.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
         rank1Col.setCellValueFactory(new PropertyValueFactory<>("rank1"));
         rank5Col.setCellValueFactory(new PropertyValueFactory<>("rank5"));
         rank20Col.setCellValueFactory(new PropertyValueFactory<>("rank20"));
@@ -147,6 +146,9 @@ public class RankingChartController extends WindowController {
         rank500Col.setCellValueFactory(new PropertyValueFactory<>("rank500"));
         rateCol.setCellValueFactory(new PropertyValueFactory<>("rate"));
         rankNoCol.setCellValueFactory(new PropertyValueFactory<>("rankNo"));
+
+        // テーブルを初期化
+        table.setItems(rows);
 
         // 表示期間を初期化
         ObservableList<RankingPeriod> periods = rankingPeriodsObservable();
@@ -157,7 +159,7 @@ public class RankingChartController extends WindowController {
     }
 
     @FXML
-    void change(@SuppressWarnings("unused") ActionEvent event) {
+    void change() {
         final RankingPeriod period = periodChoice.getValue();
         List<RankingLogItem> items = null;
 
@@ -180,22 +182,22 @@ public class RankingChartController extends WindowController {
             series.setFrom(baseTime);
             items.forEach(item -> {
                 series.add(item);
-                rows.add(new RankingTableRow(item));
+                rows.add(item);
             });
         }
     }
 
 
     @FXML
-    void copy(@SuppressWarnings("unused") ActionEvent event) {
-        RankingTableRow item = table.getSelectionModel().getSelectedItem();
+    void copy() {
+        RankingLogItem item = table.getSelectionModel().getSelectedItem();
         ClipboardContent content = new ClipboardContent();
         content.putString(item.toTSV());
         Clipboard.getSystemClipboard().setContent(content);
     }
 
     @FXML
-    void save(@SuppressWarnings("unused") ActionEvent event) {
+    void save() {
         FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
         chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
@@ -209,20 +211,19 @@ public class RankingChartController extends WindowController {
     private void saveCSV(File file) {
         StringBuffer sb = new StringBuffer();
 
-        table.getItems().sorted((r1, r2) -> {
-            ZonedDateTime dt1 = DateTimeUtil.dateTimeFromString(r1.getDate());
-            ZonedDateTime dt2 = DateTimeUtil.dateTimeFromString(r2.getDate());
-            return dt1.compareTo(dt2);
-        }).forEach(row -> {
-            // ラムダ式の中でIOExceptionをハンドリングしたくないし、
-            // そこまでメモリを使うわけでもないのでFileWriterを使わずに
-            // いったんStringBufferにCSVを書き出している。
-            sb.append(row.toCSV());
-            sb.append("\r\n");
-        });
+        table.getItems()
+                .sorted(Comparator.comparing(RankingLogItem::getDateTime))
+                .forEach(item -> {
+                    // ラムダ式の中でIOExceptionをハンドリングしたくないし、
+                    // 月次ログ程度では大してメモリを使わないのでFileWriterを使わずに
+                    // いったんStringBufferにCSVを書き出している。
+                    sb.append(item.toCSV());
+                    sb.append("\r\n");
+                });
 
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("日付,1位,5位,20位,100位,500位,戦果,順位\r\n");
+            writer.write(RankingLogItem.csvHeader());
+            writer.write("\r\n");
             writer.write(sb.toString());
         } catch (IOException e) {
             LoggerHolder.LOG.error("CSVを保存できませんでした", e);
@@ -230,7 +231,7 @@ public class RankingChartController extends WindowController {
     }
 
     @FXML
-    void showConfig(@SuppressWarnings("unused") ActionEvent event) {
+    void showConfig() {
         try {
             StageUtil.show(
                     "戦果チャート設定",
@@ -319,6 +320,36 @@ public class RankingChartController extends WindowController {
         @Override
         public Number fromString(String string) {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private static class DateTimeFormatCell extends TableCell<RankingLogItem, ZonedDateTime> {
+        @Override
+        protected void updateItem(ZonedDateTime item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(item == null ? "" : DateTimeUtil.formatDateTime(item));
+        }
+    }
+
+    private static class DateTimeFormatCellFactory implements Callback<TableColumn<RankingLogItem, ZonedDateTime>, TableCell<RankingLogItem, ZonedDateTime>> {
+        @Override
+        public TableCell<RankingLogItem, ZonedDateTime> call(TableColumn<RankingLogItem, ZonedDateTime> param) {
+            return new DateTimeFormatCell();
+        }
+    }
+
+    private static class NumberFormatCell extends TableCell<RankingLogItem, Number> {
+        @Override
+        protected void updateItem(Number item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(item == null ? "" : NumberFormat.getNumberInstance().format(item));
+        }
+    }
+
+    private static class NumberFormatCellFactory implements Callback<TableColumn<RankingLogItem, Number>, TableCell<RankingLogItem, Number>> {
+        @Override
+        public TableCell<RankingLogItem, Number> call(TableColumn<RankingLogItem, Number> param) {
+            return new NumberFormatCell();
         }
     }
 
