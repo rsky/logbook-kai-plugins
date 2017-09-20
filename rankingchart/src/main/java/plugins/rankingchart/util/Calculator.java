@@ -1,9 +1,7 @@
 package plugins.rankingchart.util;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Calculator {
@@ -71,23 +69,23 @@ public class Calculator {
      * @return 戦果係数
      */
     public static int detectUserRateFactor(Map<Integer, Long> source) {
-        // 難読化された戦果を順位別係数で割り、BigIntegerに変換する
-        List<BigInteger> list = source.entrySet()
+        long validValueCount = source.entrySet()
                 .stream()
                 .filter(e -> e.getValue() % RANKING_RATE_MAGIC_NUMBERS[e.getKey() % 13] == 0)
-                // 下行は代わりに <code>.map(Map.Entry::getValue)</code> としても良いかも
-                .map(e -> e.getValue() / RANKING_RATE_MAGIC_NUMBERS[e.getKey() % 13])
-                .map(BigInteger::valueOf)
-                .collect(Collectors.toList());
+                .count();
 
         // 割り切れない値が含まれていた場合は異常値とみなす
         // (順位別係数やアルゴリズムの見直しが必要になる)
-        if (list.size() != source.size()) {
+        if (source.size() != validValueCount) {
             return 0;
         }
 
         // 難読化された戦果の最大公約数が戦果係数である
-        return list.stream()
+        // entrySet()でなくvalues()を使い、一つ目のmapを削っても良いかも
+        return source.entrySet()
+                .stream()
+                .map(e -> e.getValue() / RANKING_RATE_MAGIC_NUMBERS[e.getKey() % 13])
+                .map(BigInteger::valueOf)
                 .reduce(BigInteger::gcd)
                 .orElse(BigInteger.ZERO)
                 .intValue();
