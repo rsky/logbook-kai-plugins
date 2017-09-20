@@ -1,7 +1,9 @@
 package plugins.rankingchart.util;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Calculator {
@@ -70,13 +72,13 @@ public class Calculator {
      */
     public static int detectUserRateFactor(Map<Integer, Long> source) {
         // 難読化された戦果を順位別係数で割り、BigIntegerに変換する
-        List<BigInteger> list = new ArrayList<>();
-        source.entrySet()
+        List<BigInteger> list = source.entrySet()
                 .stream()
                 .filter(e -> e.getValue() % RANKING_RATE_MAGIC_NUMBERS[e.getKey() % 13] == 0)
+                // 下行は代わりに <code>.map(Map.Entry::getValue)</code> としても良いかも
                 .map(e -> e.getValue() / RANKING_RATE_MAGIC_NUMBERS[e.getKey() % 13])
                 .map(BigInteger::valueOf)
-                .forEach(list::add);
+                .collect(Collectors.toList());
 
         // 割り切れない値が含まれていた場合は異常値とみなす
         // (順位別係数やアルゴリズムの見直しが必要になる)
@@ -84,22 +86,10 @@ public class Calculator {
             return 0;
         }
 
-        list = new ArrayList<>(new HashSet<>(list));
-
-        // 1つの値に収束するまで繰り返し最大公約数を求め、残ったのが戦果係数である
-        // (通常は2-passで終わる)
-        while (list.size() > 1) {
-            Set<BigInteger> set = new HashSet<>();
-
-            // 全ての組み合わせの最大公約数セットを作る
-            while (list.size() > 1) {
-                BigInteger a = list.remove(0);
-                list.stream().map(b -> b.gcd(a)).forEach(set::add);
-            }
-
-            list = new ArrayList<>(set);
-        }
-
-        return (list.size() == 1) ? list.get(0).intValue() : 0;
+        // 難読化された戦果の最大公約数が戦果係数である
+        return list.stream()
+                .reduce(BigInteger::gcd)
+                .orElse(BigInteger.ZERO)
+                .intValue();
     }
 }
