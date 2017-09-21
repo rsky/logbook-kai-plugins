@@ -4,9 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -107,5 +109,18 @@ public class CalculatorTest {
     public void detectUserRateFactorFailEmptyMap() {
         int factor = Calculator.detectUserRateFactor(Collections.emptyMap());
         assertEquals(0, factor);
+    }
+
+    @Test
+    @DisplayName("順位別戦果係数は互いに素である")
+    public void rankRateFactorsAreMutuallyPrime() {
+        int gcd = IntStream.of(Calculator.RANK_RATE_FACTORS)
+                .asLongStream()
+                .boxed()
+                .map(BigInteger::valueOf)
+                .reduce(BigInteger::gcd)
+                .orElse(BigInteger.ZERO)
+                .intValue();
+        assertEquals(1, gcd);
     }
 }
