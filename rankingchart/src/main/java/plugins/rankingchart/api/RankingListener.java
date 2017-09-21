@@ -132,19 +132,11 @@ public class RankingListener implements APIListenerSpi {
         if (rankingSourceSize < 100 && rankingSource.size() >= 100) {
             int autoUserRateFactor = Calculator.detectUserRateFactor(rankingSource);
             if (autoUserRateFactor != 0 && autoUserRateFactor != userRateFactor) {
+                // 戦果係数が更新されていたら保存する
                 config.setUserRateFactor(autoUserRateFactor);
                 configUpdated = true;
 
-                ranking.setRankNo(config.getLastRankNo());
-                ranking.setRate(Calculator.calcRate(config.getLastRankNo(), config.getLastObfuscatedRate(), autoUserRateFactor));
-
-                IntStream.of(1, 5, 20, 100, 500)
-                        .filter(rankingSource::containsKey)
-                        .forEach(rankNo -> {
-                            int rate = Calculator.calcRate(rankNo, rankingSource.get(rankNo), autoUserRateFactor);
-                            ranking.put(rankNo, rate);
-                        });
-
+                bulkSetRanking(config);
                 rankingUpdated = true;
             }
         }
@@ -156,6 +148,27 @@ public class RankingListener implements APIListenerSpi {
         if (configUpdated) {
             ThreadManager.getExecutorService().execute(Config.getDefault()::store);
         }
+    }
+
+    /**
+     * 戦果係数更新前に取得したデータから一括で現在の戦果を更新する
+     *
+     * @param config 戦果チャート構成情報
+     */
+    private void bulkSetRanking(RankingChartConfig config) {
+        int userRateFactor = config.getUserRateFactor();
+        int myRankNo = config.getLastRankNo();
+        if (myRankNo > 0) {
+            ranking.setRankNo(myRankNo);
+            ranking.setRate(Calculator.calcRate(myRankNo, config.getLastObfuscatedRate(), userRateFactor));
+        }
+
+        IntStream.of(1, 5, 20, 100, 500)
+                .filter(rankingSource::containsKey)
+                .forEach(rankNo -> {
+                    int rate = Calculator.calcRate(rankNo, rankingSource.get(rankNo), userRateFactor);
+                    ranking.put(rankNo, rate);
+                });
     }
 
     /**
