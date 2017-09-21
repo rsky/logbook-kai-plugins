@@ -68,6 +68,28 @@ public class RankingLogItem {
         return (value == null) ? "" : value.toString();
     }
 
+    public boolean put(int rankNo, int rate) {
+        switch (rankNo) {
+            case 1:
+                setRank1(rate);
+                return true;
+            case 5:
+                setRank5(rate);
+                return true;
+            case 20:
+                setRank20(rate);
+                return true;
+            case 100:
+                setRank100(rate);
+                return true;
+            case 500:
+                setRank500(rate);
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public Property<ZonedDateTime> dateTimeProperty() {
         return dateTime;
     }

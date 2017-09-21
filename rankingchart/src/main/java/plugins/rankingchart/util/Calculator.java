@@ -47,6 +47,18 @@ public class Calculator {
     }
 
     /**
+     * 戦果を難読化する
+     *
+     * @param rankNo 順位
+     * @param rate 戦果
+     * @param userRateFactor 戦果係数
+     * @return 難読化された戦果
+     */
+    public static long obfuscateRate(int rankNo, int rate, int userRateFactor) {
+        return (rate + 91L) * RANK_RATE_FACTORS[rankNo % 13] * userRateFactor;
+    }
+
+    /**
      * ユーザーごとに異なる戦果係数を総当たりで導出する
      *
      * @param rankNo 順位

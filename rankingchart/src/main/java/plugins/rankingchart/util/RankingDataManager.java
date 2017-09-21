@@ -34,6 +34,10 @@ public class RankingDataManager {
         return DEFAULT;
     }
 
+    public static void setDefault(RankingDataManager manager) {
+        DEFAULT = manager;
+    }
+
     private RankingDataManager(String url) {
         this.url = url;
     }

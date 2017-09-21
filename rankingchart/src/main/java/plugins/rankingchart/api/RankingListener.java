@@ -18,6 +18,9 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 public class RankingListener implements APIListenerSpi {
 
@@ -29,6 +32,9 @@ public class RankingListener implements APIListenerSpi {
 
     /** 現在の戦果 */
     private RankingLogItem ranking;
+
+    /** 1〜100,500位の戦果 */
+    private Map<Integer, Long> rankingSource = new HashMap<>();
 
     @Override
     public void accept(JsonObject jsonObject, RequestMetaData requestMetaData, ResponseMetaData responseMetaData) {
@@ -69,11 +75,13 @@ public class RankingListener implements APIListenerSpi {
         // 基準となる日時が変わっていたら現在のランキングも新しい日時で作り直す
         if (ranking == null || !ranking.getDateTime().equals(dateTime)) {
             ranking = RankingLogItem.withDateTime(dateTime);
+            rankingSource.clear();
         }
 
         final RankingChartConfig config = RankingChartConfig.get();
         int userRateFactor = config.getUserRateFactor();
         final long lastObfuscatedRate = config.getLastObfuscatedRate();
+        final int rankingSourceSize = rankingSource.size();
         boolean rankingUpdated = false;
         boolean configUpdated = false;
 
@@ -87,32 +95,14 @@ public class RankingListener implements APIListenerSpi {
             }
 
             final int rankNo = item.getNo();
-            final int rate = Calculator.calcRate(item.getNo(), item.getObfuscatedRate(), userRateFactor);
+            final long obfuscatedRate = item.getObfuscatedRate();
+            final int rate = Calculator.calcRate(rankNo, obfuscatedRate, userRateFactor);
 
             // 戦果係数がセットされており、戦果のデコードに成功した場合
             if (rate != Calculator.NO_RATE) {
                 // 1位とランキングボーダーの戦果が含まれていれば更新する
-                switch (rankNo) {
-                    case 1:
-                        ranking.setRank1(rate);
-                        rankingUpdated = true;
-                        break;
-                    case 5:
-                        ranking.setRank5(rate);
-                        rankingUpdated = true;
-                        break;
-                    case 20:
-                        ranking.setRank20(rate);
-                        rankingUpdated = true;
-                        break;
-                    case 100:
-                        ranking.setRank100(rate);
-                        rankingUpdated = true;
-                        break;
-                    case 500:
-                        ranking.setRank500(rate);
-                        rankingUpdated = true;
-                        break;
+                if (ranking.put(rankNo, rate)) {
+                    rankingUpdated = true;
                 }
 
                 // 自分の戦果が含まれていれば更新する
@@ -123,14 +113,39 @@ public class RankingListener implements APIListenerSpi {
                 }
             }
 
-            // 戦果係数を導出するために自分の順位と難読化された戦果を保存する
+            // 戦果係数を手動で導出するために自分の順位と難読化された戦果を保存する
             if (nickname != null && nickname.equals(item.getNickname())) {
-                final long obfuscatedRate = item.getObfuscatedRate();
                 if (rankNo != config.getLastRankNo() || obfuscatedRate != lastObfuscatedRate) {
                     config.setLastRankNo(rankNo);
                     config.setLastObfuscatedRate(obfuscatedRate);
                     configUpdated = true;
                 }
+            }
+
+            // 戦果係数を自動で導出するために100位までと500位の戦果を保持する
+            if ((1 <= rankNo && rankNo <= 100) || rankNo == 500) {
+                rankingSource.put(rankNo, obfuscatedRate);
+            }
+        }
+
+        // 1〜100位(+500位)のデータが揃ったら戦果係数を自動で求める
+        if (rankingSourceSize < 100 && rankingSource.size() >= 100) {
+            int autoUserRateFactor = Calculator.detectUserRateFactor(rankingSource);
+            if (autoUserRateFactor != 0 && autoUserRateFactor != userRateFactor) {
+                config.setUserRateFactor(autoUserRateFactor);
+                configUpdated = true;
+
+                ranking.setRankNo(config.getLastRankNo());
+                ranking.setRate(Calculator.calcRate(config.getLastRankNo(), config.getLastObfuscatedRate(), autoUserRateFactor));
+
+                IntStream.of(1, 5, 20, 100, 500)
+                        .filter(rankingSource::containsKey)
+                        .forEach(rankNo -> {
+                            int rate = Calculator.calcRate(rankNo, rankingSource.get(rankNo), autoUserRateFactor);
+                            ranking.put(rankNo, rate);
+                        });
+
+                rankingUpdated = true;
             }
         }
 
