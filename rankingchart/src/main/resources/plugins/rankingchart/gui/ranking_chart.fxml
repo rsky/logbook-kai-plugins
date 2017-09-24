@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="plugins.rankingchart.gui.RankingChartController"
-      prefHeight="650.0" prefWidth="750.0">
+<VBox prefHeight="650.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="plugins.rankingchart.gui.RankingChartController">
     <stylesheets>
-        <URL value="@global.css"/>
-        <URL value="@ranking_chart.css"/>
+        <URL value="@global.css" />
+        <URL value="@ranking_chart.css" />
     </stylesheets>
     <SplitPane dividerPositions="0.8" orientation="VERTICAL">
         <VBox>
@@ -22,7 +17,7 @@
                     <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                 </padding>
                 <Label text="期間" />
-                <ChoiceBox fx:id="periodChoice" prefWidth="100.0" onAction="#change" />
+                <ChoiceBox fx:id="periodChoice" onAction="#change" prefWidth="100.0" />
                 <CheckBox fx:id="rank1Check" mnemonicParsing="false" onAction="#change" selected="true" text="1位" />
                 <CheckBox fx:id="rank5Check" mnemonicParsing="false" onAction="#change" selected="true" text="5位" />
                 <CheckBox fx:id="rank20Check" mnemonicParsing="false" onAction="#change" selected="true" text="20位" />
@@ -31,25 +26,39 @@
                 <CheckBox fx:id="rateCheck" mnemonicParsing="false" onAction="#change" selected="true" text="自分" />
                 <Button mnemonicParsing="false" onAction="#showConfig" text="設定..." />
             </FlowPane>
-            <LineChart fx:id="chart" animated="false" createSymbols="false" VBox.vgrow="ALWAYS">
-                <xAxis>
-                    <NumberAxis fx:id="xAxis" side="BOTTOM" />
-                </xAxis>
-                <yAxis>
-                    <NumberAxis fx:id="yAxis" side="LEFT" />
-                </yAxis>
-            </LineChart>
+            <AnchorPane VBox.vgrow="ALWAYS">
+                <LineChart fx:id="chart" animated="false" createSymbols="false"
+                           AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                           AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                    <xAxis>
+                        <NumberAxis side="BOTTOM" fx:id="xAxis" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="yAxis" side="LEFT" />
+                    </yAxis>
+                </LineChart>
+                <AreaChart fx:id="chart2" animated="false" createSymbols="false" visible="false"
+                           AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+                           AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+                    <xAxis>
+                        <NumberAxis side="BOTTOM" fx:id="xAxis2" />
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis fx:id="yAxis2" side="LEFT" />
+                    </yAxis>
+                </AreaChart>
+            </AnchorPane>
         </VBox>
         <TableView fx:id="table">
             <columns>
                 <TableColumn fx:id="dateCol" prefWidth="140.0" text="日付" />
-                <TableColumn fx:id="rank1Col" sortable="false" prefWidth="70.0" text="1位" />
-                <TableColumn fx:id="rank5Col" sortable="false" prefWidth="70.0" text="5位" />
-                <TableColumn fx:id="rank20Col" sortable="false" prefWidth="70.0" text="20位" />
-                <TableColumn fx:id="rank100Col" sortable="false" prefWidth="70.0" text="100位" />
-                <TableColumn fx:id="rank500Col" sortable="false" prefWidth="70.0" text="500位" />
-                <TableColumn fx:id="rateCol" sortable="false" prefWidth="70.0" text="戦果" />
-                <TableColumn fx:id="rankNoCol" sortable="false" prefWidth="70.0" text="順位" />
+                <TableColumn fx:id="rank1Col" prefWidth="70.0" sortable="false" text="1位" />
+                <TableColumn fx:id="rank5Col" prefWidth="70.0" sortable="false" text="5位" />
+                <TableColumn fx:id="rank20Col" prefWidth="70.0" sortable="false" text="20位" />
+                <TableColumn fx:id="rank100Col" prefWidth="70.0" sortable="false" text="100位" />
+                <TableColumn fx:id="rank500Col" prefWidth="70.0" sortable="false" text="500位" />
+                <TableColumn fx:id="rateCol" prefWidth="70.0" sortable="false" text="戦果" />
+                <TableColumn fx:id="rankNoCol" prefWidth="70.0" sortable="false" text="順位" />
             </columns>
             <contextMenu>
                 <ContextMenu>

@@ -3,8 +3,10 @@ package plugins.rankingchart.gui;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.Clipboard;
@@ -26,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +36,8 @@ import java.util.List;
 public class RankingChartController extends WindowController {
     /** チャート表示用データ */
     private RankingChartSeries series = new RankingChartSeries();
+    private RankingChartSeries series1 = new RankingChartSeries(" (今月)");
+    private RankingChartSeries series2 = new RankingChartSeries(" (前月)");
 
     /** テーブル表示用データ */
     private ObservableList<RankingLogItem> rows = FXCollections.observableArrayList();
@@ -77,6 +82,18 @@ public class RankingChartController extends WindowController {
     @FXML
     private NumberAxis yAxis;
 
+    /** MoM戦果チャート */
+    @FXML
+    private AreaChart<Number, Number> chart2;
+
+    /** MoM戦果チャートX軸 */
+    @FXML
+    private NumberAxis xAxis2;
+
+    /** MoM戦果チャートY軸 */
+    @FXML
+    private NumberAxis yAxis2;
+
     /** テーブル */
     @FXML
     private TableView<RankingLogItem> table;
@@ -117,14 +134,14 @@ public class RankingChartController extends WindowController {
     void initialize() {
         // チャートを初期化
         chart.setData(series.rankingSeriesObservable());
+        ObservableList<XYChart.Series<Number, Number>> momData = series2.rankingSeriesObservable();
+        momData.addAll(series1.rankingSeriesObservable());
+        chart2.setData(momData);
 
         // チャートの表示項目をチェックボックスにバインド
-        series.rank1EnabledProperty().bind(rank1Check.selectedProperty());
-        series.rank5EnabledProperty().bind(rank5Check.selectedProperty());
-        series.rank20EnabledProperty().bind(rank20Check.selectedProperty());
-        series.rank100EnabledProperty().bind(rank100Check.selectedProperty());
-        series.rank500EnabledProperty().bind(rank500Check.selectedProperty());
-        series.rateEnabledProperty().bind(rateCheck.selectedProperty());
+        bindSeries(series);
+        bindSeries(series1);
+        bindSeries(series2);
 
         // テーブルセルのファクトリをセット
         dateCol.setCellFactory(new DateTimeFormatCellFactory());
@@ -153,9 +170,26 @@ public class RankingChartController extends WindowController {
         // 表示期間を初期化
         ObservableList<RankingPeriod> periods = rankingPeriodsObservable();
         periodChoice.setItems(periods);
-        if (periods.size() > 0) {
-            periodChoice.setValue(periods.get(0));
+        switch (periods.size()) {
+            case 0:
+                break;
+            case 1:
+                periodChoice.setValue(periods.get(0));
+                break;
+            default:
+                // index=0はMoM
+                periodChoice.setValue(periods.get(1));
+                break;
         }
+    }
+
+    private void bindSeries(RankingChartSeries series) {
+        series.rank1EnabledProperty().bind(rank1Check.selectedProperty());
+        series.rank5EnabledProperty().bind(rank5Check.selectedProperty());
+        series.rank20EnabledProperty().bind(rank20Check.selectedProperty());
+        series.rank100EnabledProperty().bind(rank100Check.selectedProperty());
+        series.rank500EnabledProperty().bind(rank500Check.selectedProperty());
+        series.rateEnabledProperty().bind(rateCheck.selectedProperty());
     }
 
     @FXML
@@ -164,8 +198,15 @@ public class RankingChartController extends WindowController {
         List<RankingLogItem> items = null;
 
         if (period != null) {
+            if (period.getFrom() == null) {
+                showMoM();
+                return;
+            }
             items = RankingDataManager.getDefault().load(period.getFrom(), period.getTo());
         }
+
+        chart.setVisible(true);
+        chart2.setVisible(false);
 
         series.clear();
         rows.clear();
@@ -180,13 +221,45 @@ public class RankingChartController extends WindowController {
             yAxis.setForceZeroInRange(true);
 
             series.setFrom(baseTime);
-            items.forEach(item -> {
-                series.add(item);
-                rows.add(item);
-            });
+
+            rows.addAll(items);
+
+            Collections.reverse(items);
+            items.forEach(series::add);
         }
     }
 
+    private void showMoM() {
+        chart.setVisible(false);
+        chart2.setVisible(true);
+
+        series1.clear();
+        series2.clear();
+        rows.clear();
+
+        xAxis2.setTickUnit(24 * 60 * 60);
+        xAxis2.setTickLabelFormatter(new TimeDeltaStringConverter());
+        xAxis2.setForceZeroInRange(true);
+        yAxis2.setForceZeroInRange(true);
+
+        RankingPeriod period1 = periodChoice.getItems().get(1);
+        RankingPeriod period2 = periodChoice.getItems().get(2);
+
+        series1.setFrom(period1.getFrom().withDayOfMonth(1).withHour(0));
+        series2.setFrom(period2.getFrom().withDayOfMonth(1).withHour(0));
+
+        List<RankingLogItem> items1 = RankingDataManager.getDefault().load(period1.getFrom(), period1.getTo());
+        List<RankingLogItem> items2 = RankingDataManager.getDefault().load(period2.getFrom(), period2.getTo());
+
+        rows.addAll(items1);
+        rows.addAll(items2);
+
+        Collections.reverse(items1);
+        items1.forEach(series1::add);
+
+        Collections.reverse(items2);
+        items2.forEach(series2::add);
+    }
 
     @FXML
     void copy() {
@@ -258,7 +331,12 @@ public class RankingChartController extends WindowController {
             }
         }
 
-        return FXCollections.observableArrayList(map.values());
+        ObservableList<RankingPeriod> periods = FXCollections.observableArrayList(map.values());
+        if (periods.size() >= 2) {
+            // 2ヶ月分以上のデータがある場合はMonth-over-Monthモードを有効にする
+            periods.add(0, new RankingPeriod("前月比"));
+        }
+        return periods;
     }
 
     /**
@@ -270,8 +348,12 @@ public class RankingChartController extends WindowController {
         private ZonedDateTime to;
 
         RankingPeriod(String name, RankingLogItem item) {
-            this.name = name;
+            this(name);
             from = to = item.getDateTime();
+        }
+
+        RankingPeriod(String name) {
+            this.name = name;
         }
 
         void extend(RankingLogItem item) {
@@ -308,13 +390,23 @@ public class RankingChartController extends WindowController {
     private static class TimeDeltaStringConverter extends StringConverter<Number> {
         private final long epoch;
 
+        TimeDeltaStringConverter() {
+            epoch = 0;
+        }
+
         TimeDeltaStringConverter(ZonedDateTime from) {
             epoch = from.toEpochSecond();
         }
 
         @Override
         public String toString(Number delta) {
-            return DateTimeUtil.formatDate(DateTimeUtil.dateTimeFromEpoch(epoch + delta.longValue()));
+            long seconds = delta.longValue();
+            String ampm = (seconds % 86400 < 43200) ? "AM" : "PM";
+            if (epoch == 0) {
+                return String.format("%d日%s", seconds / 86400 + 1, ampm);
+            } else {
+                return DateTimeUtil.formatDate(DateTimeUtil.dateTimeFromEpoch(epoch + delta.longValue()));
+            }
         }
 
         @Override

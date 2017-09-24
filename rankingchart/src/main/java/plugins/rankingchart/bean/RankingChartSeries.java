@@ -53,25 +53,29 @@ public class RankingChartSeries {
     private long fromEpoch;
 
     public RankingChartSeries() {
-        rank1Series.setName("1位");
+        this("");
+    }
+
+    public RankingChartSeries(String suffix) {
+        rank1Series.setName("1位" + suffix);
         rank1Series.setData(rank1Data);
 
-        rank5Series.setName("5位");
+        rank5Series.setName("5位" + suffix);
         rank5Series.setData(rank5Data);
 
-        rank20Series.setName("20位");
+        rank20Series.setName("20位" + suffix);
         rank20Series.setData(rank20Data);
 
-        rank100Series.setName("100位");
+        rank100Series.setName("100位" + suffix);
         rank100Series.setData(rank100Data);
 
-        rank500Series.setName("500位");
+        rank500Series.setName("500位" + suffix);
         rank500Series.setData(rank500Data);
 
-        rateSeries.setName("自分");
+        rateSeries.setName("自分" + suffix);
         rateSeries.setData(rateData);
 
-        rankNoSeries.setName("順位");
+        rankNoSeries.setName("順位" + suffix);
         rankNoSeries.setData(rankNoData);
 
         allData = Arrays.asList(rank1Data, rank5Data, rank20Data, rank100Data, rank500Data, rateData, rankNoData);
