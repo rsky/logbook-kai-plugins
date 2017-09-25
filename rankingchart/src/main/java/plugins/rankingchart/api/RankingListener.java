@@ -205,6 +205,14 @@ public class RankingListener implements APIListenerSpi {
         return jsonObject.get("api_data");
     }
 
+    int getMemberId() {
+        return memberId;
+    }
+
+    String getNickname() {
+        return nickname;
+    }
+
     private static class LoggerHolder {
         /**
          * ロガー

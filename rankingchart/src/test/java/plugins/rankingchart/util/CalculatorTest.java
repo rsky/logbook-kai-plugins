@@ -115,9 +115,7 @@ public class CalculatorTest {
     @DisplayName("順位別戦果係数は互いに素である")
     public void rankRateFactorsAreMutuallyPrime() {
         int gcd = IntStream.of(Calculator.RANK_RATE_FACTORS)
-                .asLongStream()
-                .boxed()
-                .map(BigInteger::valueOf)
+                .mapToObj(BigInteger::valueOf)
                 .reduce(BigInteger::gcd)
                 .orElse(BigInteger.ZERO)
                 .intValue();
