@@ -6,12 +6,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class DateTimeUtil {
-    /** タイムゾーン */
+    /** タイムゾーン(JST) */
     private static final ZoneId JST = ZoneId.of("Asia/Tokyo");
 
     /** 年月のフォーマット */
@@ -23,13 +24,23 @@ public class DateTimeUtil {
     /** 日時のフォーマット */
     private static final DateTimeFormatter FORMATTER_DATETIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+
+    /**
+     * JSTの現在時刻を取得する
+     *
+     * @return JSTの現在時刻
+     */
+    public static ZonedDateTime now() {
+        return ZonedDateTime.now(JST);
+    }
+
     /**
      * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を取得する
      *
      * @return ランキングが確定した日付/時間
      */
     public static ZonedDateTime getRankingDateTime() {
-        ZonedDateTime now = ZonedDateTime.now(JST);
+        ZonedDateTime now = now();
         ZonedDateTime date;
         if (now.getHour() < 3) {
             // 3時まで→前日の15時
@@ -41,7 +52,7 @@ public class DateTimeUtil {
             // 15時以降→15時
             date = now.withHour(15);
         }
-        return date.withMinute(0).withSecond(0).withNano(0);
+        return date.truncatedTo(ChronoUnit.DAYS);
     }
 
     /**

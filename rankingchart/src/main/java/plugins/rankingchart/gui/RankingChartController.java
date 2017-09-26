@@ -28,10 +28,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.time.ZonedDateTime;
-import java.util.Collections;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 public class RankingChartController extends WindowController {
     /** チャート表示用データ */
@@ -134,7 +137,8 @@ public class RankingChartController extends WindowController {
     void initialize() {
         // チャートを初期化
         chart.setData(series.rankingSeriesObservable());
-        ObservableList<XYChart.Series<Number, Number>> momData = series2.rankingSeriesObservable();
+        ObservableList<XYChart.Series<Number, Number>> momData = FXCollections.observableArrayList();
+        momData.addAll(series2.rankingSeriesObservable());
         momData.addAll(series1.rankingSeriesObservable());
         chart2.setData(momData);
 
@@ -144,8 +148,8 @@ public class RankingChartController extends WindowController {
         bindSeries(series2);
 
         // テーブルセルのファクトリをセット
-        dateCol.setCellFactory(new DateTimeFormatCellFactory());
-        NumberFormatCellFactory numberFormatCellFactory = new NumberFormatCellFactory();
+        dateCol.setCellFactory(new DateTimeFormatCell.Factory());
+        NumberCellFactory numberFormatCellFactory = new NumberFormatCell.Factory();
         rank1Col.setCellFactory(numberFormatCellFactory);
         rank5Col.setCellFactory(numberFormatCellFactory);
         rank20Col.setCellFactory(numberFormatCellFactory);
@@ -167,9 +171,19 @@ public class RankingChartController extends WindowController {
         // テーブルを初期化
         table.setItems(rows);
 
+        // 軸を初期化
+        xAxis.setTickUnit(24 * 60 * 60);
+        xAxis.setForceZeroInRange(true);
+        yAxis.setForceZeroInRange(true);
+
+        xAxis2.setTickUnit(24 * 60 * 60);
+        xAxis2.setTickLabelFormatter(new ElapsedDaysStringConverter());
+        xAxis2.setForceZeroInRange(true);
+        yAxis2.setForceZeroInRange(true);
+
         // 表示期間を初期化
-        ObservableList<RankingPeriod> periods = rankingPeriodsObservable();
-        periodChoice.setItems(periods);
+        List<RankingPeriod> periods = rankingPeriods();
+        periodChoice.setItems(FXCollections.observableList(periods));
         switch (periods.size()) {
             case 0:
                 break;
@@ -194,42 +208,31 @@ public class RankingChartController extends WindowController {
 
     @FXML
     void change() {
-        final RankingPeriod period = periodChoice.getValue();
-        List<RankingLogItem> items = null;
-
+        RankingPeriod period = periodChoice.getValue();
         if (period != null) {
             if (period.getFrom() == null) {
-                showMoM();
-                return;
+                updateMoMRankingChart();
+            } else {
+                updateRankingChart(period.getFrom(), period.getTo());
             }
-            items = RankingDataManager.getDefault().load(period.getFrom(), period.getTo());
         }
+    }
 
+    private void updateRankingChart(ZonedDateTime from, ZonedDateTime to) {
         chart.setVisible(true);
         chart2.setVisible(false);
 
         series.clear();
         rows.clear();
 
-        if (items != null && items.size() > 0) {
-            // 0時を基準とし、大目盛は1日単位
-            ZonedDateTime baseTime = period.getFrom().withHour(0);
-            xAxis.setTickUnit(24 * 60 * 60);
-            xAxis.setTickLabelFormatter(new TimeDeltaStringConverter(baseTime));
-            // 常にゼロを基準
-            xAxis.setForceZeroInRange(true);
-            yAxis.setForceZeroInRange(true);
+        xAxis.setTickLabelFormatter(new DateStringConverter(from));
 
-            series.setFrom(baseTime);
+        series.setFrom(from);
 
-            rows.addAll(items);
-
-            Collections.reverse(items);
-            items.forEach(series::add);
-        }
+        addAllItems(series, RankingDataManager.getDefault().load(from, to));
     }
 
-    private void showMoM() {
+    private void updateMoMRankingChart() {
         chart.setVisible(false);
         chart2.setVisible(true);
 
@@ -237,28 +240,27 @@ public class RankingChartController extends WindowController {
         series2.clear();
         rows.clear();
 
-        xAxis2.setTickUnit(24 * 60 * 60);
-        xAxis2.setTickLabelFormatter(new TimeDeltaStringConverter());
-        xAxis2.setForceZeroInRange(true);
-        yAxis2.setForceZeroInRange(true);
+        ZonedDateTime today, from1, from2, to1, to2;
+        today = DateTimeUtil.now().truncatedTo(ChronoUnit.DAYS);
+        from1 = today.with(TemporalAdjusters.firstDayOfMonth());
+        from2 = from1.minusMonths(1);
+        to1 = from1.with(TemporalAdjusters.lastDayOfMonth()).withHour(23);
+        to2 = from2.with(TemporalAdjusters.lastDayOfMonth()).withHour(23);
 
-        RankingPeriod period1 = periodChoice.getItems().get(1);
-        RankingPeriod period2 = periodChoice.getItems().get(2);
+        series1.setFrom(from1);
+        series2.setFrom(from2);
 
-        series1.setFrom(period1.getFrom().withDayOfMonth(1).withHour(0));
-        series2.setFrom(period2.getFrom().withDayOfMonth(1).withHour(0));
+        addAllItems(series1, RankingDataManager.getDefault().load(from1, to1));
+        addAllItems(series2, RankingDataManager.getDefault().load(from2, to2));
+    }
 
-        List<RankingLogItem> items1 = RankingDataManager.getDefault().load(period1.getFrom(), period1.getTo());
-        List<RankingLogItem> items2 = RankingDataManager.getDefault().load(period2.getFrom(), period2.getTo());
+    private void addAllItems(RankingChartSeries series, List<RankingLogItem> items) {
+        rows.addAll(items);
 
-        rows.addAll(items1);
-        rows.addAll(items2);
-
-        Collections.reverse(items1);
-        items1.forEach(series1::add);
-
-        Collections.reverse(items2);
-        items2.forEach(series2::add);
+        ListIterator<RankingLogItem> li = items.listIterator(items.size());
+        while (li.hasPrevious()) {
+            series.add(li.previous());
+        }
     }
 
     @FXML
@@ -317,25 +319,25 @@ public class RankingChartController extends WindowController {
         }
     }
 
-    private ObservableList<RankingPeriod> rankingPeriodsObservable() {
-        LinkedHashMap<String, RankingPeriod> map = new LinkedHashMap<>();
-        List<RankingLogItem> allItems = RankingDataManager.getDefault().loadAll();
+    private List<RankingPeriod> rankingPeriods() {
+        final TemporalAdjuster firstDayOfMonthAdjuster = TemporalAdjusters.firstDayOfMonth();
+        final TemporalAdjuster lastDayOfMonthAdjuster = TemporalAdjusters.lastDayOfMonth();
 
-        for (RankingLogItem item : allItems) {
-            String monthStr = DateTimeUtil.formatMonth(item.getDateTime());
-            RankingPeriod period = map.get(monthStr);
-            if (period != null) {
-                period.extend(item);
-            } else {
-                map.put(monthStr, new RankingPeriod(monthStr, item));
-            }
-        }
+        List<RankingPeriod> periods = RankingDataManager.getDefault()
+                .loadAll()
+                .stream()
+                .map(RankingLogItem::getDateTime)
+                .map(dt -> dt.with(firstDayOfMonthAdjuster).truncatedTo(ChronoUnit.DAYS))
+                .distinct()
+                .map(dt -> new RankingPeriod(DateTimeUtil.formatMonth(dt),
+                        dt, dt.with(lastDayOfMonthAdjuster).withHour(23)))
+                .collect(Collectors.toList());
 
-        ObservableList<RankingPeriod> periods = FXCollections.observableArrayList(map.values());
         if (periods.size() >= 2) {
             // 2ヶ月分以上のデータがある場合はMonth-over-Monthモードを有効にする
             periods.add(0, new RankingPeriod("前月比"));
         }
+
         return periods;
     }
 
@@ -347,24 +349,27 @@ public class RankingChartController extends WindowController {
         private ZonedDateTime from;
         private ZonedDateTime to;
 
-        RankingPeriod(String name, RankingLogItem item) {
-            this(name);
-            from = to = item.getDateTime();
+        RankingPeriod(String name, ZonedDateTime from, ZonedDateTime to) {
+            this.name = name;
+            this.from = from;
+            this.to = to;
         }
 
         RankingPeriod(String name) {
-            this.name = name;
+            this(name, null, null);
         }
 
+        /*
         void extend(RankingLogItem item) {
             ZonedDateTime dt = item.getDateTime();
-            if (from.isAfter(dt)) {
+            if (from == null || from.isAfter(dt)) {
                 from = dt;
             }
-            if (to.isBefore(dt)) {
+            if (to == null || to.isBefore(dt)) {
                 to = dt;
             }
         }
+        */
 
         @Override
         public String toString() {
@@ -384,64 +389,80 @@ public class RankingChartController extends WindowController {
         }
     }
 
-    /**
-     * チャートのX軸(日付)ラベル用コンバーター
-     */
-    private static class TimeDeltaStringConverter extends StringConverter<Number> {
-        private final long epoch;
-
-        TimeDeltaStringConverter() {
-            epoch = 0;
-        }
-
-        TimeDeltaStringConverter(ZonedDateTime from) {
-            epoch = from.toEpochSecond();
-        }
-
-        @Override
-        public String toString(Number delta) {
-            long seconds = delta.longValue();
-            String ampm = (seconds % 86400 < 43200) ? "AM" : "PM";
-            if (epoch == 0) {
-                return String.format("%d日%s", seconds / 86400 + 1, ampm);
-            } else {
-                return DateTimeUtil.formatDate(DateTimeUtil.dateTimeFromEpoch(epoch + delta.longValue()));
-            }
-        }
-
+    private static abstract class NumberToStringConverter extends StringConverter<Number> {
         @Override
         public Number fromString(String string) {
             throw new UnsupportedOperationException();
         }
     }
 
+    /**
+     * チャートのX軸(日付)ラベル用コンバーター
+     */
+    private static class DateStringConverter extends NumberToStringConverter {
+        private final long epoch;
+
+        DateStringConverter(ZonedDateTime from) {
+            epoch = from.toEpochSecond();
+        }
+
+        @Override
+        public String toString(Number delta) {
+            return DateTimeUtil.formatDate(DateTimeUtil.dateTimeFromEpoch(epoch + delta.longValue()));
+        }
+    }
+
+    /**
+     * チャートのX軸(日数)ラベル用コンバーター
+     */
+    private static class ElapsedDaysStringConverter extends NumberToStringConverter {
+        @Override
+        public String toString(Number delta) {
+            long seconds = delta.longValue();
+            String ampm = (seconds % 86400 < 43200) ? "AM" : "PM";
+            return String.format("%d日%s", seconds / 86400 + 1, ampm);
+        }
+    }
+
+    private interface DateTimeCellFactory extends Callback<TableColumn<RankingLogItem, ZonedDateTime>, TableCell<RankingLogItem, ZonedDateTime>> {
+    }
+
+    private interface NumberCellFactory extends Callback<TableColumn<RankingLogItem, Number>, TableCell<RankingLogItem, Number>> {
+    }
+
+    /**
+     * 日付列セル
+     */
     private static class DateTimeFormatCell extends TableCell<RankingLogItem, ZonedDateTime> {
         @Override
         protected void updateItem(ZonedDateTime item, boolean empty) {
             super.updateItem(item, empty);
             setText(item == null ? "" : DateTimeUtil.formatDateTime(item));
         }
-    }
 
-    private static class DateTimeFormatCellFactory implements Callback<TableColumn<RankingLogItem, ZonedDateTime>, TableCell<RankingLogItem, ZonedDateTime>> {
-        @Override
-        public TableCell<RankingLogItem, ZonedDateTime> call(TableColumn<RankingLogItem, ZonedDateTime> param) {
-            return new DateTimeFormatCell();
+        static class Factory implements DateTimeCellFactory {
+            @Override
+            public TableCell<RankingLogItem, ZonedDateTime> call(TableColumn<RankingLogItem, ZonedDateTime> param) {
+                return new DateTimeFormatCell();
+            }
         }
     }
 
+    /**
+     * 数値列セル
+     */
     private static class NumberFormatCell extends TableCell<RankingLogItem, Number> {
         @Override
         protected void updateItem(Number item, boolean empty) {
             super.updateItem(item, empty);
             setText(item == null ? "" : NumberFormat.getNumberInstance().format(item));
         }
-    }
 
-    private static class NumberFormatCellFactory implements Callback<TableColumn<RankingLogItem, Number>, TableCell<RankingLogItem, Number>> {
-        @Override
-        public TableCell<RankingLogItem, Number> call(TableColumn<RankingLogItem, Number> param) {
-            return new NumberFormatCell();
+        static class Factory implements NumberCellFactory {
+            @Override
+            public TableCell<RankingLogItem, Number> call(TableColumn<RankingLogItem, Number> param) {
+                return new NumberFormatCell();
+            }
         }
     }
 
