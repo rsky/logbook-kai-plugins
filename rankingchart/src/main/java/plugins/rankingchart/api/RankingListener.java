@@ -5,14 +5,14 @@ import logbook.internal.Config;
 import logbook.internal.ThreadManager;
 import logbook.proxy.RequestMetaData;
 import logbook.proxy.ResponseMetaData;
+import lombok.Value;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import plugins.rankingchart.bean.LogItem;
 import plugins.rankingchart.bean.RankingChartConfig;
-import plugins.rankingchart.bean.RankingEntry;
-import plugins.rankingchart.bean.RankingLogItem;
 import plugins.rankingchart.util.Calculator;
+import plugins.rankingchart.util.Database;
 import plugins.rankingchart.util.DateTimeUtil;
-import plugins.rankingchart.util.RankingDataManager;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -31,10 +31,18 @@ public class RankingListener implements APIListenerSpi {
     private String nickname;
 
     /** 現在の戦果 */
-    private RankingLogItem ranking;
+    private LogItem ranking;
 
     /** 1〜100,500位の戦果 */
     private Map<Integer, Long> rankingSource = new HashMap<>();
+
+    int getMemberId() {
+        return memberId;
+    }
+
+    String getNickname() {
+        return nickname;
+    }
 
     @Override
     public void accept(JsonObject jsonObject, RequestMetaData requestMetaData, ResponseMetaData responseMetaData) {
@@ -68,13 +76,13 @@ public class RankingListener implements APIListenerSpi {
         }
 
         if (ranking == null) {
-            ranking = RankingDataManager.getDefault().getLatest();
+            ranking = Database.getDefault().getLatest();
         }
 
         final ZonedDateTime dateTime = DateTimeUtil.getRankingDateTime();
         // 基準となる日時が変わっていたら現在のランキングも新しい日時で作り直す
         if (ranking == null || !ranking.getDateTime().equals(dateTime)) {
-            ranking = RankingLogItem.withDateTime(dateTime);
+            ranking = LogItem.withDateTime(dateTime);
             rankingSource.clear();
         }
 
@@ -86,16 +94,16 @@ public class RankingListener implements APIListenerSpi {
         boolean configUpdated = false;
 
         for (JsonValue value : list) {
-            final RankingEntry item;
+            final Entry entry;
             if (value instanceof JsonObject) {
-                item = new RankingEntry((JsonObject) value);
+                entry = new Entry((JsonObject) value);
             } else {
                 // 実際はここには到達しないが便宜上
                 break;
             }
 
-            final int rankNo = item.getNo();
-            final long obfuscatedRate = item.getObfuscatedRate();
+            final int rankNo = entry.getNo();
+            final long obfuscatedRate = entry.getObfuscatedRate();
             final int rate = Calculator.calcRate(rankNo, obfuscatedRate, userRateFactor);
 
             // 戦果係数がセットされており、戦果のデコードに成功した場合
@@ -106,7 +114,7 @@ public class RankingListener implements APIListenerSpi {
                 }
 
                 // 自分の戦果が含まれていれば更新する
-                if (nickname != null && nickname.equals(item.getNickname())) {
+                if (nickname != null && nickname.equals(entry.getNickname())) {
                     ranking.setRankNo(rankNo);
                     ranking.setRate(rate);
                     rankingUpdated = true;
@@ -114,7 +122,7 @@ public class RankingListener implements APIListenerSpi {
             }
 
             // 戦果係数を手動で導出するために自分の順位と難読化された戦果を保存する
-            if (nickname != null && nickname.equals(item.getNickname())) {
+            if (nickname != null && nickname.equals(entry.getNickname())) {
                 if (rankNo != config.getLastRankNo() || obfuscatedRate != lastObfuscatedRate) {
                     config.setLastRankNo(rankNo);
                     config.setLastObfuscatedRate(obfuscatedRate);
@@ -142,7 +150,7 @@ public class RankingListener implements APIListenerSpi {
         }
 
         if (rankingUpdated) {
-            RankingDataManager.getDefault().update(ranking);
+            Database.getDefault().update(ranking);
         }
 
         if (configUpdated) {
@@ -205,12 +213,25 @@ public class RankingListener implements APIListenerSpi {
         return jsonObject.get("api_data");
     }
 
-    int getMemberId() {
-        return memberId;
-    }
+    @Value
+    private static class Entry {
+        int no;
+        String nickname;
+        int flag;
+        int rank;
+        String comment;
+        long obfuscatedMedals;
+        long obfuscatedRate;
 
-    String getNickname() {
-        return nickname;
+        Entry(JsonObject jo) {
+            no = jo.getInt("api_mxltvkpyuklh");
+            nickname = jo.getString("api_mtjmdcwtvhdr");
+            flag = jo.getInt("api_pbgkfylkbjuy");
+            rank = jo.getInt("api_pcumlrymlujh");
+            comment = jo.getString("api_itbrdpdbkynm");
+            obfuscatedMedals = jo.getJsonNumber("api_itslcqtmrxtf").longValue();
+            obfuscatedRate = jo.getJsonNumber("api_wuhnhojjxmke").longValue();
+        }
     }
 
     private static class LoggerHolder {
@@ -218,5 +239,6 @@ public class RankingListener implements APIListenerSpi {
          * ロガー
          */
         private static final Logger LOG = LogManager.getLogger(RankingListener.class);
+
     }
 }

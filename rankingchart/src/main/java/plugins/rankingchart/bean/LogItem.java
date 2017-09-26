@@ -7,7 +7,7 @@ import plugins.rankingchart.util.DateTimeUtil;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 
-public class RankingLogItem {
+public class LogItem {
     /** 日付 */
     private final Property<ZonedDateTime> dateTime = new SimpleObjectProperty<>();
 
@@ -32,8 +32,8 @@ public class RankingLogItem {
     /** 自分の順位 */
     private final Property<Integer> rankNo = new SimpleObjectProperty<>();
 
-    public static RankingLogItem withDateTime(ZonedDateTime dateTime) {
-        RankingLogItem row = new RankingLogItem();
+    public static LogItem withDateTime(ZonedDateTime dateTime) {
+        LogItem row = new LogItem();
         row.setDateTime(dateTime);
         return row;
     }

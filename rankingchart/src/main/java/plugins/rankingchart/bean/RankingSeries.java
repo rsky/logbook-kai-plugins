@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-public class RankingChartSeries {
+public class RankingSeries {
     /** ランキング1位戦果 */
     private XYChart.Series<Number, Number> rank1Series = new XYChart.Series<>();
     private ObservableList<XYChart.Data<Number, Number>> rank1Data = FXCollections.observableArrayList();
@@ -52,33 +52,36 @@ public class RankingChartSeries {
     /** 基準となるエポック秒 */
     private long fromEpoch;
 
-    public RankingChartSeries() {
+    public RankingSeries() {
         this("");
     }
 
-    public RankingChartSeries(String suffix) {
-        rank1Series.setName("1位" + suffix);
+    public RankingSeries(String suffix) {
+        updateSeriesName(suffix);
+
         rank1Series.setData(rank1Data);
-
-        rank5Series.setName("5位" + suffix);
         rank5Series.setData(rank5Data);
-
-        rank20Series.setName("20位" + suffix);
         rank20Series.setData(rank20Data);
-
-        rank100Series.setName("100位" + suffix);
         rank100Series.setData(rank100Data);
-
-        rank500Series.setName("500位" + suffix);
         rank500Series.setData(rank500Data);
-
-        rateSeries.setName("自分" + suffix);
         rateSeries.setData(rateData);
-
-        rankNoSeries.setName("順位" + suffix);
         rankNoSeries.setData(rankNoData);
 
         allData = Arrays.asList(rank1Data, rank5Data, rank20Data, rank100Data, rank500Data, rateData, rankNoData);
+    }
+
+    private void updateSeriesName(String suffix) {
+        rank1Series.setName("1位" + suffix);
+        rank5Series.setName("5位" + suffix);
+        rank20Series.setName("20位" + suffix);
+        rank100Series.setName("100位" + suffix);
+        rank500Series.setName("500位" + suffix);
+        rateSeries.setName("自分" + suffix);
+        rankNoSeries.setName("順位" + suffix);
+    }
+
+    public void setOver(Period.Over over) {
+        updateSeriesName((over == null) ? "" : String.format(" (%s)", over));
     }
 
     public BooleanProperty rank1EnabledProperty() {
@@ -128,7 +131,7 @@ public class RankingChartSeries {
      * データを追加する
      * @param item ランキングログ
      */
-    public void add(RankingLogItem item) {
+    public void add(LogItem item) {
         Long delta = item.getDateTime().toEpochSecond() - fromEpoch;
         Integer value;
 

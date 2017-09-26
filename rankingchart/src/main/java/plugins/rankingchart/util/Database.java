@@ -2,7 +2,7 @@ package plugins.rankingchart.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import plugins.rankingchart.bean.RankingLogItem;
+import plugins.rankingchart.bean.LogItem;
 
 import java.sql.*;
 import java.time.ZonedDateTime;
@@ -10,23 +10,23 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class RankingDataManager {
+public class Database {
 
     private static final String DEFAULT_DRIVER = "org.sqlite.JDBC";
     private static final String DEFAULT_URL = "jdbc:sqlite:ranking.db";
 
-    private static RankingDataManager DEFAULT = null;
+    private static Database DEFAULT = null;
 
     private String url;
 
     /**
      * @return デフォルトのRankingDataManager
      */
-    public static synchronized RankingDataManager getDefault() {
+    public static synchronized Database getDefault() {
         if (DEFAULT == null) {
             try {
                 Class.forName(DEFAULT_DRIVER);
-                DEFAULT = new RankingDataManager(DEFAULT_URL);
+                DEFAULT = new Database(DEFAULT_URL);
             } catch (ClassNotFoundException e) {
                 LoggerHolder.LOG.error(e.getMessage(), e);
             }
@@ -34,11 +34,11 @@ public class RankingDataManager {
         return DEFAULT;
     }
 
-    public static void setDefault(RankingDataManager manager) {
+    public static void setDefault(Database manager) {
         DEFAULT = manager;
     }
 
-    private RankingDataManager(String url) {
+    private Database(String url) {
         this.url = url;
     }
 
@@ -72,7 +72,7 @@ public class RankingDataManager {
      * ランキング情報を登録する
      * @param ranking ランキング情報
      */
-    public void update(RankingLogItem ranking) {
+    public void update(LogItem ranking) {
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
         String sql = "REPLACE INTO ranking" +
                 " (published_at, rank_no, rate, rank1, rank5, rank20, rank100, rank500)" +
@@ -113,8 +113,8 @@ public class RankingDataManager {
     /**
      * @return 全期間のランキング情報を日付で降順にソートしたリスト
      */
-    public List<RankingLogItem> loadAll() {
-        List<RankingLogItem> list = new ArrayList<>();
+    public List<LogItem> loadAll() {
+        List<LogItem> list = new ArrayList<>();
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
         String sql = "SELECT * FROM ranking ORDER BY published_at DESC";
         Calendar calendar = DateTimeUtil.getCalender();
@@ -135,8 +135,8 @@ public class RankingDataManager {
      * @param to 終了日時
      * @return 指定期間[from, to]のランキング情報を日付で降順にソートしたリスト
      */
-    public List<RankingLogItem> load(ZonedDateTime from, ZonedDateTime to) {
-        List<RankingLogItem> list = new ArrayList<>();
+    public List<LogItem> load(ZonedDateTime from, ZonedDateTime to) {
+        List<LogItem> list = new ArrayList<>();
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
         String sql = "SELECT * FROM ranking" +
                 " WHERE published_at >= ? AND published_at <= ?" +
@@ -160,7 +160,7 @@ public class RankingDataManager {
     /**
      * @return 直近のランキング情報
      */
-    public RankingLogItem getLatest() {
+    public LogItem getLatest() {
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
         String sql = "SELECT * FROM ranking ORDER BY published_at DESC LIMIT 1";
         Calendar calendar = DateTimeUtil.getCalender();
@@ -176,9 +176,9 @@ public class RankingDataManager {
         return null;
     }
 
-    private RankingLogItem convertResult(ResultSet resultSet, Calendar calendar) throws SQLException {
+    private LogItem convertResult(ResultSet resultSet, Calendar calendar) throws SQLException {
         Timestamp timestamp = resultSet.getTimestamp("published_at", calendar);
-        RankingLogItem row = RankingLogItem.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
+        LogItem row = LogItem.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
         row.setRankNo(getIntOrNull(resultSet, "rank_no"));
         row.setRate(getIntOrNull(resultSet, "rate"));
         row.setRank1(getIntOrNull(resultSet, "rank1"));
@@ -193,6 +193,6 @@ public class RankingDataManager {
         /**
          * ロガー
          */
-        private static final Logger LOG = LogManager.getLogger(RankingDataManager.class);
+        private static final Logger LOG = LogManager.getLogger(Database.class);
     }
 }

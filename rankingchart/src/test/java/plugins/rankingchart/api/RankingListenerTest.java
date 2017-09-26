@@ -9,9 +9,9 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import plugins.rankingchart.bean.LogItem;
 import plugins.rankingchart.bean.RankingChartConfig;
-import plugins.rankingchart.bean.RankingLogItem;
-import plugins.rankingchart.util.RankingDataManager;
+import plugins.rankingchart.util.Database;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -38,12 +38,12 @@ public class RankingListenerTest {
     }
 
     @BeforeEach
-    public void setUp(@Mock RankingDataManager rankingDataManager) {
+    public void setUp(@Mock Database database) {
         invocationOnMocks = new CopyOnWriteArrayList<>();
 
-        doAnswer(invocationOnMocks::add).when(rankingDataManager).update(any());
+        doAnswer(invocationOnMocks::add).when(database).update(any());
 
-        RankingDataManager.setDefault(rankingDataManager);
+        Database.setDefault(database);
 
         RankingChartConfig config = RankingChartConfig.get();
         config.setUserRateFactor(0);
@@ -76,7 +76,7 @@ public class RankingListenerTest {
             listener.accept(json, requestMetaData, responseMetaData);
         }
 
-        // データが足りないので RankingDataManager#update() はまだコールされない
+        // データが足りないので Database#update() はまだコールされない
         assertEquals(0, invocationOnMocks.size());
 
         filename = String.format("api_req_ranking_%02d.json", 10);
@@ -84,7 +84,7 @@ public class RankingListenerTest {
         json = Json.createReader(stream).readObject();
         listener.accept(json, requestMetaData, responseMetaData);
 
-        // RankingDataManager#update() が1回コールされた
+        // Database#update() が1回コールされた
         assertEquals(1, invocationOnMocks.size());
 
         // 自分のIDとニックネーム
@@ -96,7 +96,7 @@ public class RankingListenerTest {
         assertEquals(46, config.getUserRateFactor());
 
         // ログ
-        RankingLogItem item = invocationOnMocks.get(0).getArgument(0);
+        LogItem item = invocationOnMocks.get(0).getArgument(0);
         assertEquals(7369, item.getRank1().intValue());
         assertEquals(4247, item.getRank5().intValue());
         assertEquals(3237, item.getRank20().intValue());

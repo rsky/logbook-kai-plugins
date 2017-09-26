@@ -1,11 +1,11 @@
 package plugins.rankingchart;
 
 import logbook.plugin.lifecycle.StartUp;
-import plugins.rankingchart.util.RankingDataManager;
+import plugins.rankingchart.util.Database;
 
 public class DatabaseInitializer implements StartUp {
     @Override
     public void run() {
-        RankingDataManager.getDefault().createTable();
+        Database.getDefault().createTable();
     }
 }
