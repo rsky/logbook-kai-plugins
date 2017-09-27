@@ -79,7 +79,7 @@ public class RankingListener implements APIListenerSpi {
             ranking = Database.getDefault().getLatest();
         }
 
-        final ZonedDateTime dateTime = DateTimeUtil.getRankingDateTime();
+        final ZonedDateTime dateTime = DateTimeUtil.rankingDateTime();
         // 基準となる日時が変わっていたら現在のランキングも新しい日時で作り直す
         if (ranking == null || !ranking.getDateTime().equals(dateTime)) {
             ranking = LogItem.withDateTime(dateTime);

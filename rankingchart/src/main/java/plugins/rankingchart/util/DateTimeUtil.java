@@ -35,24 +35,32 @@ public class DateTimeUtil {
     }
 
     /**
-     * タイムゾーンをJSTとして3時または15時に丸めた日付/時間を取得する
+     * タイムゾーンをJSTとして現在時刻を3時または15時に丸めた日時を取得する
      *
-     * @return ランキングが確定した日付/時間
+     * @return ランキングが確定した日時
      */
-    public static ZonedDateTime getRankingDateTime() {
-        ZonedDateTime now = now();
-        ZonedDateTime date;
-        if (now.getHour() < 3) {
+    public static ZonedDateTime rankingDateTime() {
+        return truncateToRankingDateTime(now());
+    }
+
+    /**
+     * 日時を3時または15時に丸める
+     *
+     * @param dateTime 日時
+     * @return ランキングが確定した日時
+     */
+    static ZonedDateTime truncateToRankingDateTime(ZonedDateTime dateTime) {
+        if (dateTime.getHour() < 3) {
             // 3時まで→前日の15時
-            date = now.minusDays(1).withHour(15);
-        } else if (now.getHour() < 15) {
+            dateTime = dateTime.minusDays(1).withHour(15);
+        } else if (dateTime.getHour() < 15) {
             // 15時まで→当日の3時
-            date = now.withHour(3);
+            dateTime = dateTime.withHour(3);
         } else {
             // 15時以降→15時
-            date = now.withHour(15);
+            dateTime = dateTime.withHour(15);
         }
-        return date.truncatedTo(ChronoUnit.DAYS);
+        return dateTime.truncatedTo(ChronoUnit.HOURS);
     }
 
     /**
