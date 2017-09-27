@@ -52,7 +52,7 @@
     -fx-background-color: CHART_COLOR_RANK1, CHART_COLOR_RANK1_3_16_PM;
 }
 
-/* 1位(今月)のシンボル */
+/* 1位(当月)のシンボル */
 .series6.area-legend-symbol {
     -fx-background-color: CHART_COLOR_RANK1, CHART_COLOR_RANK1_6_16_PM;
 }
@@ -64,7 +64,7 @@
     -fx-stroke: CHART_COLOR_RANK1;
 }
 
-/* 1位(今月)の線幅 */
+/* 1位(当月)の線幅 */
 .series6.chart-series-area-line {
     -fx-stroke-width: 2px;
 }
@@ -74,7 +74,7 @@
     -fx-fill: CHART_COLOR_RANK1_1_16;
 }
 
-/* 1位(今月)の塗り */
+/* 1位(当月)の塗り */
 .series6.chart-series-area-fill {
     -fx-fill: CHART_COLOR_RANK1_2_16;
 }
@@ -89,7 +89,7 @@
     -fx-background-color: CHART_COLOR_RANK5, CHART_COLOR_RANK5_3_16_PM;
 }
 
-/* 5位(今月)のシンボル */
+/* 5位(当月)のシンボル */
 .series7.area-legend-symbol {
     -fx-background-color: CHART_COLOR_RANK5, CHART_COLOR_RANK5_6_16_PM;
 }
@@ -101,7 +101,7 @@
     -fx-stroke: CHART_COLOR_RANK5;
 }
 
-/* 5位(今月)の線幅 */
+/* 5位(当月)の線幅 */
 .series7.chart-series-area-line {
     -fx-stroke-width: 2px;
 }
@@ -111,7 +111,7 @@
     -fx-fill: CHART_COLOR_RANK5_1_16;
 }
 
-/* 5位(今月)の塗り */
+/* 5位(当月)の塗り */
 .series7.chart-series-area-fill {
     -fx-fill: CHART_COLOR_RANK5_2_16;
 }
@@ -126,7 +126,7 @@
     -fx-background-color: CHART_COLOR_RANK20, CHART_COLOR_RANK20_3_16_PM;
 }
 
-/* 20位(今月)のシンボル */
+/* 20位(当月)のシンボル */
 .series8.area-legend-symbol {
     -fx-background-color: CHART_COLOR_RANK20, CHART_COLOR_RANK20_6_16_PM;
 }
@@ -138,7 +138,7 @@
     -fx-stroke: CHART_COLOR_RANK20;
 }
 
-/* 20位(今月)の線幅 */
+/* 20位(当月)の線幅 */
 .series8.chart-series-area-line {
     -fx-stroke-width: 2px;
 }
@@ -148,7 +148,7 @@
     -fx-fill: CHART_COLOR_RANK20_1_16;
 }
 
-/* 20位(今月)の塗り */
+/* 20位(当月)の塗り */
 .series8.chart-series-area-fill {
     -fx-fill: CHART_COLOR_RANK20_2_16;
 }
@@ -164,7 +164,7 @@
     -fx-background-color: CHART_COLOR_RANK100, CHART_COLOR_RANK100_3_16_PM;
 }
 
-/* 100位(今月)のシンボル */
+/* 100位(当月)のシンボル */
 .series9.area-legend-symbol {
     -fx-background-color: CHART_COLOR_RANK100, CHART_COLOR_RANK100_6_16_PM;
 }
@@ -176,7 +176,7 @@
     -fx-stroke: CHART_COLOR_RANK100;
 }
 
-/* 100位(今月)の線幅 */
+/* 100位(当月)の線幅 */
 .series9.chart-series-area-line {
     -fx-stroke-width: 2px;
 }
@@ -186,7 +186,7 @@
     -fx-fill: CHART_COLOR_RANK100_1_16;
 }
 
-/* 100位(今月)の塗り */
+/* 100位(当月)の塗り */
 .series9.chart-series-area-fill {
     -fx-fill: CHART_COLOR_RANK100_2_16;
 }
@@ -201,7 +201,7 @@
     -fx-background-color: CHART_COLOR_RANK500, CHART_COLOR_RANK500_3_16_PM;
 }
 
-/* 500位(今月)のシンボル */
+/* 500位(当月)のシンボル */
 .series10.area-legend-symbol {
     -fx-background-color: CHART_COLOR_RANK500, CHART_COLOR_RANK500_6_16_PM;
 }
@@ -213,7 +213,7 @@
     -fx-stroke: CHART_COLOR_RANK500;
 }
 
-/* 500位(今月)の線幅 */
+/* 500位(当月)の線幅 */
 .series10.chart-series-area-line {
     -fx-stroke-width: 2px;
 }
@@ -223,7 +223,7 @@
     -fx-fill: CHART_COLOR_RANK500_1_16;
 }
 
-/* 500位(今月)の塗り */
+/* 500位(当月)の塗り */
 .series10.chart-series-area-fill {
     -fx-fill: CHART_COLOR_RANK500_2_16;
 }
@@ -238,7 +238,7 @@
     -fx-background-color: CHART_COLOR_MY_RATE, CHART_COLOR_MY_RATE_3_16_PM;
 }
 
-/* 自分(今月)のシンボル */
+/* 自分(当月)のシンボル */
 .series11.area-legend-symbol {
     -fx-background-color: CHART_COLOR_MY_RATE, CHART_COLOR_MY_RATE_6_16_PM;
 }
@@ -256,18 +256,18 @@
     -fx-stroke-width: 2px;
 }
 
-/* 自分(今月) の線幅 */
+/* 自分(当月) の線幅 */
 .series11.chart-series-area-line {
     -fx-stroke-width: 3px;
 }
 
-/* 自分(前月,今月)は破線 */
+/* 自分(前月,当月)は破線 */
 .series5.chart-series-area-line,
 .series11.chart-series-area-line {
     -fx-stroke-dash-array: 4 6;
 }
 
-/* 自分(前月,今月)は塗り潰し無し */
+/* 自分(前月,当月)は塗り潰し無し */
 .series5.chart-series-area-fill,
 .series11.chart-series-area-fill {
     -fx-fill: transparent;

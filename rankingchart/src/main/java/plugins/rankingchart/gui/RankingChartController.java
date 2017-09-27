@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public class RankingChartController extends WindowController {
     /** チャート表示用データ */
     private RankingSeries series = new RankingSeries();
-    private RankingSeries series1 = new RankingSeries(ChartMode.SINGLE.legendSuffix());
+    private RankingSeries series1 = new RankingSeries();
     private RankingSeries series2 = new RankingSeries();
 
     /** テーブル表示用データ */
@@ -214,7 +214,8 @@ public class RankingChartController extends WindowController {
             if (mode == ChartMode.SINGLE) {
                 updateRankingLinearChart(period);
             } else {
-                updateRankingAreaChart(period, mode);
+                updateRankingAreaChart(period, ChartMode.SINGLE.legendSuffix(),
+                        period.with(mode), mode.legendSuffix());
             }
         }
     }
@@ -231,23 +232,22 @@ public class RankingChartController extends WindowController {
         series.clear();
         rows.clear();
 
-        ZonedDateTime from = period.getFrom();
-        ZonedDateTime to = period.getTo();
+        xAxis.setTickLabelFormatter(new DateStringConverter(period.getFrom()));
 
-        xAxis.setTickLabelFormatter(new DateStringConverter(from));
+        series.setFrom(period.getFrom());
 
-        series.setFrom(from);
-
-        addAllItems(series, Database.getDefault().load(from, to));
+        addAllItems(series, Database.getDefault().load(period.getFrom(), period.getTo()));
     }
 
     /**
      * 比較(面グラフ)のチャートを表示・更新する
      *
-     * @param period 期間
-     * @param mode 比較モード
+     * @param period1 期間1
+     * @param suffix1 期間1のシリーズ名接尾辞
+     * @param period2 期間2
+     * @param suffix2 期間2のシリーズ名接尾辞
      */
-    private void updateRankingAreaChart(Period period, ChartMode mode) {
+    private void updateRankingAreaChart(Period period1, String suffix1, Period period2, String suffix2) {
         chart.setVisible(false);
         chart2.setVisible(true);
 
@@ -255,30 +255,14 @@ public class RankingChartController extends WindowController {
         series2.clear();
         rows.clear();
 
-        ZonedDateTime from1 = period.getFrom();
-        ZonedDateTime to1 = period.getTo();
-        ZonedDateTime from2;
-        switch (mode) {
-            case MOM:
-                from2 = from1.minusMonths(1);
-                break;
-            case QOQ:
-                from2 = from1.minusMonths(3);
-                break;
-            case YOY:
-                from2 = from1.minusYears(1);
-                break;
-            default:
-                from2 = from1;
-        }
-        ZonedDateTime to2 = from2.with(TemporalAdjusters.lastDayOfMonth()).withHour(23);
+        series1.setSeriesNameSuffix(suffix1);
+        series2.setSeriesNameSuffix(suffix2);
 
-        series1.setFrom(from1);
-        series2.setFrom(from2);
-        series2.setSeriesNameSuffix(mode.legendSuffix());
+        series1.setFrom(period1.getFrom());
+        series2.setFrom(period2.getFrom());
 
-        addAllItems(series1, Database.getDefault().load(from1, to1));
-        addAllItems(series2, Database.getDefault().load(from2, to2));
+        addAllItems(series1, Database.getDefault().load(period1.getFrom(), period1.getTo()));
+        addAllItems(series2, Database.getDefault().load(period2.getFrom(), period2.getTo()));
     }
 
     private void addAllItems(RankingSeries series, List<LogItem> items) {
@@ -348,15 +332,13 @@ public class RankingChartController extends WindowController {
 
     private List<Period> rankingPeriods() {
         final TemporalAdjuster firstDayOfMonthAdjuster = TemporalAdjusters.firstDayOfMonth();
-        final TemporalAdjuster lastDayOfMonthAdjuster = TemporalAdjusters.lastDayOfMonth();
 
         return Database.getDefault()
                 .allDateTime()
                 .stream()
                 .map(dt -> dt.with(firstDayOfMonthAdjuster).truncatedTo(ChronoUnit.DAYS))
                 .distinct()
-                .map(dt -> new Period(DateTimeUtil.formatMonth(dt),
-                        dt, dt.with(lastDayOfMonthAdjuster).withHour(23)))
+                .map(Period::new)
                 .collect(Collectors.toList());
     }
 

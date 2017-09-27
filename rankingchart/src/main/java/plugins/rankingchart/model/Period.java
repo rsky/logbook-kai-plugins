@@ -1,6 +1,9 @@
 package plugins.rankingchart.model;
 
+import plugins.rankingchart.util.DateTimeUtil;
+
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 
 /**
  * ランキング期間
@@ -14,6 +17,33 @@ public class Period {
         this.name = name;
         this.from = from;
         this.to = to;
+    }
+
+    public Period(ZonedDateTime from) {
+        this(
+                DateTimeUtil.formatMonth(from),
+                from,
+                from.with(TemporalAdjusters.lastDayOfMonth()).withHour(23)
+        );
+    }
+
+    public Period with(ChartMode mode) {
+        ZonedDateTime dt;
+        switch (mode) {
+            case MOM:
+                dt = from.minusMonths(1);
+                break;
+            case QOQ:
+                dt = from.minusMonths(3);
+                break;
+            case YOY:
+                dt = from.minusYears(1);
+                break;
+            default:
+                dt = from;
+        }
+
+        return new Period(dt);
     }
 
     @Override

@@ -21,7 +21,7 @@ public enum ChartMode {
     public String legendSuffix() {
         switch (this) {
             case SINGLE:
-                return " (今月)";
+                return " (当月)";
             case MOM:
                 return " (前月)";
             case QOQ:
