@@ -17,9 +17,10 @@ import javafx.util.StringConverter;
 import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import plugins.rankingchart.bean.LogItem;
-import plugins.rankingchart.bean.Period;
-import plugins.rankingchart.bean.RankingSeries;
+import plugins.rankingchart.model.ChartMode;
+import plugins.rankingchart.model.LogItem;
+import plugins.rankingchart.model.Period;
+import plugins.rankingchart.model.RankingSeries;
 import plugins.rankingchart.util.Database;
 import plugins.rankingchart.util.DateTimeUtil;
 import plugins.util.StageUtil;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
 public class RankingChartController extends WindowController {
     /** チャート表示用データ */
     private RankingSeries series = new RankingSeries();
-    private RankingSeries series1 = new RankingSeries(" (今月)");
+    private RankingSeries series1 = new RankingSeries(ChartMode.SINGLE.legendSuffix());
     private RankingSeries series2 = new RankingSeries();
 
     /** テーブル表示用データ */
@@ -49,6 +50,10 @@ public class RankingChartController extends WindowController {
     /** 期間 */
     @FXML
     private ChoiceBox<Period> periodChoice;
+
+    /** 表示モード */
+    @FXML
+    private ChoiceBox<ChartMode> modeChoice;
 
     /** ランキング1位戦果 */
     @FXML
@@ -138,10 +143,10 @@ public class RankingChartController extends WindowController {
     void initialize() {
         // チャートを初期化
         chart.setData(series.rankingSeriesObservable());
-        ObservableList<XYChart.Series<Number, Number>> momData = FXCollections.observableArrayList();
-        momData.addAll(series2.rankingSeriesObservable());
-        momData.addAll(series1.rankingSeriesObservable());
-        chart2.setData(momData);
+        ObservableList<XYChart.Series<Number, Number>> areaChartData = FXCollections.observableArrayList();
+        areaChartData.addAll(series2.rankingSeriesObservable());
+        areaChartData.addAll(series1.rankingSeriesObservable());
+        chart2.setData(areaChartData);
 
         // チャートの表示項目をチェックボックスにバインド
         bindSeries(series);
@@ -185,17 +190,11 @@ public class RankingChartController extends WindowController {
         // 表示期間を初期化
         List<Period> periods = rankingPeriods();
         periodChoice.setItems(FXCollections.observableList(periods));
-        switch (periods.size()) {
-            case 0:
-                break;
-            case 1:
-                periodChoice.setValue(periods.get(0));
-                break;
-            default:
-                // index=0,1,2はそれぞれYoY,QoQ,MoM
-                periodChoice.setValue(periods.get(3));
-                break;
+        modeChoice.setItems(FXCollections.observableArrayList(ChartMode.values()));
+        if (periods.size() != 0) {
+            periodChoice.setValue(periods.get(0));
         }
+        modeChoice.setValue(ChartMode.SINGLE);
     }
 
     private void bindSeries(RankingSeries series) {
@@ -210,21 +209,30 @@ public class RankingChartController extends WindowController {
     @FXML
     void change() {
         Period period = periodChoice.getValue();
-        if (period != null) {
-            if (period.getOver() != null) {
-                updateMoMRankingChart(period.getOver());
+        ChartMode mode = modeChoice.getValue();
+        if (period != null && mode != null) {
+            if (mode == ChartMode.SINGLE) {
+                updateRankingLinearChart(period);
             } else {
-                updateRankingChart(period.getFrom(), period.getTo());
+                updateRankingAreaChart(period, mode);
             }
         }
     }
 
-    private void updateRankingChart(ZonedDateTime from, ZonedDateTime to) {
+    /**
+     * 単月(線グラフ)のチャートを表示・更新する
+     *
+     * @param period 期間
+     */
+    private void updateRankingLinearChart(Period period) {
         chart.setVisible(true);
         chart2.setVisible(false);
 
         series.clear();
         rows.clear();
+
+        ZonedDateTime from = period.getFrom();
+        ZonedDateTime to = period.getTo();
 
         xAxis.setTickLabelFormatter(new DateStringConverter(from));
 
@@ -233,7 +241,13 @@ public class RankingChartController extends WindowController {
         addAllItems(series, Database.getDefault().load(from, to));
     }
 
-    private void updateMoMRankingChart(Period.Over over) {
+    /**
+     * 比較(面グラフ)のチャートを表示・更新する
+     *
+     * @param period 期間
+     * @param mode 比較モード
+     */
+    private void updateRankingAreaChart(Period period, ChartMode mode) {
         chart.setVisible(false);
         chart2.setVisible(true);
 
@@ -241,28 +255,27 @@ public class RankingChartController extends WindowController {
         series2.clear();
         rows.clear();
 
-        ZonedDateTime today, from1, from2, to1, to2;
-        today = DateTimeUtil.now().truncatedTo(ChronoUnit.DAYS);
-        from1 = today.with(TemporalAdjusters.firstDayOfMonth());
-        switch (over) {
-            case YEAR:
-                from2 = from1.minusYears(1);
+        ZonedDateTime from1 = period.getFrom();
+        ZonedDateTime to1 = period.getTo();
+        ZonedDateTime from2;
+        switch (mode) {
+            case MOM:
+                from2 = from1.minusMonths(1);
                 break;
-            case QUARTER:
+            case QOQ:
                 from2 = from1.minusMonths(3);
                 break;
-            case MONTH:
-                from2 = from1.minusMonths(1);
+            case YOY:
+                from2 = from1.minusYears(1);
                 break;
             default:
                 from2 = from1;
         }
-        to1 = from1.with(TemporalAdjusters.lastDayOfMonth()).withHour(23);
-        to2 = from2.with(TemporalAdjusters.lastDayOfMonth()).withHour(23);
+        ZonedDateTime to2 = from2.with(TemporalAdjusters.lastDayOfMonth()).withHour(23);
 
         series1.setFrom(from1);
         series2.setFrom(from2);
-        series2.setOver(over);
+        series2.setSeriesNameSuffix(mode.legendSuffix());
 
         addAllItems(series1, Database.getDefault().load(from1, to1));
         addAllItems(series2, Database.getDefault().load(from2, to2));
@@ -337,24 +350,14 @@ public class RankingChartController extends WindowController {
         final TemporalAdjuster firstDayOfMonthAdjuster = TemporalAdjusters.firstDayOfMonth();
         final TemporalAdjuster lastDayOfMonthAdjuster = TemporalAdjusters.lastDayOfMonth();
 
-        List<Period> periods = Database.getDefault()
-                .loadAll()
+        return Database.getDefault()
+                .allDateTime()
                 .stream()
-                .map(LogItem::getDateTime)
                 .map(dt -> dt.with(firstDayOfMonthAdjuster).truncatedTo(ChronoUnit.DAYS))
                 .distinct()
                 .map(dt -> new Period(DateTimeUtil.formatMonth(dt),
                         dt, dt.with(lastDayOfMonthAdjuster).withHour(23)))
                 .collect(Collectors.toList());
-
-        if (periods.size() >= 2) {
-            // 2ヶ月分以上のデータがある場合は比較モードを有効にする
-            periods.add(0, new Period(Period.Over.YEAR));
-            periods.add(1, new Period(Period.Over.QUARTER));
-            periods.add(2, new Period(Period.Over.MONTH));
-        }
-
-        return periods;
     }
 
     private static abstract class NumberToStringConverter extends StringConverter<Number> {

@@ -8,8 +8,8 @@ import logbook.proxy.ResponseMetaData;
 import lombok.Value;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import plugins.rankingchart.bean.LogItem;
 import plugins.rankingchart.bean.RankingChartConfig;
+import plugins.rankingchart.model.LogItem;
 import plugins.rankingchart.util.Calculator;
 import plugins.rankingchart.util.Database;
 import plugins.rankingchart.util.DateTimeUtil;
@@ -239,6 +239,5 @@ public class RankingListener implements APIListenerSpi {
          * ロガー
          */
         private static final Logger LOG = LogManager.getLogger(RankingListener.class);
-
     }
 }

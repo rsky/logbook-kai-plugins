@@ -18,6 +18,7 @@
                 </padding>
                 <Label text="期間" />
                 <ChoiceBox fx:id="periodChoice" onAction="#change" prefWidth="100.0" />
+                <ChoiceBox fx:id="modeChoice" onAction="#change" prefWidth="100.0" />
                 <CheckBox fx:id="rank1Check" mnemonicParsing="false" onAction="#change" selected="true" text="1位" />
                 <CheckBox fx:id="rank5Check" mnemonicParsing="false" onAction="#change" selected="true" text="5位" />
                 <CheckBox fx:id="rank20Check" mnemonicParsing="false" onAction="#change" selected="true" text="20位" />

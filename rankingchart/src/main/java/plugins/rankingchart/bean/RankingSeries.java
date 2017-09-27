@@ -1,4 +1,4 @@
-package plugins.rankingchart.bean;
+package plugins.rankingchart.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -57,7 +57,7 @@ public class RankingSeries {
     }
 
     public RankingSeries(String suffix) {
-        updateSeriesName(suffix);
+        setSeriesNameSuffix(suffix);
 
         rank1Series.setData(rank1Data);
         rank5Series.setData(rank5Data);
@@ -70,7 +70,7 @@ public class RankingSeries {
         allData = Arrays.asList(rank1Data, rank5Data, rank20Data, rank100Data, rank500Data, rateData, rankNoData);
     }
 
-    private void updateSeriesName(String suffix) {
+    public void setSeriesNameSuffix(String suffix) {
         rank1Series.setName("1位" + suffix);
         rank5Series.setName("5位" + suffix);
         rank20Series.setName("20位" + suffix);
@@ -78,10 +78,6 @@ public class RankingSeries {
         rank500Series.setName("500位" + suffix);
         rateSeries.setName("自分" + suffix);
         rankNoSeries.setName("順位" + suffix);
-    }
-
-    public void setOver(Period.Over over) {
-        updateSeriesName((over == null) ? "" : String.format(" (%s)", over));
     }
 
     public BooleanProperty rank1EnabledProperty() {

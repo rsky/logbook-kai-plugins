@@ -2,7 +2,7 @@ package plugins.rankingchart.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import plugins.rankingchart.bean.LogItem;
+import plugins.rankingchart.model.LogItem;
 
 import java.sql.*;
 import java.time.ZonedDateTime;
@@ -111,18 +111,19 @@ public class Database {
     }
 
     /**
-     * @return 全期間のランキング情報を日付で降順にソートしたリスト
+     * @return 全期間の日付を降順にソートしたリスト
      */
-    public List<LogItem> loadAll() {
-        List<LogItem> list = new ArrayList<>();
+    public List<ZonedDateTime> allDateTime() {
+        List<ZonedDateTime> list = new ArrayList<>();
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
-        String sql = "SELECT * FROM ranking ORDER BY published_at DESC";
+        String sql = "SELECT published_at FROM ranking ORDER BY published_at DESC";
         Calendar calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
-                list.add(convertResult(resultSet, calendar));
+                Timestamp timestamp = resultSet.getTimestamp(1, calendar);
+                list.add(DateTimeUtil.dateTimeFromTimestamp(timestamp));
             }
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);

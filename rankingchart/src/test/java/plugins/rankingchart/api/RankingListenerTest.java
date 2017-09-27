@@ -9,8 +9,8 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import plugins.rankingchart.bean.LogItem;
 import plugins.rankingchart.bean.RankingChartConfig;
+import plugins.rankingchart.model.LogItem;
 import plugins.rankingchart.util.Database;
 
 import javax.json.Json;
