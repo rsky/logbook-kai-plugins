@@ -79,7 +79,7 @@ sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirota
 
 ## ビルド方法
 
-`lib` フォルダに航海日誌の `logbook-kai.jar` を入れて `mvn package`
+`lib` フォルダに航海日誌の `logbook-kai.jar` を入れて `./gradlew shadow`
 
 ## 宣伝
 
