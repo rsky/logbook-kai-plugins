@@ -60,4 +60,12 @@ subprojects {
             includeClassNamePattern '.*Test'
         }
     }
+
+    shadowJar {
+        exclude 'logbook-kai.jar'
+        dependencies {
+            //noinspection GroovyAssignabilityCheck
+            exclude dependency('org.projectlombok:lombok')
+        }
+    }
 }
