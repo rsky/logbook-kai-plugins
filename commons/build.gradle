@@ -1,0 +1,7 @@
+description = 'logbook-kai-plugin-commons'
+version = '17.9.6'
+
+dependencies {
+    compileOnly files('../lib/logbook-kai.jar')
+    testCompileOnly files('../lib/logbook-kai.jar')
+}

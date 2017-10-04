@@ -112,3 +112,9 @@ Session.vim
 target/
 
 
+### https://raw.github.com/github/gitignore/5979282c55da38db155427080d7a89dd31c93502/gradle.gitignore
+
+.gradle
+build/
+
+

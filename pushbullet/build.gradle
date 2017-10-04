@@ -1,0 +1,18 @@
+description = 'Pushbullet Plugin'
+version = '1.2.0'
+
+def retrofitVersion = '2.3.0'
+def rxJavaFXVersion = '2.0.2'
+def reactiveStreamsVersion = '1.0.0'
+
+dependencies {
+    compile project(':commons')
+    compileOnly files('../lib/logbook-kai.jar')
+    testCompileOnly files('../lib/logbook-kai.jar')
+
+    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
+    compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: retrofitVersion
+    compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion
+    compile group: 'io.reactivex', name: 'rxjavafx', version: rxJavaFXVersion
+    compile group: 'org.reactivestreams', name: 'reactive-streams', version: reactiveStreamsVersion
+}
