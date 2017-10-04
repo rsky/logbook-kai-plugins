@@ -6,9 +6,6 @@ def sqliteVersion = '3.20.0'
 
 dependencies {
     compile project(':commons')
-    compileOnly files('../lib/logbook-kai.jar')
-    testCompileOnly files('../lib/logbook-kai.jar')
-
     compile group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteVersion
 }
 

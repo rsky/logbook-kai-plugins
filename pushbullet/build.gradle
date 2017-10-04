@@ -8,9 +8,6 @@ def reactiveStreamsVersion = '1.0.0'
 
 dependencies {
     compile project(':commons')
-    compileOnly files('../lib/logbook-kai.jar')
-    testCompileOnly files('../lib/logbook-kai.jar')
-
     compile group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
     compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: retrofitVersion
     compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion
