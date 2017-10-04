@@ -1,6 +1,7 @@
 description = 'Pushbullet Plugin'
 version = '1.2.0'
 
+def bundleName = description
 def retrofitVersion = '2.3.0'
 def rxJavaFXVersion = '2.0.2'
 def reactiveStreamsVersion = '1.0.0'
@@ -15,4 +16,11 @@ dependencies {
     compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion
     compile group: 'io.reactivex', name: 'rxjavafx', version: rxJavaFXVersion
     compile group: 'org.reactivestreams', name: 'reactive-streams', version: reactiveStreamsVersion
+}
+
+jar {
+    manifest {
+        attributes 'Bundle-Name': bundleName, 'Bundle-Version': version
+        attributes 'Bundle-Vendor': vendor, 'Bundle-License': license
+    }
 }
