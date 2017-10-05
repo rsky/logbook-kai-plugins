@@ -1,4 +1,4 @@
-rootProject.name = 'plugins'
+rootProject.name = 'logbook-kai-plugins'
 include ':commons'
 include ':pushbullet'
 include ':rankingchart'
