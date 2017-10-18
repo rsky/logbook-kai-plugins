@@ -2,13 +2,14 @@ package plugins.rankingchart.gui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
-import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.FileChooser;
@@ -25,6 +26,7 @@ import plugins.rankingchart.util.Database;
 import plugins.rankingchart.util.DateTimeUtil;
 import plugins.util.StageUtil;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -147,6 +149,10 @@ public class RankingChartController extends WindowController {
         areaChartData.addAll(series2.rankingSeriesObservable());
         areaChartData.addAll(series1.rankingSeriesObservable());
         chart2.setData(areaChartData);
+
+        // 画像として保存するコンテクストメニューをセット
+        setContextMenu(chart);
+        setContextMenu(chart2);
 
         // チャートの表示項目をチェックボックスにバインド
         bindSeries(series);
@@ -274,8 +280,37 @@ public class RankingChartController extends WindowController {
         }
     }
 
+    private void setContextMenu(Chart node) {
+        final MenuItem item = new MenuItem("画像ファイルとして保存");
+        item.setOnAction(event -> saveSnapshotAsPNG(node));
+
+        final ContextMenu menu = new ContextMenu(item);
+
+        node.setOnContextMenuRequested(event -> menu.show(getWindow(), event.getScreenX(), event.getScreenY()));
+    }
+
+    private void saveSnapshotAsPNG(Node node) {
+        FileChooser chooser = new FileChooser();
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png"));
+        chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
+
+        File file = chooser.showSaveDialog(getWindow());
+        if (file != null){
+            saveSnapshotAsPNG(node, file);
+        }
+    }
+
+    private void saveSnapshotAsPNG(Node node, File file) {
+        WritableImage image = node.snapshot(new SnapshotParameters(), null);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        } catch (IOException e) {
+            LoggerHolder.LOG.error("画像ファイルを保存できませんでした", e);
+        }
+    }
+
     @FXML
-    void copy() {
+    void copyRowAsTSV() {
         LogItem item = table.getSelectionModel().getSelectedItem();
         ClipboardContent content = new ClipboardContent();
         content.putString(item.toTSV());
@@ -283,18 +318,18 @@ public class RankingChartController extends WindowController {
     }
 
     @FXML
-    void save() {
+    void saveTableAsCSV() {
         FileChooser chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
         chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
 
         File file = chooser.showSaveDialog(getWindow());
         if (file != null){
-            saveCSV(file);
+            saveTableAsCSV(file);
         }
     }
 
-    private void saveCSV(File file) {
+    private void saveTableAsCSV(File file) {
         StringBuffer sb = new StringBuffer();
 
         table.getItems()
