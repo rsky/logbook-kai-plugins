@@ -18,6 +18,7 @@ import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.pushbullet.api.PushbulletService;
+import plugins.pushbullet.api.Pusher;
 import plugins.pushbullet.api.ServiceFactory;
 import plugins.pushbullet.bean.*;
 
@@ -156,7 +157,7 @@ public class PushbulletConfigController extends WindowController {
                 .flatMapObservable(response -> Observable.fromIterable(response.getDevices()))
                 .filter(Device::isActive)
                 .map(this::markDeviceSelected)
-                .subscribe(this::addDevice, LoggerHolder.LOG::error);
+                .subscribe(this::addDevice, LoggerHolder::logError);
 
         channels.clear();
         service.getChannels()
@@ -165,26 +166,22 @@ public class PushbulletConfigController extends WindowController {
                 .flatMapObservable(response -> Observable.fromIterable(response.getChannels()))
                 .filter(Channel::isActive)
                 .map(this::markChannelSelected)
-                .subscribe(this::addChannel, LoggerHolder.LOG::error);
+                .subscribe(this::addChannel, LoggerHolder::logError);
     }
 
     /**
      * キャンセル
-     *
-     * @param event ActionEvent
      */
     @FXML
-    void cancel(@SuppressWarnings("UnusedParameters") ActionEvent event) {
+    void cancel() {
         getWindow().close();
     }
 
     /**
      * 設定の反映
-     *
-     * @param event ActionEvent
      */
     @FXML
-    void ok(@SuppressWarnings("UnusedParameters") ActionEvent event) {
+    void ok() {
         PushbulletConfig config = PushbulletConfig.get();
         config.setAccessToken(accessToken.getText());
         config.setNotifyMissionCompleted(notifyMissionCompleted.isSelected());
@@ -205,10 +202,24 @@ public class PushbulletConfigController extends WindowController {
         getWindow().close();
     }
 
+    /**
+     * テスト通知
+     */
+    @FXML
+    void test() {
+        new Pusher(accessToken.getText()).pushToSelectedTargets(
+                "送信テスト",
+                "航海日誌 Pushbullet Plugin より");
+    }
+
     private static class LoggerHolder {
         /**
          * ロガー
          */
         private static final Logger LOG = LogManager.getLogger(PushbulletConfigController.class);
+
+        private static void logError(Throwable e) {
+            LOG.error(e.getMessage(), e);
+        }
     }
 }

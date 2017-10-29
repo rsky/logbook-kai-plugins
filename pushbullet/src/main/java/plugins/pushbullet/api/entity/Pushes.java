@@ -6,5 +6,5 @@ import java.util.List;
 
 @Value
 public class Pushes {
-    private List<PushResult> pushes;
+    List<PushResult> pushes;
 }

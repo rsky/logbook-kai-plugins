@@ -7,5 +7,5 @@ import java.util.List;
 
 @Value
 public class Channels {
-    private List<Channel> channels;
+    List<Channel> channels;
 }

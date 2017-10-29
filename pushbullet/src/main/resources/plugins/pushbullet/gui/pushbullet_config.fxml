@@ -22,6 +22,7 @@
         </BorderPane>
         <CheckBox fx:id="notifyMissionCompleted" text="遠征完了を通知する" />
         <CheckBox fx:id="notifyNdockCompleted" text="入渠完了を通知する" />
+        <Button mnemonicParsing="false" onAction="#test" text="テスト送信" />
     </VBox>
     <TitledPane animated="false" text="端末">
         <ListView fx:id="deviceListView" prefHeight="0.0" prefWidth="400.0" />

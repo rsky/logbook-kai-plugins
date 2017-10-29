@@ -7,5 +7,5 @@ import java.util.List;
 
 @Value
 public class Devices {
-    private List<Device> devices;
+    List<Device> devices;
 }

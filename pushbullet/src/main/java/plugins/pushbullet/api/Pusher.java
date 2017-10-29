@@ -1,6 +1,5 @@
 package plugins.pushbullet.api;
 
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,8 +30,8 @@ public class Pusher {
                 .filter(Device::isSelected)
                 .forEach(device -> service.push(PushParameter.noteToDevice(device, title, message))
                         .subscribeOn(Schedulers.io())
-                        .observeOn(JavaFxScheduler.platform())
-                        .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder.LOG::error));
+                        .observeOn(Schedulers.computation())
+                        .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder::logError));
 
         ChannelCollection.get()
                 .stream()
@@ -40,8 +39,8 @@ public class Pusher {
                 .filter(Channel::isSelected)
                 .forEach(channel -> service.push(PushParameter.noteToChannel(channel, title, message))
                         .subscribeOn(Schedulers.io())
-                        .observeOn(JavaFxScheduler.platform())
-                        .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder.LOG::error));
+                        .observeOn(Schedulers.computation())
+                        .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder::logError));
     }
 
     private static class LoggerHolder {
@@ -49,5 +48,9 @@ public class Pusher {
          * ロガー
          */
         private static final Logger LOG = LogManager.getLogger(Pusher.class);
+
+        private static void logError(Throwable e) {
+            LOG.error(e.getMessage(), e);
+        }
     }
 }

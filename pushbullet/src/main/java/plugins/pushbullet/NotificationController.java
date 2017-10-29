@@ -1,7 +1,7 @@
-package plugins.pushbullet.gui;
+package plugins.pushbullet;
 
 import io.reactivex.Flowable;
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import io.reactivex.schedulers.Schedulers;
 import logbook.Messages;
 import logbook.bean.*;
 import logbook.internal.Ships;
@@ -9,7 +9,9 @@ import logbook.plugin.lifecycle.StartUp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.pushbullet.api.Pusher;
+import plugins.pushbullet.api.ServiceFactory;
 import plugins.pushbullet.bean.PushbulletConfig;
+import plugins.pushbullet.gui.PushbulletConfigMenu;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -32,10 +34,19 @@ public class NotificationController implements StartUp {
 
     @Override
     public void run() {
+        String accessToken = PushbulletConfig.get().getAccessToken();
+        if (accessToken != null) {
+            // warm-up
+            ServiceFactory.create(accessToken).getUser()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.computation())
+                    .subscribe(LoggerHolder.LOG::info, LoggerHolder::logError);
+        }
+
         // 起動時には通知を飛ばさないように1分待ってから監視を始める
         Flowable.interval(60, 1, TimeUnit.SECONDS)
-                .observeOn(JavaFxScheduler.platform())
-                .subscribe(l -> update(), e -> LoggerHolder.LOG.error(e.getMessage(), e));
+                .observeOn(Schedulers.computation())
+                .subscribe(l -> update(), LoggerHolder::logError);
     }
 
     /**
@@ -183,5 +194,9 @@ public class NotificationController implements StartUp {
          * ロガー
          */
         private static final Logger LOG = LogManager.getLogger(PushbulletConfigMenu.class);
+
+        private static void logError(Throwable e) {
+            LOG.error(e.getMessage(), e);
+        }
     }
 }
