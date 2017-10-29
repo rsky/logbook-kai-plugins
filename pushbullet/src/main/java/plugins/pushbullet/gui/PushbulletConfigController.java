@@ -3,14 +3,13 @@ package plugins.pushbullet.gui;
 import io.reactivex.Observable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import io.reactivex.schedulers.Schedulers;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import logbook.internal.Config;
 import logbook.internal.ThreadManager;
@@ -209,7 +208,22 @@ public class PushbulletConfigController extends WindowController {
     void test() {
         new Pusher(accessToken.getText()).pushToSelectedTargets(
                 "送信テスト",
-                "航海日誌 Pushbullet Plugin より");
+                "航海日誌 Pushbullet Plugin より",
+                pushes -> Platform.runLater(() ->
+                        showAlert(Alert.AlertType.INFORMATION, "テスト通知を送信しました")
+                ),
+                throwable -> {
+                    LoggerHolder.logError(throwable);
+                    Platform.runLater(() ->
+                            showAlert(Alert.AlertType.ERROR, "テスト通知の送信に失敗しました")
+                    );
+                });
+    }
+
+    private void showAlert(Alert.AlertType alertType, String contentText) {
+        Alert alert = new Alert(alertType, contentText, ButtonType.OK);
+        alert.initOwner(getWindow().getOwner());
+        alert.show();
     }
 
     private static class LoggerHolder {

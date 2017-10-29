@@ -1,8 +1,10 @@
 package plugins.pushbullet.api;
 
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import plugins.pushbullet.api.entity.Pushes;
 import plugins.pushbullet.bean.Channel;
 import plugins.pushbullet.bean.ChannelCollection;
 import plugins.pushbullet.bean.Device;
@@ -22,7 +24,24 @@ public class Pusher {
      * @param message String
      */
     public void pushToSelectedTargets(String title, String message) {
+        pushToSelectedTargets(title, message, null, null);
+    }
+
+    /**
+     * 設定で選択した端末およびチャンネルにプッシュする
+     *
+     * @param title   String
+     * @param message String
+     * @param onSuccess Consumer&lt;Pushes&gt;
+     * @param onError Consumer&lt;Throwable&gt;
+     */
+    public void pushToSelectedTargets(String title,
+                                      String message,
+                                      Consumer<Pushes> onSuccess,
+                                      Consumer<Throwable> onError) {
         PushbulletService service = ServiceFactory.create(accessToken);
+        Consumer<Pushes> _onSuccess = (onSuccess != null) ? onSuccess : pushes -> {};
+        Consumer<Throwable> _onError = (onError != null) ? onError : LoggerHolder::logError;
 
         DeviceCollection.get()
                 .stream()
@@ -31,7 +50,7 @@ public class Pusher {
                 .forEach(device -> service.push(PushParameter.noteToDevice(device, title, message))
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
-                        .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder::logError));
+                        .subscribe(_onSuccess, _onError));
 
         ChannelCollection.get()
                 .stream()
@@ -40,7 +59,7 @@ public class Pusher {
                 .forEach(channel -> service.push(PushParameter.noteToChannel(channel, title, message))
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.computation())
-                        .subscribe(result -> LoggerHolder.LOG.debug(result.getPushes()), LoggerHolder::logError));
+                        .subscribe(_onSuccess, _onError));
     }
 
     private static class LoggerHolder {
