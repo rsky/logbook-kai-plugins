@@ -5,12 +5,12 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
     }
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
     id 'io.franzbecker.gradle-lombok' version '1.10'
 }
 
@@ -37,10 +37,10 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 
-    def lombokVersion = '1.16.18'
-    def jUnitVersion = '5.0.1'
-    def mockitoVersion = '2.8.47'
-    def powerMockVersion = '1.7.1'
+    def lombokVersion = '1.16.20'
+    def jUnitVersion = '5.0.3'
+    def mockitoVersion = '2.13.0'
+    def powerMockVersion = '1.7.3'
 
     repositories {
         mavenCentral()

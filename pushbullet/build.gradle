@@ -3,15 +3,15 @@ version = '1.2.0'
 
 def bundleName = description
 def retrofitVersion = '2.3.0'
-def rxJavaFXVersion = '2.0.2'
-def reactiveStreamsVersion = '1.0.0'
+def rxJavaFXVersion = '2.2.2'
+def reactiveStreamsVersion = '1.0.2'
 
 dependencies {
     compile project(':commons')
     compile group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
     compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: retrofitVersion
     compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion
-    compile group: 'io.reactivex', name: 'rxjavafx', version: rxJavaFXVersion
+    compile group: 'io.reactivex.rxjava2', name: 'rxjavafx', version: rxJavaFXVersion
     compile group: 'org.reactivestreams', name: 'reactive-streams', version: reactiveStreamsVersion
 }
 
