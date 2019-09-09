@@ -4,9 +4,6 @@ buildscript {
             url "https://plugins.gradle.org/m2/"
         }
     }
-    dependencies {
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
-    }
 }
 
 plugins {
@@ -23,7 +20,6 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.franzbecker.gradle-lombok'
     apply plugin: 'com.github.johnrengelman.shadow'
-    apply plugin: 'org.junit.platform.gradle.plugin'
 
     ext {
         vendor = '@rsky'
@@ -50,17 +46,15 @@ subprojects {
         runtime files("$rootDir/lib/logbook-kai.jar")
         compileOnly files("$rootDir/lib/logbook-kai.jar")
         compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
-        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
-        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
+        testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
+        testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
         testCompile group: 'org.apiguardian', name: 'apiguardian-api', version: '1.0.0' // suppress warning on test
         testCompile group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
         testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: powerMockVersion
     }
 
-    junitPlatform {
-        filters {
-            includeClassNamePattern '.*Test'
-        }
+    test {
+        useJUnitPlatform()
     }
 
     shadowJar {
