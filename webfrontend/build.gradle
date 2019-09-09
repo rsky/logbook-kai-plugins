@@ -1,0 +1,18 @@
+description = 'Web Frontend Plugin'
+version = '1.0.0'
+
+def bundleName = description
+def jettyVersion = '9.4.20.v20190813'
+
+dependencies {
+    compile project(':commons')
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: jettyVersion
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: jettyVersion
+}
+
+jar {
+    manifest {
+        attributes 'Bundle-Name': bundleName, 'Bundle-Version': version
+        attributes 'Bundle-Vendor': vendor, 'Bundle-License': license
+    }
+}
