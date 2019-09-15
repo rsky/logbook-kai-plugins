@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 public class WebAppServer {
     public static void main(String[] args) {
         int port = 10080;
-
         if (args.length > 0) {
             port = Integer.parseUnsignedInt(args[0], 10);
         }
@@ -35,8 +34,8 @@ public class WebAppServer {
         // Servlet handler
         ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         servletHandler.setContextPath("/");
-        servletHandler.addServlet(new ServletHolder(ApiServlet.class), "/api");
-        servletHandler.addServlet(new ServletHolder(ApiSocketServlet.class), "/socket");
+        servletHandler.addServlet(new ServletHolder(ApiServlet.class), "/pub");
+        servletHandler.addServlet(new ServletHolder(ApiSocketServlet.class), "/sub");
 
         HandlerCollection handlers = new HandlerCollection();
         handlers.setHandlers(new Handler[]{webappHandler, resourceContextHandler, servletHandler});
