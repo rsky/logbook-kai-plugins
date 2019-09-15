@@ -1,5 +1,6 @@
 package plugins.rankingchart.api;
 
+import logbook.api.API;
 import logbook.api.APIListenerSpi;
 import logbook.internal.Config;
 import logbook.internal.ThreadManager;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+@API({"/kcsapi/api_get_member/record", "/kcsapi/api_req_ranking/mxltvkpyuklh"})
 public class RankingListener implements APIListenerSpi {
 
     /** 提督ID */
