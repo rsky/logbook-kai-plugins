@@ -1,0 +1,17 @@
+description = 'Simple WebSocket Server'
+version = '1.0.0'
+
+def jettyVersion = '9.4.20.v20190813'
+
+dependencies {
+    compile group: 'org.eclipse.jetty', name: 'jetty-server', version: jettyVersion
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: jettyVersion
+    compile group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: jettyVersion
+    compile group: 'org.eclipse.jetty.websocket', name: 'websocket-servlet', version: jettyVersion
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'webappd.WebAppServer'
+    }
+}
