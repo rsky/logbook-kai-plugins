@@ -2,6 +2,7 @@ package webappd;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -21,25 +22,27 @@ public class WebAppServer {
         Path cwd = Paths.get(System.getProperty("user.dir"));
 
         // WebApp resource handler
-        ResourceHandler webAppResourceHandler = new ResourceHandler();
-        webAppResourceHandler.setResourceBase(cwd.resolve("./webapp").toString());
+        ResourceHandler webappHandler = new ResourceHandler();
+        webappHandler.setResourceBase(cwd.resolve("./webapp").toString());
 
         // KanColle resource handler
-        ResourceHandler kcResourceHandler = new ResourceHandler();
-        kcResourceHandler.setResourceBase(cwd.resolve("./resources").toString());
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setResourceBase(cwd.resolve("./resources").toString());
+        ContextHandler resourceContextHandler = new ContextHandler();
+        resourceContextHandler.setContextPath("/resources");
+        resourceContextHandler.setHandler(resourceHandler);
 
         // Servlet handler
-        ServletContextHandler servletContextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        servletContextHandler.setContextPath("/");
+        ServletContextHandler servletHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        servletHandler.setContextPath("/");
+        servletHandler.addServlet(new ServletHolder(ApiServlet.class), "/api");
+        servletHandler.addServlet(new ServletHolder(ApiSocketServlet.class), "/socket");
 
         HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[]{kcResourceHandler, webAppResourceHandler, servletContextHandler});
+        handlers.setHandlers(new Handler[]{webappHandler, resourceContextHandler, servletHandler});
 
         Server server = new Server(port);
         server.setHandler(handlers);
-
-        servletContextHandler.addServlet(new ServletHolder(ApiServlet.class), "/api");
-        servletContextHandler.addServlet(new ServletHolder(ApiSocketServlet.class), "/socket");
 
         try {
             server.start();
