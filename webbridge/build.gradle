@@ -1,0 +1,17 @@
+description = 'Web Bridge Plugin'
+version = '1.0.0'
+
+def bundleName = description
+def okHttp3Version = '4.2.0'
+
+dependencies {
+    compile project(':commons')
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: okHttp3Version
+}
+
+jar {
+    manifest {
+        attributes 'Bundle-Name': bundleName, 'Bundle-Version': version
+        attributes 'Bundle-Vendor': vendor, 'Bundle-License': license
+    }
+}
