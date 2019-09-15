@@ -8,6 +8,8 @@ dependencies {
     compile project(':commons')
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: jettyVersion
     compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: jettyVersion
+    compile group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: jettyVersion
+    compile group: 'org.eclipse.jetty.websocket', name: 'websocket-servlet', version: jettyVersion
 }
 
 jar {
