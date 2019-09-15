@@ -2,12 +2,14 @@ description = 'Pushbullet Plugin'
 version = '1.2.2'
 
 def bundleName = description
+def okHttp3Version = '4.2.0'
 def retrofitVersion = '2.6.1'
 def rxJavaFXVersion = '2.2.2'
 def reactiveStreamsVersion = '1.0.3'
 
 dependencies {
     compile project(':commons')
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: okHttp3Version
     compile group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
     compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: retrofitVersion
     compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion

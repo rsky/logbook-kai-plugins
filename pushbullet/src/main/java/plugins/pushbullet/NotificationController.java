@@ -40,7 +40,7 @@ public class NotificationController implements StartUp {
             ServiceFactory.create(accessToken).getUser()
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.computation())
-                    .subscribe(LoggerHolder.LOG::info, LoggerHolder::logError);
+                    .subscribe(user -> {}, LoggerHolder::logError);
         }
 
         // 起動時には通知を飛ばさないように1分待ってから監視を始める
@@ -193,7 +193,7 @@ public class NotificationController implements StartUp {
         /**
          * ロガー
          */
-        private static final Logger LOG = LogManager.getLogger(PushbulletConfigMenu.class);
+        private static final Logger LOG = LogManager.getLogger(NotificationController.class);
 
         private static void logError(Throwable e) {
             LOG.error(e.getMessage(), e);
