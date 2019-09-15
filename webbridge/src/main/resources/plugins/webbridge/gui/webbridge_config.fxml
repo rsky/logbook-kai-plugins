@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox prefHeight="300.0" prefWidth="400.0" styleClass="configWindow" stylesheets="@webbridge.css"
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="plugins.webbridge.gui.WebBridgeConfigController">
+    <VBox spacing="10.0" styleClass="header">
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints fillWidth="false"/>
+                <ColumnConstraints fillWidth="false"/>
+                <ColumnConstraints fillWidth="false" minWidth="10.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <CheckBox fx:id="bridgeEnabled" mnemonicParsing="false" text="中継サーバーへのデータ送信を有効にする"
+                      GridPane.columnSpan="2147483647"/>
+            <Label text="ホスト" GridPane.rowIndex="1"/>
+            <TextField fx:id="bridgeHost" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label text="ポート番号" GridPane.rowIndex="2"/>
+            <TextField fx:id="bridgePort" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+    </VBox>
+    <HBox alignment="TOP_RIGHT" styleClass="footer">
+            <Button mnemonicParsing="false" onAction="#ok" text="OK" />
+            <Button mnemonicParsing="false" onAction="#cancel" text="キャンセル" />
+    </HBox>
+</VBox>

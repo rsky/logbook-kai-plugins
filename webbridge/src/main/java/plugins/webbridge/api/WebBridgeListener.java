@@ -11,29 +11,34 @@ import plugins.webbridge.bean.WebBridgeConfig;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import java.util.Date;
 
 public class WebBridgeListener implements APIListenerSpi {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
+    private OkHttpClient client = new OkHttpClient();
+
     @Override
     public void accept(JsonObject jsonObject, RequestMetaData requestMetaData, ResponseMetaData responseMetaData) {
+        WebBridgeConfig config = WebBridgeConfig.get();
+        if (!config.isBridgeEnabled()) {
+            return;
+        }
+
+        RequestBody body = RequestBody.create(Json.createObjectBuilder()
+                .add("uri", requestMetaData.getRequestURI())
+                .add("date", new Date().getTime())
+                .add("body", jsonObject)
+                .build().toString(), JSON);
+
+        String url = "http://" + config.getBridgeHost() + ":" + config.getBridgePort() + "/pub";
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
         try {
-            JsonObject bodyJson = Json.createObjectBuilder()
-                    .add("requestURI", requestMetaData.getRequestURI())
-                    .add("responseJSON", jsonObject)
-                    .build();
-            RequestBody body = RequestBody.create(bodyJson.toString(), JSON);
-
-            int port = WebBridgeConfig.get().getPort();
-            String url = "http://127.0.0.1:" + port + "/api";
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-
-            OkHttpClient client = new OkHttpClient();
-            client.newCall(request).execute();
+            this.client.newCall(request).execute();
         } catch (Exception e) {
             e.printStackTrace();
         }
