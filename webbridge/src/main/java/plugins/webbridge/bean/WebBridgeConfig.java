@@ -9,22 +9,22 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 public class WebBridgeConfig implements Serializable {
-    private static final long serialVersionUID = 1325064620901096791L;
+    private static final long serialVersionUID = -490501834823854143L;
 
     /**
-     * データ送信先ホスト名
+     * 中継サーバーへのデータ送信を有効にする
      */
-    private String targetHost = "127.0.0.1";
+    private boolean bridgeEnabled = true;
 
     /**
-     * データ送信先ポート番号
+     * ホスト
      */
-    private int targetPort = 10080;
+    private String bridgeHost = "127.0.0.1";
 
     /**
-     * データ送信が有効かどうか
+     * ポート番号
      */
-    private boolean publishEnabled = true;
+    private int bridgePort = 10080;
 
     /**
      * アプリケーションのデフォルト設定ディレクトリから{@link WebBridgeConfig}を取得します、

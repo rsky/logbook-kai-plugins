@@ -21,7 +21,7 @@ public class WebBridgeListener implements APIListenerSpi {
     @Override
     public void accept(JsonObject jsonObject, RequestMetaData requestMetaData, ResponseMetaData responseMetaData) {
         WebBridgeConfig config = WebBridgeConfig.get();
-        if (!config.isPublishEnabled()) {
+        if (!config.isBridgeEnabled()) {
             return;
         }
 
@@ -31,7 +31,7 @@ public class WebBridgeListener implements APIListenerSpi {
                 .add("body", jsonObject)
                 .build().toString(), JSON);
 
-        String url = "http://" + config.getTargetHost() + ":" + config.getTargetPort() + "/pub";
+        String url = "http://" + config.getBridgeHost() + ":" + config.getBridgePort() + "/pub";
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
