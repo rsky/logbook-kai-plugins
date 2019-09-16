@@ -25,8 +25,9 @@
             <TextField fx:id="bridgePort" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
         </GridPane>
     </VBox>
+    <Separator />
     <HBox alignment="TOP_RIGHT" styleClass="footer">
-            <Button mnemonicParsing="false" onAction="#ok" text="OK" />
-            <Button mnemonicParsing="false" onAction="#cancel" text="キャンセル" />
+        <Button mnemonicParsing="false" onAction="#ok" text="OK"/>
+        <Button mnemonicParsing="false" onAction="#cancel" text="キャンセル"/>
     </HBox>
 </VBox>
