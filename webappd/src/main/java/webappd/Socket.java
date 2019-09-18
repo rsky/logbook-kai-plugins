@@ -18,6 +18,12 @@ public class Socket {
         this.remoteHost = session.getRemoteAddress().getHostString();
         Broadcaster.getInstance().addSocket(this);
 
+        // On connect, then send the latest port data.
+        String portJSON = PortHolder.getInstance().getJSON();
+        if (portJSON != null) {
+            this.send(portJSON);
+        }
+
         System.out.println("WebSocket connected: " + this.remoteHost);
     }
 

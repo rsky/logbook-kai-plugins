@@ -25,16 +25,18 @@ public class WebBridgeListener implements APIListenerSpi {
             return;
         }
 
+        String apiURI = requestMetaData.getRequestURI();
         String url = "http://" + config.getBridgeHost() + ":" + config.getBridgePort() + "/pub";
 
         RequestBody body = RequestBody.create(Json.createObjectBuilder()
-                .add("uri", requestMetaData.getRequestURI())
+                .add("uri", apiURI)
                 .add("time", new Date().getTime())
                 .add("body", jsonObject)
                 .build().toString(), JSON);
 
         Request request = new Request.Builder()
                 .url(url)
+                .header("X-API-URI", apiURI)
                 .post(body)
                 .build();
 

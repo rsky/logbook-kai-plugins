@@ -17,7 +17,7 @@ public class WebBridgeConfigController extends WindowController {
     private CheckBox bridgeEnabled;
 
     /**
-     *  ホスト
+     * ホスト
      */
     @FXML
     private TextField bridgeHost;
