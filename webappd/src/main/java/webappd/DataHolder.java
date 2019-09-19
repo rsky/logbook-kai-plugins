@@ -2,10 +2,8 @@ package webappd;
 
 import lombok.Synchronized;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -19,6 +17,10 @@ class DataHolder {
     private String portJSON = null;
 
     private DataHolder() {
+    }
+
+    static DataHolder getInstance() {
+        return INSTANCE;
     }
 
     @Synchronized
@@ -54,9 +56,12 @@ class DataHolder {
     }
 
     private byte[] gzCompress(String str) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (OutputStream gzip = new GZIPOutputStream(out)) {
-            gzip.write(str.getBytes());
+        try (
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                OutputStream gzip = new GZIPOutputStream(out);
+        ) {
+            gzip.write(str.getBytes(StandardCharsets.UTF_8));
+            gzip.close(); // GZIPOutputStream must be closed before getting the compression result!
             return out.toByteArray();
         }
     }
@@ -64,19 +69,14 @@ class DataHolder {
     private String gzDecompress(byte[] data) throws IOException {
         try (
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                ByteArrayInputStream in = new ByteArrayInputStream(data);
-                GZIPInputStream zin = new GZIPInputStream(in);
+                InputStream gzip = new GZIPInputStream(new ByteArrayInputStream(data));
         ) {
             byte[] buf = new byte[8192];
             int read;
-            while ((read = zin.read(buf)) > 0) {
+            while ((read = gzip.read(buf)) != -1) {
                 out.write(buf, 0, read);
             }
-            return out.toString();
+            return new String(out.toByteArray(), StandardCharsets.UTF_8);
         }
-    }
-
-    static DataHolder getInstance() {
-        return INSTANCE;
     }
 }
