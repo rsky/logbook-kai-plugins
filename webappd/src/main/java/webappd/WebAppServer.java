@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -40,8 +41,15 @@ public class WebAppServer {
         HandlerCollection handlers = new HandlerCollection();
         handlers.setHandlers(new Handler[]{webappHandler, resourceContextHandler, servletHandler});
 
+        GzipHandler gzipHandler = new GzipHandler();
+        gzipHandler.setIncludedMethods("GET", "POST");
+        gzipHandler.setIncludedMimeTypes("application/javascript", "application/json");
+        gzipHandler.setInflateBufferSize(8192);
+        gzipHandler.setMinGzipSize(1024);
+        gzipHandler.setHandler(handlers);
+
         Server server = new Server(port);
-        server.setHandler(handlers);
+        server.setHandler(gzipHandler);
 
         try {
             server.start();

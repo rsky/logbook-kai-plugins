@@ -7,6 +7,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.recipes.GzipRequestInterceptor;
 import plugins.webbridge.bean.WebBridgeConfig;
 
 import javax.json.Json;
@@ -17,6 +18,10 @@ public class WebBridgeListener implements APIListenerSpi {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     private OkHttpClient client = new OkHttpClient();
+
+    private OkHttpClient gzipClient = new OkHttpClient.Builder()
+            .addInterceptor(new GzipRequestInterceptor())
+            .build();
 
     @Override
     public void accept(JsonObject jsonObject, RequestMetaData requestMetaData, ResponseMetaData responseMetaData) {
@@ -41,7 +46,11 @@ public class WebBridgeListener implements APIListenerSpi {
                 .build();
 
         try {
-            this.client.newCall(request).execute();
+            if (apiURI.equals("/kcsapi/api_start2/getData")) {
+                this.gzipClient.newCall(request).execute();
+            } else {
+                this.client.newCall(request).execute();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

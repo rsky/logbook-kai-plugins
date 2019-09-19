@@ -36,17 +36,8 @@ class DataHolder {
         if (this.compressedStartJSON == null) {
             return null;
         }
-        try (
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                ByteArrayInputStream in = new ByteArrayInputStream(this.compressedStartJSON);
-                GZIPInputStream zin = new GZIPInputStream(in);
-        ) {
-            byte[] buf = new byte[8192];
-            int read;
-            while ((read = zin.read(buf)) > 0) {
-                out.write(buf, 0, read);
-            }
-            return out.toString();
+        try {
+            return this.gzDecompress(this.compressedStartJSON);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -55,12 +46,33 @@ class DataHolder {
 
     @Synchronized
     void setStartJSON(String jsonStr) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (OutputStream gzip = new GZIPOutputStream(out)) {
-            gzip.write(jsonStr.getBytes());
-            this.compressedStartJSON = out.toByteArray();
+        try {
+            this.compressedStartJSON = this.gzCompress(jsonStr);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private byte[] gzCompress(String str) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (OutputStream gzip = new GZIPOutputStream(out)) {
+            gzip.write(str.getBytes());
+            return out.toByteArray();
+        }
+    }
+
+    private String gzDecompress(byte[] data) throws IOException {
+        try (
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ByteArrayInputStream in = new ByteArrayInputStream(data);
+                GZIPInputStream zin = new GZIPInputStream(in);
+        ) {
+            byte[] buf = new byte[8192];
+            int read;
+            while ((read = zin.read(buf)) > 0) {
+                out.write(buf, 0, read);
+            }
+            return out.toString();
         }
     }
 
