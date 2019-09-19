@@ -24,8 +24,15 @@ public class ApiServlet extends HttpServlet {
         String jsonStr = sb.toString();
 
         String apiURI = req.getHeader("X-API-URI");
-        if (apiURI != null && apiURI.equals(PortHolder.PORT_URI)) {
-            PortHolder.getInstance().setJSON(jsonStr);
+        if (apiURI != null) {
+            switch (apiURI) {
+                case DataHolder.PORT_URI:
+                    DataHolder.getInstance().setPortJSON(jsonStr);
+                    break;
+                case DataHolder.START_URI:
+                    DataHolder.getInstance().setStartJSON(jsonStr);
+                    break;
+            }
         }
 
         Broadcaster.getInstance().broadcast(jsonStr);

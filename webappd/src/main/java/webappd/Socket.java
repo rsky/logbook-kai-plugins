@@ -18,8 +18,13 @@ public class Socket {
         this.remoteHost = session.getRemoteAddress().getHostString();
         Broadcaster.getInstance().addSocket(this);
 
-        // On connect, then send the latest port data.
-        String portJSON = PortHolder.getInstance().getJSON();
+        // On connect, then send the latest start-and-port data.
+        DataHolder holder = DataHolder.getInstance();
+        String startJSON = holder.getStartJSON();
+        if (startJSON != null) {
+            this.send(startJSON);
+        }
+        String portJSON = holder.getPortJSON();
         if (portJSON != null) {
             this.send(portJSON);
         }

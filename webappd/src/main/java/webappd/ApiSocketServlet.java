@@ -1,5 +1,6 @@
 package webappd;
 
+import org.eclipse.jetty.websocket.common.extensions.compress.PerMessageDeflateExtension;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
@@ -8,6 +9,7 @@ public class ApiSocketServlet extends WebSocketServlet {
 
     @Override
     public void configure(WebSocketServletFactory factory) {
+        factory.getExtensionFactory().register("permessage-deflate", PerMessageDeflateExtension.class);
         factory.register(Socket.class);
     }
 }
