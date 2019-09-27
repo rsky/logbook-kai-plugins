@@ -13,21 +13,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class WebAppServer {
+    private final static int DEFAULT_PORT = 10080;
+
     public static void main(String[] args) {
-        int port = 10080;
-        if (args.length > 0) {
-            port = Integer.parseUnsignedInt(args[0], 10);
-        }
-
         Path cwd = Paths.get(System.getProperty("user.dir"));
+        int port = (args.length > 0) ? Integer.parseUnsignedInt(args[0], 10) : DEFAULT_PORT;
+        Server server = configureServer(cwd, port);
+        try {
+            server.start();
+            Runtime.getRuntime().addShutdownHook(makeShutdownHook(server));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    private static Server configureServer(Path baseDir, int port) {
         // WebApp resource handler
         ResourceHandler webappHandler = new ResourceHandler();
-        webappHandler.setResourceBase(cwd.resolve("./webapp").toString());
+        webappHandler.setResourceBase(baseDir.resolve("./webapp").toString());
 
         // KanColle resource handler
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase(cwd.resolve("./resources").toString());
+        resourceHandler.setResourceBase(baseDir.resolve("./resources").toString());
         ContextHandler resourceContextHandler = new ContextHandler();
         resourceContextHandler.setContextPath("/resources");
         resourceContextHandler.setHandler(resourceHandler);
@@ -48,21 +55,20 @@ public class WebAppServer {
         gzipHandler.setMinGzipSize(1024);
         gzipHandler.setHandler(handlers);
 
-        final Server server = new Server(port);
+        Server server = new Server(port);
         server.setHandler(gzipHandler);
 
-        try {
-            server.start();
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    server.stop();
-                } catch (Exception e) {
-                    System.err.println("An error occurred while stopping the server.");
-                    e.printStackTrace();
-                }
-            }));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return server;
+    }
+
+    private static Thread makeShutdownHook(final Server server) {
+        return new Thread(() -> {
+            try {
+                server.stop();
+            } catch (Exception e) {
+                System.err.println("An error occurred while stopping the server.");
+                e.printStackTrace();
+            }
+        });
     }
 }
