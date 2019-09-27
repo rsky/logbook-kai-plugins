@@ -23,4 +23,9 @@ class Broadcaster {
     void broadcast(String txt) {
         this.sockets.forEach(socket -> socket.send(txt));
     }
+
+    void tearDown() {
+        this.sockets.forEach(Socket::goAway);
+        this.sockets.clear();
+    }
 }

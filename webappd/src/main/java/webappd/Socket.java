@@ -48,4 +48,8 @@ public class Socket {
             }
         }
     }
+
+    void goAway() {
+        this.session.close(1001, "The server is going away.");
+    }
 }

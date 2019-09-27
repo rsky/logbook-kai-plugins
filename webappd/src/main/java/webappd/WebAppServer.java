@@ -18,10 +18,16 @@ public class WebAppServer {
     public static void main(String[] args) {
         Path cwd = Paths.get(System.getProperty("user.dir"));
         int port = (args.length > 0) ? Integer.parseUnsignedInt(args[0], 10) : DEFAULT_PORT;
+
+        Broadcaster broadcaster = Broadcaster.getInstance();
         Server server = configureServer(cwd, port);
+
         try {
             server.start();
-            Runtime.getRuntime().addShutdownHook(makeShutdownHook(server));
+
+            Runtime runtime = Runtime.getRuntime();
+            runtime.addShutdownHook(new Thread(broadcaster::tearDown));
+            runtime.addShutdownHook(makeServerShutdownHook(server));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,7 +67,7 @@ public class WebAppServer {
         return server;
     }
 
-    private static Thread makeShutdownHook(final Server server) {
+    private static Thread makeServerShutdownHook(final Server server) {
         return new Thread(() -> {
             try {
                 server.stop();
