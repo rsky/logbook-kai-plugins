@@ -48,11 +48,19 @@ public class WebAppServer {
         gzipHandler.setMinGzipSize(1024);
         gzipHandler.setHandler(handlers);
 
-        Server server = new Server(port);
+        final Server server = new Server(port);
         server.setHandler(gzipHandler);
 
         try {
             server.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    server.stop();
+                } catch (Exception e) {
+                    System.err.println("An error occurred while stopping the server.");
+                    e.printStackTrace();
+                }
+            }));
         } catch (Exception e) {
             e.printStackTrace();
         }
