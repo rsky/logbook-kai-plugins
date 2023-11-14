@@ -2,11 +2,9 @@ rootProject.name = 'logbook-kai-plugins'
 include ':commons'
 include ':pushbullet'
 include ':rankingchart'
-include ':webappd'
 include ':webbridge'
 
 project(':commons').projectDir = "$rootDir/commons" as File
 project(':pushbullet').projectDir = "$rootDir/pushbullet" as File
 project(':rankingchart').projectDir = "$rootDir/rankingchart" as File
-project(':webappd').projectDir = "$rootDir/webappd" as File
 project(':webbridge').projectDir = "$rootDir/webbridge" as File
