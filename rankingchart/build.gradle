@@ -5,13 +5,13 @@ def bundleName = description
 def sqliteVersion = '3.43.2.2'
 
 dependencies {
-    compile project(':commons')
-    compile group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteVersion
+    implementation project(':commons')
+    implementation group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteVersion
 }
 
 jar {
     manifest {
-        attributes 'Bundle-Name': bundleName, 'Bundle-Version': version
+        attributes 'Bundle-Name': bundleName, 'Bundle-Version': archiveVersion
         attributes 'Bundle-Vendor': vendor, 'Bundle-License': license
     }
 }

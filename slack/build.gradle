@@ -8,16 +8,16 @@ def reactiveStreamsVersion = '1.0.4'
 def slackApiVersion = '1.35.0'
 
 dependencies {
-    compile project(':commons')
-    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: rxJavaVersion
-    compile group: 'io.reactivex.rxjava2', name: 'rxjavafx', version: rxJavaFXVersion
-    compile group: 'org.reactivestreams', name: 'reactive-streams', version: reactiveStreamsVersion
-    compile group: 'com.slack.api', name: 'slack-api-client', version: slackApiVersion
+    implementation project(':commons')
+    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: rxJavaVersion
+    implementation group: 'io.reactivex.rxjava2', name: 'rxjavafx', version: rxJavaFXVersion
+    implementation group: 'org.reactivestreams', name: 'reactive-streams', version: reactiveStreamsVersion
+    implementation group: 'com.slack.api', name: 'slack-api-client', version: slackApiVersion
 }
 
 jar {
     manifest {
-        attributes 'Bundle-Name': bundleName, 'Bundle-Version': version
+        attributes 'Bundle-Name': bundleName, 'Bundle-Version': archiveVersion
         attributes 'Bundle-Vendor': vendor, 'Bundle-License': license
     }
 }
