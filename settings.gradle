@@ -1,8 +1,8 @@
 rootProject.name = 'logbook-kai-plugins'
 include ':commons'
-include ':pushbullet'
 include ':rankingchart'
+include ':slack'
 
 project(':commons').projectDir = "$rootDir/commons" as File
-project(':pushbullet').projectDir = "$rootDir/pushbullet" as File
 project(':rankingchart').projectDir = "$rootDir/rankingchart" as File
+project(':slack').projectDir = "$rootDir/slack" as File
