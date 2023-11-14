@@ -7,8 +7,9 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
     id 'io.franzbecker.gradle-lombok' version '5.0.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 allprojects  {
@@ -26,8 +27,10 @@ subprojects {
         license = 'MIT'
     }
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
