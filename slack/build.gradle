@@ -1,4 +1,4 @@
-description = 'Pushbullet Plugin'
+description = 'Slack Plugin'
 version = '1.2.3'
 
 def bundleName = description

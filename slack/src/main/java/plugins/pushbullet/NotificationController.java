@@ -10,8 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.slack.api.Pusher;
 import plugins.slack.api.ServiceFactory;
-import plugins.slack.bean.PushbulletConfig;
-import plugins.slack.gui.PushbulletConfigMenu;
+import plugins.slack.bean.SlackConfig;
+import plugins.slack.gui.SlackConfigMenu;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class NotificationController implements StartUp {
 
     @Override
     public void run() {
-        String accessToken = PushbulletConfig.get().getAccessToken();
+        String accessToken = SlackConfig.get().getAccessToken();
         if (accessToken != null) {
             // warm-up
             ServiceFactory.create(accessToken).getUser()
@@ -54,7 +54,7 @@ public class NotificationController implements StartUp {
      */
     private void update() {
         try {
-            PushbulletConfig config = PushbulletConfig.get();
+            SlackConfig config = SlackConfig.get();
             if (config.isNotifyMissionCompleted()) {
                 // 遠征の通知
                 checkNotifyMission();
@@ -91,7 +91,7 @@ public class NotificationController implements StartUp {
                 long timeStamp = timeStampMission.getOrDefault(port.getId(), 0L);
                 if (requireNotify(now, timeStamp)) {
                     timeStampMission.put(port.getId(), System.currentTimeMillis());
-                    pushbulletNotifyMission(port);
+                    SlackNotifyMission(port);
                 }
             }
         }
@@ -99,14 +99,14 @@ public class NotificationController implements StartUp {
 
 
     /**
-     * Pushbulletで遠征通知
+     * Slackで遠征通知
      *
      * @param port 艦隊
      */
-    private void pushbulletNotifyMission(DeckPort port) {
+    private void SlackNotifyMission(DeckPort port) {
         String title = String.format("遠征完了 #%d", port.getId());
         String message = Messages.getString("mission.complete", port.getName());
-        pushbulletNotify(title, message);
+        SlackNotify(title, message);
     }
 
     /**
@@ -131,18 +131,18 @@ public class NotificationController implements StartUp {
 
                 if (requireNotify(now, timeStamp)) {
                     timeStampNdock.put(ndock.getId(), currentTime);
-                    pushbulletNotifyNdock(ndock);
+                    SlackNotifyNdock(ndock);
                 }
             }
         }
     }
 
     /**
-     * Pushbulletで入渠ドックの通知
+     * Slackで入渠ドックの通知
      *
      * @param ndock 入渠ドック
      */
-    private void pushbulletNotifyNdock(Ndock ndock) {
+    private void SlackNotifyNdock(Ndock ndock) {
         String title = String.format("修復完了 #%d", ndock.getId());
         Ship ship = ShipCollection.get()
                 .getShipMap()
@@ -152,7 +152,7 @@ public class NotificationController implements StartUp {
                 .orElse("");
         String message = Messages.getString("ship.ndock", name, ship.getLv()); //$NON-NLS-1$
 
-        pushbulletNotify(title, message);
+        SlackNotify(title, message);
     }
 
     /**
@@ -177,13 +177,13 @@ public class NotificationController implements StartUp {
     }
 
     /**
-     * Pushbullet通知
+     * Slack通知
      *
      * @param title String
      * @param message String
      */
-    private void pushbulletNotify(String title, String message) {
-        String accessToken = PushbulletConfig.get().getAccessToken();
+    private void SlackNotify(String title, String message) {
+        String accessToken = SlackConfig.get().getAccessToken();
         if (accessToken != null) {
             new Pusher(accessToken).pushToSelectedTargets(title, message);
         }

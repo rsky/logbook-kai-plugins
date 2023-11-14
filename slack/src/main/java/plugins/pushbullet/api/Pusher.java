@@ -39,7 +39,7 @@ public class Pusher {
                                       String message,
                                       Consumer<Pushes> onSuccess,
                                       Consumer<Throwable> onError) {
-        PushbulletService service = ServiceFactory.create(accessToken);
+        SlackService service = ServiceFactory.create(accessToken);
         Consumer<Pushes> _onSuccess = (onSuccess != null) ? onSuccess : pushes -> {};
         Consumer<Throwable> _onError = (onError != null) ? onError : LoggerHolder::logError;
 

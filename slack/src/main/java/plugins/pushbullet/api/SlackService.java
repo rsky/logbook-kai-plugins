@@ -10,9 +10,9 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 /**
- * Pushbulletクライアント
+ * Slackクライアント
  */
-public interface PushbulletService {
+public interface SlackService {
     @GET("users/me")
     Single<User> getUser();
 

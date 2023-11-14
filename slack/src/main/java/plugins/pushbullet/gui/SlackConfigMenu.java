@@ -6,15 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.util.StageUtil;
 
-public class PushbulletConfigMenu implements MainExtMenu {
+public class SlackConfigMenu implements MainExtMenu {
     @Override
     public MenuItem getContent() {
-        MenuItem item = new MenuItem("Pushbullet");
+        MenuItem item = new MenuItem("Slack");
         item.setOnAction(event -> {
             try {
                 StageUtil.show(
-                        "Pushbulletの設定",
-                        "plugins/pushbullet/gui/pushbullet_config.fxml",
+                        "Slackの設定",
+                        "plugins/Slack/gui/Slack_config.fxml",
                         ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow(),
                         getClass().getClassLoader()
                 );
@@ -29,6 +29,6 @@ public class PushbulletConfigMenu implements MainExtMenu {
         /**
          * ロガー
          */
-        private static final Logger LOG = LogManager.getLogger(PushbulletConfigMenu.class);
+        private static final Logger LOG = LogManager.getLogger(SlackConfigMenu.class);
     }
 }

@@ -16,7 +16,7 @@ import logbook.internal.ThreadManager;
 import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import plugins.slack.api.PushbulletService;
+import plugins.slack.api.SlackService;
 import plugins.slack.api.Pusher;
 import plugins.slack.api.ServiceFactory;
 import plugins.slack.bean.*;
@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PushbulletConfigController extends WindowController {
+public class SlackConfigController extends WindowController {
 
     /**
      * アクセストークン
@@ -108,7 +108,7 @@ public class PushbulletConfigController extends WindowController {
     @SuppressWarnings("unused")
     @FXML
     void initialize() {
-        PushbulletConfig config = PushbulletConfig.get();
+        SlackConfig config = SlackConfig.get();
         accessToken.setText(config.getAccessToken());
         notifyMissionCompleted.setSelected(config.isNotifyMissionCompleted());
         notifyNdockCompleted.setSelected(config.isNotifyNdockCompleted());
@@ -137,7 +137,7 @@ public class PushbulletConfigController extends WindowController {
     }
 
     /**
-     * PushBulletからAPIトークンに紐付けされているデバイスとチャンネルを取得する
+     * SlackからAPIトークンに紐付けされているデバイスとチャンネルを取得する
      *
      * @param event ActionEvent
      */
@@ -147,7 +147,7 @@ public class PushbulletConfigController extends WindowController {
         if (accessToken.isEmpty()) {
             return;
         }
-        PushbulletService service = ServiceFactory.create(accessToken);
+        SlackService service = ServiceFactory.create(accessToken);
 
         devices.clear();
         service.getDevices()
@@ -181,7 +181,7 @@ public class PushbulletConfigController extends WindowController {
      */
     @FXML
     void ok() {
-        PushbulletConfig config = PushbulletConfig.get();
+        SlackConfig config = SlackConfig.get();
         config.setAccessToken(accessToken.getText());
         config.setNotifyMissionCompleted(notifyMissionCompleted.isSelected());
         config.setNotifyNdockCompleted(notifyNdockCompleted.isSelected());
@@ -208,7 +208,7 @@ public class PushbulletConfigController extends WindowController {
     void test() {
         new Pusher(accessToken.getText()).pushToSelectedTargets(
                 "送信テスト",
-                "航海日誌 Pushbullet Plugin より",
+                "航海日誌 Slack Plugin より",
                 pushes -> Platform.runLater(() ->
                         showAlert(Alert.AlertType.INFORMATION, "テスト通知を送信しました")
                 ),
@@ -230,7 +230,7 @@ public class PushbulletConfigController extends WindowController {
         /**
          * ロガー
          */
-        private static final Logger LOG = LogManager.getLogger(PushbulletConfigController.class);
+        private static final Logger LOG = LogManager.getLogger(SlackConfigController.class);
 
         private static void logError(Throwable e) {
             LOG.error(e.getMessage(), e);

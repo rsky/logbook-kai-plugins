@@ -6,10 +6,10 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceFactory {
-    private static final String BASE_URL = "https://api.pushbullet.com/v2/";
+    private static final String BASE_URL = "https://api.Slack.com/v2/";
 
-    public static PushbulletService create(String accessToken) {
-        return createRetrofit(accessToken).create(PushbulletService.class);
+    public static SlackService create(String accessToken) {
+        return createRetrofit(accessToken).create(SlackService.class);
     }
 
     private static Retrofit createRetrofit(String accessToken) {

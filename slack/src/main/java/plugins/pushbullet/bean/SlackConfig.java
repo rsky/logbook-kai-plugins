@@ -7,11 +7,11 @@ import plugins.util.ConfigLoader;
 import java.io.Serializable;
 
 /**
- * Pushbulletの設定
+ * Slackの設定
  */
 @Data
 @NoArgsConstructor
-public class PushbulletConfig implements Serializable {
+public class SlackConfig implements Serializable {
 
     private static final long serialVersionUID = -317595360788883807L;
 
@@ -31,15 +31,15 @@ public class PushbulletConfig implements Serializable {
     private boolean notifyNdockCompleted = true;
 
     /**
-     * アプリケーションのデフォルト設定ディレクトリから{@link PushbulletConfig}を取得します、
+     * アプリケーションのデフォルト設定ディレクトリから{@link SlackConfig}を取得します、
      * これは次の記述と同等です
      * <blockquote>
-     * <code>Config.getDefault().get(PushbulletConfig.class, PushbulletConfig::new)</code>
+     * <code>Config.getDefault().get(SlackConfig.class, SlackConfig::new)</code>
      * </blockquote>
      *
-     * @return {@link PushbulletConfig}
+     * @return {@link SlackConfig}
      */
-    public static PushbulletConfig get() {
-        return ConfigLoader.load(PushbulletConfig.class, PushbulletConfig::new);
+    public static SlackConfig get() {
+        return ConfigLoader.load(SlackConfig.class, SlackConfig::new);
     }
 }
