@@ -17,20 +17,6 @@
                 </TextField>
             </center>
             <right>
-            </right>
-        </BorderPane>
-        <BorderPane prefHeight="40.0" prefWidth="400.0">
-            <left>
-                <Label text="Channel ID (optional)" BorderPane.alignment="CENTER" />
-            </left>
-            <center>
-                <TextField fx:id="channelId" BorderPane.alignment="CENTER">
-                    <BorderPane.margin>
-                        <Insets left="10.0" right="10.0" />
-                    </BorderPane.margin>
-                </TextField>
-            </center>
-            <right>
                 <Button mnemonicParsing="false" onAction="#load" text="更新" BorderPane.alignment="CENTER" />
             </right>
         </BorderPane>

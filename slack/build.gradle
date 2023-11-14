@@ -2,19 +2,17 @@ description = 'Slack Plugin'
 version = '1.2.3'
 
 def bundleName = description
-def okHttp3Version = '4.12.0'
-def retrofitVersion = '2.8.2'
+def rxJavaVersion = '2.2.21'
 def rxJavaFXVersion = '2.2.2'
 def reactiveStreamsVersion = '1.0.4'
+def slackApiVersion = '1.35.0'
 
 dependencies {
     compile project(':commons')
-    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: okHttp3Version
-    compile group: 'com.squareup.retrofit2', name: 'retrofit', version: retrofitVersion
-    compile group: 'com.squareup.retrofit2', name: 'converter-gson', version: retrofitVersion
-    compile group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: retrofitVersion
+    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: rxJavaVersion
     compile group: 'io.reactivex.rxjava2', name: 'rxjavafx', version: rxJavaFXVersion
     compile group: 'org.reactivestreams', name: 'reactive-streams', version: reactiveStreamsVersion
+    compile group: 'com.slack.api', name: 'slack-api-client', version: slackApiVersion
 }
 
 jar {

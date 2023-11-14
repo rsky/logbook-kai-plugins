@@ -21,11 +21,6 @@ public class SlackConfig implements Serializable {
     private String incomingWebhookUrl;
 
     /**
-     * Channel ID
-     */
-    private String channelId;
-
-    /**
      * 遠征完了を通知する
      */
     private boolean notifyMissionCompleted = true;

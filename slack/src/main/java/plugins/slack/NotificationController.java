@@ -9,9 +9,7 @@ import logbook.plugin.lifecycle.StartUp;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.slack.api.Pusher;
-import plugins.slack.api.ServiceFactory;
 import plugins.slack.bean.SlackConfig;
-import plugins.slack.gui.SlackConfigMenu;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -27,22 +25,13 @@ public class NotificationController implements StartUp {
     /** 通知 */
     private static final Duration NOTIFY = Duration.ofMinutes(1);
 
-    private Map<Integer, Long> timeStampMission = new HashMap<>();
+    private final Map<Integer, Long> timeStampMission = new HashMap<>();
 
     /** 入渠通知のタイムスタンプ */
-    private Map<Integer, Long> timeStampNdock = new HashMap<>();
+    private final Map<Integer, Long> timeStampNdock = new HashMap<>();
 
     @Override
     public void run() {
-        String incomingWebhookUrl = SlackConfig.get().getIncomingWebhookUrl();
-        if (incomingWebhookUrl != null) {
-            // warm-up
-            ServiceFactory.create(incomingWebhookUrl).getUser()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.computation())
-                    .subscribe(user -> {}, LoggerHolder::logError);
-        }
-
         // 起動時には通知を飛ばさないように1分待ってから監視を始める
         Flowable.interval(60, 1, TimeUnit.SECONDS)
                 .observeOn(Schedulers.computation())
@@ -91,7 +80,7 @@ public class NotificationController implements StartUp {
                 long timeStamp = timeStampMission.getOrDefault(port.getId(), 0L);
                 if (requireNotify(now, timeStamp)) {
                     timeStampMission.put(port.getId(), System.currentTimeMillis());
-                    SlackNotifyMission(port);
+                    slackNotifyMission(port);
                 }
             }
         }
@@ -103,10 +92,10 @@ public class NotificationController implements StartUp {
      *
      * @param port 艦隊
      */
-    private void SlackNotifyMission(DeckPort port) {
+    private void slackNotifyMission(DeckPort port) {
         String title = String.format("遠征完了 #%d", port.getId());
         String message = Messages.getString("mission.complete", port.getName());
-        SlackNotify(title, message);
+        slackNotify(title, message);
     }
 
     /**
@@ -131,7 +120,7 @@ public class NotificationController implements StartUp {
 
                 if (requireNotify(now, timeStamp)) {
                     timeStampNdock.put(ndock.getId(), currentTime);
-                    SlackNotifyNdock(ndock);
+                    slackNotifyNdock(ndock);
                 }
             }
         }
@@ -142,7 +131,7 @@ public class NotificationController implements StartUp {
      *
      * @param ndock 入渠ドック
      */
-    private void SlackNotifyNdock(Ndock ndock) {
+    private void slackNotifyNdock(Ndock ndock) {
         String title = String.format("修復完了 #%d", ndock.getId());
         Ship ship = ShipCollection.get()
                 .getShipMap()
@@ -152,7 +141,7 @@ public class NotificationController implements StartUp {
                 .orElse("");
         String message = Messages.getString("ship.ndock", name, ship.getLv()); //$NON-NLS-1$
 
-        SlackNotify(title, message);
+        slackNotify(title, message);
     }
 
     /**
@@ -182,10 +171,11 @@ public class NotificationController implements StartUp {
      * @param title String
      * @param message String
      */
-    private void SlackNotify(String title, String message) {
-        String incomingWebhookUrl = SlackConfig.get().getIncomingWebhookUrl();
+    private void slackNotify(String title, String message) {
+        SlackConfig config = SlackConfig.get();
+        String incomingWebhookUrl = config.getIncomingWebhookUrl();
         if (incomingWebhookUrl != null) {
-            new Pusher(incomingWebhookUrl).pushToSelectedTargets(title, message);
+            new Pusher(incomingWebhookUrl).push(title, message);
         }
     }
 

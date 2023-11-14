@@ -1,29 +1,16 @@
 package plugins.slack.gui;
 
-import io.reactivex.Observable;
-import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
-import io.reactivex.schedulers.Schedulers;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
 import logbook.internal.Config;
 import logbook.internal.ThreadManager;
 import logbook.internal.gui.WindowController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import plugins.slack.api.SlackService;
 import plugins.slack.api.Pusher;
-import plugins.slack.api.ServiceFactory;
 import plugins.slack.bean.*;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SlackConfigController extends WindowController {
 
@@ -32,12 +19,6 @@ public class SlackConfigController extends WindowController {
      */
     @FXML
     private TextField incomingWebhookUrl;
-
-    /**
-     * Channel ID
-     */
-    @FXML
-    private TextField channelId;
 
     /**
      * 遠征完了を通知する
@@ -59,7 +40,6 @@ public class SlackConfigController extends WindowController {
     void initialize() {
         SlackConfig config = SlackConfig.get();
         incomingWebhookUrl.setText(config.getIncomingWebhookUrl());
-        channelId.setText(config.getChannelId());
         notifyMissionCompleted.setSelected(config.isNotifyMissionCompleted());
         notifyNdockCompleted.setSelected(config.isNotifyNdockCompleted());
     }
@@ -86,7 +66,6 @@ public class SlackConfigController extends WindowController {
     void ok() {
         SlackConfig config = SlackConfig.get();
         config.setIncomingWebhookUrl(incomingWebhookUrl.getText());
-        config.setChannelId(channelId.getText());
         config.setNotifyMissionCompleted(notifyMissionCompleted.isSelected());
         config.setNotifyNdockCompleted(notifyNdockCompleted.isSelected());
 
@@ -100,7 +79,7 @@ public class SlackConfigController extends WindowController {
      */
     @FXML
     void test() {
-        new Pusher(incomingWebhookUrl.getText()).pushToSelectedTargets(
+        new Pusher(incomingWebhookUrl.getText()).push(
                 "送信テスト",
                 "航海日誌 Slack Plugin より",
                 pushes -> Platform.runLater(() ->
