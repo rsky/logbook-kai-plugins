@@ -174,7 +174,7 @@ public class NotificationController implements StartUp {
     private void slackNotify(String title, String message) {
         SlackConfig config = SlackConfig.get();
         String incomingWebhookUrl = config.getIncomingWebhookUrl();
-        if (incomingWebhookUrl != null) {
+        if (incomingWebhookUrl != null && !incomingWebhookUrl.isEmpty()) {
             new Pusher(incomingWebhookUrl).push(title, message);
         }
     }

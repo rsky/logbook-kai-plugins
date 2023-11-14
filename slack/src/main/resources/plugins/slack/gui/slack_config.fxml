@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox prefHeight="300.0"
+      prefWidth="400.0"
+      styleClass="configWindow"
+      stylesheets="@slack.css"
+      xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="plugins.slack.gui.SlackConfigController"
+>
+    <VBox spacing="10.0" styleClass="header">
+        <Label text="Webhook URL" /><!-- labelFor="$incomingWebhookUrl" labelForは先に宣言された要素にしか効かない -->
+        <TextField fx:id="incomingWebhookUrl" />
+        <CheckBox fx:id="notifyMissionCompleted" text="遠征完了を通知する" />
+        <CheckBox fx:id="notifyNdockCompleted" text="入渠完了を通知する" />
+    </VBox>
+    <HBox spacing="10.0" styleClass="footer">
+        <Button mnemonicParsing="false" onAction="#test" text="テスト送信" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Button mnemonicParsing="false" onAction="#ok" text="OK" />
+        <Button mnemonicParsing="false" onAction="#cancel" text="キャンセル" />
+    </HBox>
+</VBox>

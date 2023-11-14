@@ -15,7 +15,7 @@ import plugins.slack.bean.*;
 public class SlackConfigController extends WindowController {
 
     /**
-     * アクセストークン
+     * Incoming Webhook URL
      */
     @FXML
     private TextField incomingWebhookUrl;
@@ -42,13 +42,6 @@ public class SlackConfigController extends WindowController {
         incomingWebhookUrl.setText(config.getIncomingWebhookUrl());
         notifyMissionCompleted.setSelected(config.isNotifyMissionCompleted());
         notifyNdockCompleted.setSelected(config.isNotifyNdockCompleted());
-    }
-
-    /**
-     * @param event ActionEvent
-     */
-    @FXML
-    void load(@SuppressWarnings("UnusedParameters") ActionEvent event) {
     }
 
     /**

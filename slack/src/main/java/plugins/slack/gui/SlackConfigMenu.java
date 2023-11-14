@@ -14,7 +14,7 @@ public class SlackConfigMenu implements MainExtMenu {
             try {
                 StageUtil.show(
                         "Slackの設定",
-                        "plugins/Slack/gui/Slack_config.fxml",
+                        "plugins/slack/gui/slack_config.fxml",
                         ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow(),
                         getClass().getClassLoader()
                 );
