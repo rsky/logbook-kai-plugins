@@ -6,26 +6,23 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceFactory {
-    private static final String BASE_URL = "https://api.Slack.com/v2/";
-
-    public static SlackService create(String accessToken) {
-        return createRetrofit(accessToken).create(SlackService.class);
+    public static SlackService create(String incomingWebhookUrl) {
+        return createRetrofit(incomingWebhookUrl).create(SlackService.class);
     }
 
-    private static Retrofit createRetrofit(String accessToken) {
+    private static Retrofit createRetrofit(String incomingWebhookUrl) {
         return new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(createClient(accessToken))
+                .baseUrl(incomingWebhookUrl)
+                .client(createClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 
-    private static OkHttpClient createClient(String accessToken) {
+    private static OkHttpClient createClient() {
         return new OkHttpClient.Builder()
                 .addInterceptor(chain -> chain.proceed(chain.request()
                         .newBuilder()
-                        .addHeader("Access-Token", accessToken)
                         .build()))
                 .build();
     }

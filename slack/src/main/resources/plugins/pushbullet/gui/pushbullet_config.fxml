@@ -7,10 +7,24 @@
     <VBox spacing="10.0" styleClass="header">
         <BorderPane prefHeight="40.0" prefWidth="400.0">
             <left>
-                <Label text="アクセストークン" BorderPane.alignment="CENTER" />
+                <Label text="Incoming Webhook Url" BorderPane.alignment="CENTER" />
             </left>
             <center>
-                <TextField fx:id="accessToken" BorderPane.alignment="CENTER">
+                <TextField fx:id="incomingWebhookUrl" BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </BorderPane.margin>
+                </TextField>
+            </center>
+            <right>
+            </right>
+        </BorderPane>
+        <BorderPane prefHeight="40.0" prefWidth="400.0">
+            <left>
+                <Label text="Channel ID (optional)" BorderPane.alignment="CENTER" />
+            </left>
+            <center>
+                <TextField fx:id="channelId" BorderPane.alignment="CENTER">
                     <BorderPane.margin>
                         <Insets left="10.0" right="10.0" />
                     </BorderPane.margin>
@@ -24,12 +38,6 @@
         <CheckBox fx:id="notifyNdockCompleted" text="入渠完了を通知する" />
         <Button mnemonicParsing="false" onAction="#test" text="テスト送信" />
     </VBox>
-    <TitledPane animated="false" text="端末">
-        <ListView fx:id="deviceListView" prefHeight="0.0" prefWidth="400.0" />
-    </TitledPane>
-    <TitledPane animated="false" text="チャンネル">
-        <ListView fx:id="channelListView" prefHeight="0.0" prefWidth="400.0" />
-    </TitledPane>
     <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="400.0" spacing="10.0" styleClass="footer">
         <Button mnemonicParsing="false" onAction="#ok" text="OK" />
         <Button mnemonicParsing="false" onAction="#cancel" text="キャンセル" />

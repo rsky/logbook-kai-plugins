@@ -11,10 +11,10 @@ import plugins.slack.bean.Device;
 import plugins.slack.bean.DeviceCollection;
 
 public class Pusher {
-    private String accessToken;
+    private String incomingWebhookUrl;
 
-    public Pusher(String accessToken) {
-        this.accessToken = accessToken;
+    public Pusher(String incomingWebhookUrl) {
+        this.incomingWebhookUrl = incomingWebhookUrl;
     }
 
     /**
@@ -39,7 +39,7 @@ public class Pusher {
                                       String message,
                                       Consumer<Pushes> onSuccess,
                                       Consumer<Throwable> onError) {
-        SlackService service = ServiceFactory.create(accessToken);
+        SlackService service = ServiceFactory.create(incomingWebhookUrl);
         Consumer<Pushes> _onSuccess = (onSuccess != null) ? onSuccess : pushes -> {};
         Consumer<Throwable> _onError = (onError != null) ? onError : LoggerHolder::logError;
 

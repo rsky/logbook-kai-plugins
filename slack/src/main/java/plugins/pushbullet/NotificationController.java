@@ -34,10 +34,10 @@ public class NotificationController implements StartUp {
 
     @Override
     public void run() {
-        String accessToken = SlackConfig.get().getAccessToken();
-        if (accessToken != null) {
+        String incomingWebhookUrl = SlackConfig.get().getIncomingWebhookUrl();
+        if (incomingWebhookUrl != null) {
             // warm-up
-            ServiceFactory.create(accessToken).getUser()
+            ServiceFactory.create(incomingWebhookUrl).getUser()
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.computation())
                     .subscribe(user -> {}, LoggerHolder::logError);
@@ -183,9 +183,9 @@ public class NotificationController implements StartUp {
      * @param message String
      */
     private void SlackNotify(String title, String message) {
-        String accessToken = SlackConfig.get().getAccessToken();
-        if (accessToken != null) {
-            new Pusher(accessToken).pushToSelectedTargets(title, message);
+        String incomingWebhookUrl = SlackConfig.get().getIncomingWebhookUrl();
+        if (incomingWebhookUrl != null) {
+            new Pusher(incomingWebhookUrl).pushToSelectedTargets(title, message);
         }
     }
 

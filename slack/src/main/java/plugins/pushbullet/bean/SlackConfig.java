@@ -13,12 +13,17 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class SlackConfig implements Serializable {
 
-    private static final long serialVersionUID = -317595360788883807L;
+    private static final long serialVersionUID = 4545996096461149394L;
 
     /**
-     * APIトークン
+     * Incoming Webhook URL
      */
-    private String accessToken;
+    private String incomingWebhookUrl;
+
+    /**
+     * Channel ID
+     */
+    private String channelId;
 
     /**
      * 遠征完了を通知する
