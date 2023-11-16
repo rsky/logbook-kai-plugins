@@ -3,33 +3,33 @@ logbook-kai-plugins
 
 sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirotaka/logbook-kai)) へのプラグイン集。
 
-## Pushbulletプラグイン
+## Slackプラグイン
 
-航海日誌に[Pushbullet](https://www.pushbullet.com/)を使って遠征・入渠の完了をプッシュ通知する機能を追加します。  
+航海日誌に遠征・入渠の完了をSlack通知する機能を追加します。  
 
 ### インストール方法
 
-[Releases](https://github.com/rsky/logbook-kai-plugins/releases)より **pushbullet.jar** をダウンロードして航海日誌の **plugins** フォルダに入れ、航海日誌を再起動してください。
+[Releases](https://github.com/rsky/logbook-kai-plugins/releases)より **slack.jar** をダウンロードして航海日誌の **plugins** フォルダに入れ、航海日誌を再起動してください。
 
 ### 設定方法
 
-1. 「その他」メニュー内の「Pushbullet」よりPushbulletの設定ウインドウを開きます。
-2. Pushbulletの管理画面で取得したアクセストークンを入力し、「更新」ボタンを押します。
-3. 登録されている端末およびチャンネルのリストが表示されるので、プッシュ通知したい対象をチェックして「OK」を押せば設定完了です。
+1. 「その他」メニュー内の「Slack」よりSlackの設定ウインドウを開きます。
+2. Slackの管理画面で取得したアクセストークンを入力し、「OK」を押せば設定完了です。
 
-![Pushbullet設定画面](./img/pushbullet.png)
+![Slack設定画面](./img/pushbullet.png)
 
 ### 使用ライブラリとライセンス
 
 以下のライブラリを使用しています。
 
-#### [Retrofit](http://square.github.io/retrofit/)
+#### [Slack SDK for Java](https://github.com/slackapi/java-slack-sdk)
 
-- [Apache License 2.0](http://square.github.io/retrofit/#license)
+- [MIT License](https://github.com/slackapi/java-slack-sdk/blob/main/LICENSE)
 
-#### [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
+#### [RxJava](https://github.com/ReactiveX/RxJava) &amp; [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
 
-- [Apache License 2.0](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE)
+- [Apache License 2.0](https://github.com/ReactiveX/RxJava/blob/3.x/LICENSE) (RxJava)
+- [Apache License 2.0](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE) (RxJavaFx)
 
 #### [Lombok](https://projectlombok.org/)
 
