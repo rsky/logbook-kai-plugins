@@ -1,9 +1,12 @@
 package plugins.rankingchart.util;
 
+import logbook.internal.AppPath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.rankingchart.model.LogItem;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -13,11 +16,12 @@ import java.util.List;
 public class Database {
 
     private static final String DEFAULT_DRIVER = "org.sqlite.JDBC";
-    private static final String DEFAULT_URL = "jdbc:sqlite:ranking.db";
+    private static final String DEFAULT_URL_PREFIX = "jdbc:sqlite:";
+    private static final String DEFAULT_DATABASE_NAME = "ranking.db";
 
     private static Database DEFAULT = null;
 
-    private String url;
+    private final String url;
 
     /**
      * @return デフォルトのRankingDataManager
@@ -25,8 +29,9 @@ public class Database {
     public static synchronized Database getDefault() {
         if (DEFAULT == null) {
             try {
+                Path path = Paths.get(AppPath.DATA_DIR, DEFAULT_DATABASE_NAME);
                 Class.forName(DEFAULT_DRIVER);
-                DEFAULT = new Database(DEFAULT_URL);
+                DEFAULT = new Database(DEFAULT_URL_PREFIX + path);
             } catch (ClassNotFoundException e) {
                 LoggerHolder.LOG.error(e.getMessage(), e);
             }
