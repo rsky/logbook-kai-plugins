@@ -42,12 +42,12 @@ import java.util.stream.Collectors;
 
 public class RankingChartController extends WindowController {
     /** チャート表示用データ */
-    private RankingSeries series = new RankingSeries();
-    private RankingSeries series1 = new RankingSeries();
-    private RankingSeries series2 = new RankingSeries();
+    private final RankingSeries series = new RankingSeries();
+    private final RankingSeries series1 = new RankingSeries();
+    private final RankingSeries series2 = new RankingSeries();
 
     /** テーブル表示用データ */
-    private ObservableList<LogItem> rows = FXCollections.observableArrayList();
+    private final ObservableList<LogItem> rows = FXCollections.observableArrayList();
 
     /** 期間 */
     @FXML
@@ -65,7 +65,7 @@ public class RankingChartController extends WindowController {
     @FXML
     private CheckBox rank5Check;
 
-    /** ランキング220位戦果 */
+    /** ランキング20位戦果 */
     @FXML
     private CheckBox rank20Check;
 
@@ -197,7 +197,7 @@ public class RankingChartController extends WindowController {
         List<Period> periods = rankingPeriods();
         periodChoice.setItems(FXCollections.observableList(periods));
         modeChoice.setItems(FXCollections.observableArrayList(ChartMode.values()));
-        if (periods.size() != 0) {
+        if (!periods.isEmpty()) {
             periodChoice.setValue(periods.get(0));
         }
         modeChoice.setValue(ChartMode.SINGLE);
@@ -458,6 +458,6 @@ public class RankingChartController extends WindowController {
         /**
          * ロガー
          */
-        private static final Logger LOG = LogManager.getLogger(RankingChartMenu.class);
+        private static final Logger LOG = LogManager.getLogger(RankingChartController.class);
     }
 }
