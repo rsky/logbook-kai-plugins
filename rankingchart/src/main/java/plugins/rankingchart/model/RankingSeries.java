@@ -7,47 +7,42 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 public class RankingSeries {
     /** ランキング1位戦果 */
-    private XYChart.Series<Number, Number> rank1Series = new XYChart.Series<>();
-    private ObservableList<XYChart.Data<Number, Number>> rank1Data = FXCollections.observableArrayList();
-    private BooleanProperty rank1Enabled = new SimpleBooleanProperty();
+    private final XYChart.Series<Number, Number> rank1Series = new XYChart.Series<>();
+    private final ObservableList<XYChart.Data<Number, Number>> rank1Data = FXCollections.observableArrayList();
+    private final BooleanProperty rank1Enabled = new SimpleBooleanProperty();
 
     /** ランキング5位戦果 */
-    private XYChart.Series<Number, Number> rank5Series = new XYChart.Series<>();
-    private ObservableList<XYChart.Data<Number, Number>> rank5Data = FXCollections.observableArrayList();
-    private BooleanProperty rank5Enabled = new SimpleBooleanProperty();
+    private final XYChart.Series<Number, Number> rank5Series = new XYChart.Series<>();
+    private final ObservableList<XYChart.Data<Number, Number>> rank5Data = FXCollections.observableArrayList();
+    private final BooleanProperty rank5Enabled = new SimpleBooleanProperty();
 
     /** ランキング20位戦果 */
-    private XYChart.Series<Number, Number> rank20Series = new XYChart.Series<>();
-    private ObservableList<XYChart.Data<Number, Number>> rank20Data = FXCollections.observableArrayList();
-    private BooleanProperty rank20Enabled = new SimpleBooleanProperty();
+    private final XYChart.Series<Number, Number> rank20Series = new XYChart.Series<>();
+    private final ObservableList<XYChart.Data<Number, Number>> rank20Data = FXCollections.observableArrayList();
+    private final BooleanProperty rank20Enabled = new SimpleBooleanProperty();
 
     /** ランキング100位戦果 */
-    private XYChart.Series<Number, Number> rank100Series = new XYChart.Series<>();
-    private ObservableList<XYChart.Data<Number, Number>> rank100Data = FXCollections.observableArrayList();
-    private BooleanProperty rank100Enabled = new SimpleBooleanProperty();
+    private final XYChart.Series<Number, Number> rank100Series = new XYChart.Series<>();
+    private final ObservableList<XYChart.Data<Number, Number>> rank100Data = FXCollections.observableArrayList();
+    private final BooleanProperty rank100Enabled = new SimpleBooleanProperty();
 
     /** ランキング500位戦果 */
-    private XYChart.Series<Number, Number> rank500Series = new XYChart.Series<>();
-    private ObservableList<XYChart.Data<Number, Number>> rank500Data = FXCollections.observableArrayList();
-    private BooleanProperty rank500Enabled = new SimpleBooleanProperty();
+    private final XYChart.Series<Number, Number> rank500Series = new XYChart.Series<>();
+    private final ObservableList<XYChart.Data<Number, Number>> rank500Data = FXCollections.observableArrayList();
+    private final BooleanProperty rank500Enabled = new SimpleBooleanProperty();
 
     /** 自分の戦果 */
-    private XYChart.Series<Number, Number> rateSeries = new XYChart.Series<>();
-    private ObservableList<XYChart.Data<Number, Number>> rateData = FXCollections.observableArrayList();
-    private BooleanProperty rateEnabled = new SimpleBooleanProperty();
+    private final XYChart.Series<Number, Number> rateSeries = new XYChart.Series<>();
+    private final ObservableList<XYChart.Data<Number, Number>> rateData = FXCollections.observableArrayList();
+    private final BooleanProperty rateEnabled = new SimpleBooleanProperty();
 
     /** 自分の順位 */
-    private XYChart.Series<Number, Number> rankNoSeries = new XYChart.Series<>();
-    private ObservableList<XYChart.Data<Number, Number>> rankNoData = FXCollections.observableArrayList();
-    private BooleanProperty rankNoEnabled = new SimpleBooleanProperty();
-
-    /** 全データ */
-    private List<ObservableList<XYChart.Data<Number, Number>>> allData;
+    private final XYChart.Series<Number, Number> rankNoSeries = new XYChart.Series<>();
+    private final ObservableList<XYChart.Data<Number, Number>> rankNoData = FXCollections.observableArrayList();
+    private final BooleanProperty rankNoEnabled = new SimpleBooleanProperty();
 
     /** 基準となるエポック秒 */
     private long fromEpoch;
@@ -66,8 +61,6 @@ public class RankingSeries {
         rank500Series.setData(rank500Data);
         rateSeries.setData(rateData);
         rankNoSeries.setData(rankNoData);
-
-        allData = Arrays.asList(rank1Data, rank5Data, rank20Data, rank100Data, rank500Data, rateData, rankNoData);
     }
 
     public void setSeriesNameSuffix(String suffix) {
@@ -120,7 +113,40 @@ public class RankingSeries {
      * データを消去する
      */
     public void clear() {
-        allData.forEach(ObservableList::clear);
+        rank1Data.clear();
+        rank5Data.clear();
+        rank20Data.clear();
+        rank100Data.clear();
+        rank500Data.clear();
+        rateData.clear();
+        rankNoData.clear();
+    }
+
+    /**
+     * Seriesの可視性を更新する
+     */
+    public void updateVisibilities() {
+        if (rank1Series.getNode() != null) {
+            rank1Series.getNode().setVisible(rank1Enabled.get());
+        }
+        if (rank5Series.getNode() != null) {
+            rank5Series.getNode().setVisible(rank5Enabled.get());
+        }
+        if (rank20Series.getNode() != null) {
+            rank20Series.getNode().setVisible(rank20Enabled.get());
+        }
+        if (rank100Series.getNode() != null) {
+            rank100Series.getNode().setVisible(rank100Enabled.get());
+        }
+        if (rank500Series.getNode() != null) {
+            rank500Series.getNode().setVisible(rank500Enabled.get());
+        }
+        if (rateSeries.getNode() != null) {
+            rateSeries.getNode().setVisible(rateEnabled.get());
+        }
+        if (rankNoSeries.getNode() != null) {
+            rankNoSeries.getNode().setVisible(rankNoEnabled.get());
+        }
     }
 
     /**

@@ -238,6 +238,8 @@ public class RankingChartController extends WindowController {
         series.clear();
         rows.clear();
 
+        series.updateVisibilities();
+
         xAxis.setTickLabelFormatter(new DateStringConverter(period.getFrom()));
 
         series.setFrom(period.getFrom());
@@ -260,6 +262,9 @@ public class RankingChartController extends WindowController {
         series1.clear();
         series2.clear();
         rows.clear();
+
+        series1.updateVisibilities();
+        series2.updateVisibilities();
 
         series1.setSeriesNameSuffix(suffix1);
         series2.setSeriesNameSuffix(suffix2);
