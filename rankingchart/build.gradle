@@ -2,7 +2,7 @@ description = '戦果チャート Plugin'
 version = '2.0.1'
 
 def bundleName = description
-def sqliteVersion = '3.48.0.0'
+def sqliteVersion = '3.49.0.0'
 
 dependencies {
     implementation project(':commons')
