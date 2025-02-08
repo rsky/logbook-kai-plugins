@@ -1,5 +1,5 @@
 description = '戦果チャート Plugin'
-version = '2.0.1'
+version = '2.0.2'
 
 def bundleName = description
 def sqliteVersion = '3.49.0.0'
