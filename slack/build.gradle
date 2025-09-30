@@ -9,10 +9,10 @@ def slackApiVersion = '1.35.0'
 
 dependencies {
     implementation project(':commons')
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: rxJavaVersion
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjavafx', version: rxJavaFXVersion
-    implementation group: 'org.reactivestreams', name: 'reactive-streams', version: reactiveStreamsVersion
-    implementation group: 'com.slack.api', name: 'slack-api-client', version: slackApiVersion
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxjavafx:$rxJavaFXVersion"
+    implementation "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+    implementation "com.slack.api:slack-api-client:$slackApiVersion"
 }
 
 jar {

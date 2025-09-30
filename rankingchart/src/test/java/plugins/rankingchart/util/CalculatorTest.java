@@ -66,7 +66,7 @@ public class CalculatorTest {
     @Test
     @DisplayName("ユーザー別戦果係数をランキング1-20位の戦果の最大公約数より求める")
     public void detectUserRateFactorByMapSuccess() {
-        Map<Integer, Long> source = new HashMap<Integer, Long>() {{
+        Map<Integer, Long> source = new HashMap<>() {{
             put(1, 337718798L);
             put(2, 290021904L);
             put(3, 927964716L);
@@ -95,7 +95,7 @@ public class CalculatorTest {
     @Test
     @DisplayName("辞書に不正なデータがあるので戦果係数の導出に失敗する")
     public void detectUserRateFactorFailBadMap() {
-        Map<Integer, Long> source = new HashMap<Integer, Long>() {{
+        Map<Integer, Long> source = new HashMap<>() {{
             put(1, 337718799L);
             put(2, 290021904L);
             put(3, 927964716L);

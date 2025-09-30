@@ -6,7 +6,8 @@ def sqliteVersion = '3.50.3.0'
 
 dependencies {
     implementation project(':commons')
-    implementation group: 'org.xerial', name: 'sqlite-jdbc', version: sqliteVersion
+    implementation "org.xerial:sqlite-jdbc:$sqliteVersion"
+    compileOnly 'org.glassfish:javax.json:1.1.4'
 }
 
 jar {
