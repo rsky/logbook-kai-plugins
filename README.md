@@ -1,11 +1,10 @@
-logbook-kai-plugins
--------------------
+## logbook-kai-plugins
 
 sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirotaka/logbook-kai)) へのプラグイン集。
 
 ## Slackプラグイン
 
-航海日誌に遠征・入渠の完了をSlack通知する機能を追加します。  
+航海日誌に遠征・入渠の完了をSlack通知する機能を追加します。
 
 ### インストール方法
 
@@ -26,7 +25,7 @@ sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirota
 
 - [MIT License](https://github.com/slackapi/java-slack-sdk/blob/main/LICENSE)
 
-#### [RxJava](https://github.com/ReactiveX/RxJava) &amp; [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
+#### [RxJava](https://github.com/ReactiveX/RxJava) & [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
 
 - [Apache License 2.0](https://github.com/ReactiveX/RxJava/blob/3.x/LICENSE) (RxJava)
 - [Apache License 2.0](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE) (RxJavaFx)
@@ -34,7 +33,6 @@ sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirota
 #### [Lombok](https://projectlombok.org/)
 
 - [MIT License](https://github.com/rzwitserloot/lombok/blob/master/LICENSE)
-
 
 ## 戦果チャートプラグイン
 

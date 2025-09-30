@@ -8,7 +8,7 @@ buildscript {
 
 plugins {
     id 'java-library'
-    id 'com.gradleup.shadow' version '9.0.0-rc3'
+    id 'com.gradleup.shadow' version '9.2.2'
 }
 
 allprojects  {
@@ -34,8 +34,8 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 
-    def lombokVersion = '1.18.36'
-    def jUnitVersion = '5.10.1'
+    def lombokVersion = '1.18.42'
+    def jUnitVersion = '5.13.4'
     def mockitoVersion = '2.28.2'
     def powerMockVersion = '2.0.9'
 
@@ -44,8 +44,8 @@ subprojects {
     }
 
     dependencies {
-        runtimeOnly files("$rootDir/lib/logbook-kai.jar")
         compileOnly files("$rootDir/lib/logbook-kai.jar")
+        testImplementation files("$rootDir/lib/logbook-kai.jar")
         compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
         testCompileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
@@ -62,10 +62,5 @@ subprojects {
     }
 
     shadowJar {
-        exclude 'logbook-kai.jar'
-        dependencies {
-            //noinspection GroovyAssignabilityCheck
-            exclude dependency('org.projectlombok:lombok')
-        }
     }
 }
