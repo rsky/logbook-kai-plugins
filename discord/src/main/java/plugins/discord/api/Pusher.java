@@ -52,7 +52,7 @@ public class Pusher {
                     .build();
             try {
                 var res = client.send(req, HttpResponse.BodyHandlers.ofString());
-                if (res.statusCode() == 200 && onSuccess != null) {
+                if (res.statusCode() == 204 && onSuccess != null) {
                     onSuccess.accept(res.body());
                 }
             } catch (Exception e) {
