@@ -15,10 +15,8 @@ import plugins.rankingchart.util.Calculator;
 import plugins.rankingchart.util.Database;
 import plugins.rankingchart.util.DateTimeUtil;
 
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonValue;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -67,12 +65,12 @@ public class RankingListener implements APIListenerSpi {
      * @param jsonObject APIレスポンス
      */
     private void logRanking(JsonObject jsonObject) {
-        final JsonValue data = getData(jsonObject);
-        if (!(data instanceof JsonObject)) {
+        final var data = getData(jsonObject);
+        if (!(data instanceof JsonObject dataObj)) {
             return;
         }
 
-        final JsonArray list = ((JsonObject) data).getJsonArray("api_list");
+        final var list = dataObj.getJsonArray("api_list");
         if (list == null) {
             return;
         }
@@ -81,32 +79,30 @@ public class RankingListener implements APIListenerSpi {
             ranking = Database.getDefault().getLatest();
         }
 
-        final ZonedDateTime dateTime = DateTimeUtil.rankingDateTime();
+        final var dateTime = DateTimeUtil.rankingDateTime();
         // 基準となる日時が変わっていたら現在のランキングも新しい日時で作り直す
         if (ranking == null || !ranking.getDateTime().equals(dateTime)) {
             ranking = LogItem.withDateTime(dateTime);
             rankingSource.clear();
         }
 
-        final RankingChartConfig config = RankingChartConfig.get();
-        int userRateFactor = config.getUserRateFactor();
-        final long lastObfuscatedRate = config.getLastObfuscatedRate();
-        final int rankingSourceSize = rankingSource.size();
-        boolean rankingUpdated = false;
-        boolean configUpdated = false;
+        final var config = RankingChartConfig.get();
+        var userRateFactor = config.getUserRateFactor();
+        final var lastObfuscatedRate = config.getLastObfuscatedRate();
+        final var rankingSourceSize = rankingSource.size();
+        var rankingUpdated = false;
+        var configUpdated = false;
 
         for (JsonValue value : list) {
-            final Entry entry;
-            if (value instanceof JsonObject) {
-                entry = new Entry((JsonObject) value);
-            } else {
+            if (!(value instanceof JsonObject jsonObj)) {
                 // 実際はここには到達しないが便宜上
                 break;
             }
 
-            final int rankNo = entry.getNo();
-            final long obfuscatedRate = entry.getObfuscatedRate();
-            final int rate = Calculator.calcRate(rankNo, obfuscatedRate, userRateFactor);
+            final var entry = new Entry(jsonObj);
+            final var rankNo = entry.getNo();
+            final var obfuscatedRate = entry.getObfuscatedRate();
+            final var rate = Calculator.calcRate(rankNo, obfuscatedRate, userRateFactor);
 
             // 戦果係数がセットされており、戦果のデコードに成功した場合
             if (rate != Calculator.NO_RATE) {
@@ -140,7 +136,7 @@ public class RankingListener implements APIListenerSpi {
 
         // 1〜100位(+500位)のデータが揃ったら戦果係数を自動で求める
         if (rankingSourceSize < 100 && rankingSource.size() >= 100) {
-            int autoUserRateFactor = Calculator.detectUserRateFactor(rankingSource);
+            var autoUserRateFactor = Calculator.detectUserRateFactor(rankingSource);
             if (autoUserRateFactor != 0 && autoUserRateFactor != userRateFactor) {
                 // 戦果係数が更新されていたら保存する
                 config.setUserRateFactor(autoUserRateFactor);
@@ -166,8 +162,8 @@ public class RankingListener implements APIListenerSpi {
      * @param config 戦果チャート構成情報
      */
     private void bulkSetRanking(RankingChartConfig config) {
-        int userRateFactor = config.getUserRateFactor();
-        int myRankNo = config.getLastRankNo();
+        var userRateFactor = config.getUserRateFactor();
+        var myRankNo = config.getLastRankNo();
         if (myRankNo > 0) {
             ranking.setRankNo(myRankNo);
             ranking.setRate(Calculator.calcRate(myRankNo, config.getLastObfuscatedRate(), userRateFactor));
@@ -176,7 +172,7 @@ public class RankingListener implements APIListenerSpi {
         IntStream.of(1, 5, 20, 100, 500)
                 .filter(rankingSource::containsKey)
                 .forEach(rankNo -> {
-                    int rate = Calculator.calcRate(rankNo, rankingSource.get(rankNo), userRateFactor);
+                    var rate = Calculator.calcRate(rankNo, rankingSource.get(rankNo), userRateFactor);
                     ranking.put(rankNo, rate);
                 });
     }
@@ -186,12 +182,10 @@ public class RankingListener implements APIListenerSpi {
      * @param jsonObject APIレスポンス
      */
     private void storeMemberInfo(JsonObject jsonObject) {
-        final JsonValue data = getData(jsonObject);
-        if (!(data instanceof JsonObject)) {
+        final var data = getData(jsonObject);
+        if (!(data instanceof JsonObject obj)) {
             return;
         }
-
-        final JsonObject obj = (JsonObject) data;
 
         if (obj.containsKey("api_member_id")) {
             memberId = obj.getInt("api_member_id");

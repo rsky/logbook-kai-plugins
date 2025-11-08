@@ -9,7 +9,7 @@ import plugins.util.StageUtil;
 public class SlackConfigMenu implements MainExtMenu {
     @Override
     public MenuItem getContent() {
-        MenuItem item = new MenuItem("Slack");
+        var item = new MenuItem("Slack");
         item.setOnAction(event -> {
             try {
                 StageUtil.show(

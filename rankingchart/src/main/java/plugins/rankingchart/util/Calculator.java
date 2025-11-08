@@ -21,7 +21,7 @@ public class Calculator {
      * @return 戦果
      */
     private static int calcRate(int rankNo, long obfuscatedRate, int userRateFactor, boolean strict) {
-        int rankRateFactor = RANK_RATE_FACTORS[rankNo % 13];
+        var rankRateFactor = RANK_RATE_FACTORS[rankNo % 13];
         if (strict && obfuscatedRate % rankRateFactor != 0) {
             return NO_RATE;
         } else if (userRateFactor > 0) {
@@ -81,7 +81,7 @@ public class Calculator {
      * @return 戦果係数
      */
     public static int detectUserRateFactor(Map<Integer, Long> source) {
-        boolean hasInvalidValue = source.entrySet()
+        var hasInvalidValue = source.entrySet()
                 .stream()
                 .filter(e -> e.getValue() % RANK_RATE_FACTORS[e.getKey() % 13] != 0)
                 .count() != 0;

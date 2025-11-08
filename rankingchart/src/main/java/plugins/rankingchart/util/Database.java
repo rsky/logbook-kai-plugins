@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.rankingchart.model.LogItem;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.time.ZonedDateTime;
@@ -29,7 +28,7 @@ public class Database {
     public static synchronized Database getDefault() {
         if (DEFAULT == null) {
             try {
-                Path path = Paths.get(AppPath.DATA_DIR, DEFAULT_DATABASE_NAME);
+                var path = Paths.get(AppPath.DATA_DIR, DEFAULT_DATABASE_NAME);
                 Class.forName(DEFAULT_DRIVER);
                 DEFAULT = new Database(DEFAULT_URL_PREFIX + path);
             } catch (ClassNotFoundException e) {
@@ -58,16 +57,17 @@ public class Database {
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement()) {
             //noinspection SqlNoDataSourceInspection
-            statement.execute("CREATE TABLE IF NOT EXISTS ranking (\n" +
-                    "  published_at INTEGER PRIMARY KEY,\n" +
-                    "  rank_no INTEGER,\n" +
-                    "  rate INTEGER,\n" +
-                    "  rank1 INTEGER,\n" +
-                    "  rank5 INTEGER,\n" +
-                    "  rank20 INTEGER,\n" +
-                    "  rank100 INTEGER,\n" +
-                    "  rank500 INTEGER\n" +
-                    ")");
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS ranking (
+                      published_at INTEGER PRIMARY KEY,
+                      rank_no INTEGER,
+                      rate INTEGER,
+                      rank1 INTEGER,
+                      rank5 INTEGER,
+                      rank20 INTEGER,
+                      rank100 INTEGER,
+                      rank500 INTEGER
+                    )""");
         } catch (SQLException e) {
             LoggerHolder.LOG.error(e.getMessage(), e);
         }
@@ -79,9 +79,10 @@ public class Database {
      */
     public void update(LogItem ranking) {
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
-        String sql = "REPLACE INTO ranking" +
-                " (published_at, rank_no, rate, rank1, rank5, rank20, rank100, rank500)" +
-                " values (?, ?, ?, ?, ?, ?, ?, ?)";
+        var sql = """
+                REPLACE INTO ranking
+                 (published_at, rank_no, rate, rank1, rank5, rank20, rank100, rank500)
+                 values (?, ?, ?, ?, ?, ?, ?, ?)""";
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setTimestamp(1, Timestamp.from(ranking.getDateTime().toInstant()));
@@ -107,7 +108,7 @@ public class Database {
     }
 
     private Integer getIntOrNull(ResultSet resultSet, String columnLabel) throws SQLException {
-        int value = resultSet.getInt(columnLabel);
+        var value = resultSet.getInt(columnLabel);
         if (resultSet.wasNull()) {
             return null;
         } else {
@@ -119,15 +120,15 @@ public class Database {
      * @return 全期間の日付を降順にソートしたリスト
      */
     public List<ZonedDateTime> allDateTime() {
-        List<ZonedDateTime> list = new ArrayList<>();
+        var list = new ArrayList<ZonedDateTime>();
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
-        String sql = "SELECT published_at FROM ranking ORDER BY published_at DESC";
-        Calendar calendar = DateTimeUtil.getCalender();
+        var sql = "SELECT published_at FROM ranking ORDER BY published_at DESC";
+        var calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
             while (resultSet.next()) {
-                Timestamp timestamp = resultSet.getTimestamp(1, calendar);
+                var timestamp = resultSet.getTimestamp(1, calendar);
                 list.add(DateTimeUtil.dateTimeFromTimestamp(timestamp));
             }
         } catch (SQLException e) {
@@ -142,12 +143,13 @@ public class Database {
      * @return 指定期間[from, to]のランキング情報を日付で降順にソートしたリスト
      */
     public List<LogItem> load(ZonedDateTime from, ZonedDateTime to) {
-        List<LogItem> list = new ArrayList<>();
+        var list = new ArrayList<LogItem>();
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
-        String sql = "SELECT * FROM ranking" +
-                " WHERE published_at >= ? AND published_at <= ?" +
-                " ORDER BY published_at DESC";
-        Calendar calendar = DateTimeUtil.getCalender();
+        var sql = """
+                SELECT * FROM ranking
+                 WHERE published_at >= ? AND published_at <= ?
+                 ORDER BY published_at DESC""";
+        var calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setTimestamp(1, Timestamp.from(from.toInstant()));
@@ -168,8 +170,8 @@ public class Database {
      */
     public LogItem getLatest() {
         //noinspection SqlDialectInspection,SqlNoDataSourceInspection,SqlResolve
-        String sql = "SELECT * FROM ranking ORDER BY published_at DESC LIMIT 1";
-        Calendar calendar = DateTimeUtil.getCalender();
+        var sql = "SELECT * FROM ranking ORDER BY published_at DESC LIMIT 1";
+        var calendar = DateTimeUtil.getCalender();
         try (Connection connection = getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
@@ -183,8 +185,8 @@ public class Database {
     }
 
     private LogItem convertResult(ResultSet resultSet, Calendar calendar) throws SQLException {
-        Timestamp timestamp = resultSet.getTimestamp("published_at", calendar);
-        LogItem row = LogItem.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
+        var timestamp = resultSet.getTimestamp("published_at", calendar);
+        var row = LogItem.withDateTime(DateTimeUtil.dateTimeFromTimestamp(timestamp));
         row.setRankNo(getIntOrNull(resultSet, "rank_no"));
         row.setRate(getIntOrNull(resultSet, "rate"));
         row.setRank1(getIntOrNull(resultSet, "rank1"));

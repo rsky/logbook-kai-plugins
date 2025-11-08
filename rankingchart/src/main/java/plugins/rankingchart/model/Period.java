@@ -28,20 +28,12 @@ public class Period {
     }
 
     public Period with(ChartMode mode) {
-        ZonedDateTime dt;
-        switch (mode) {
-            case MOM:
-                dt = from.minusMonths(1);
-                break;
-            case QOQ:
-                dt = from.minusMonths(3);
-                break;
-            case YOY:
-                dt = from.minusYears(1);
-                break;
-            default:
-                dt = from;
-        }
+        var dt = switch (mode) {
+            case MOM -> from.minusMonths(1);
+            case QOQ -> from.minusMonths(3);
+            case YOY -> from.minusYears(1);
+            default -> from;
+        };
 
         return new Period(dt);
     }

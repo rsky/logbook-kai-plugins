@@ -12,14 +12,14 @@ import logbook.plugin.PluginContainer;
 
 public class StageUtil {
     public static void show(String title, String fxmlPath, Window owner, ClassLoader classLoader) throws Exception {
-        FXMLLoader loader = new FXMLLoader(PluginContainer.getInstance().getClassLoader().getResource(fxmlPath));
+        var loader = new FXMLLoader(PluginContainer.getInstance().getClassLoader().getResource(fxmlPath));
         loader.setClassLoader(classLoader);
 
-        Stage stage = new Stage();
-        Parent root = loader.load();
+        var stage = new Stage();
+        var root = loader.<Parent>load();
         stage.setScene(new Scene(root));
 
-        WindowController controller = loader.getController();
+        var controller = loader.<WindowController>getController();
         controller.setWindow(stage);
 
         stage.initOwner(owner);
@@ -32,7 +32,7 @@ public class StageUtil {
             }
         });
 
-        WindowLocation location = AppConfig.get()
+        var location = AppConfig.get()
                 .getWindowLocationMap()
                 .get(controller.getClass().getCanonicalName());
         if (location != null) {

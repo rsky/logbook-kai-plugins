@@ -5,30 +5,20 @@ public enum ChartMode {
 
     @Override
     public String toString() {
-        switch (this) {
-            case SINGLE:
-                return "単月";
-            case MOM:
-                return "前月比";
-            case QOQ:
-                return "前期比";
-            case YOY:
-                return "前年比";
-        }
-        return name();
+        return switch (this) {
+            case SINGLE -> "単月";
+            case MOM -> "前月比";
+            case QOQ -> "前期比";
+            case YOY -> "前年比";
+        };
     }
 
     public String legendSuffix() {
-        switch (this) {
-            case SINGLE:
-                return " (当月)";
-            case MOM:
-                return " (前月)";
-            case QOQ:
-                return " (前期)";
-            case YOY:
-                return " (前年)";
-        }
-        return "";
+        return switch (this) {
+            case SINGLE -> " (当月)";
+            case MOM -> " (前月)";
+            case QOQ -> " (前期)";
+            case YOY -> " (前年)";
+        };
     }
 }

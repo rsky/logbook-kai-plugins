@@ -43,7 +43,7 @@ public class NotificationController implements StartUp {
      */
     private void update() {
         try {
-            SlackConfig config = SlackConfig.get();
+            var config = SlackConfig.get();
             if (config.isNotifyMissionCompleted()) {
                 // 遠征の通知
                 checkNotifyMission();
@@ -61,15 +61,14 @@ public class NotificationController implements StartUp {
      * 遠征の通知をチェックします
      */
     private void checkNotifyMission() {
-        Map<Integer, DeckPort> ports = DeckPortCollection.get()
-                .getDeckPortMap();
-        long currentTime = System.currentTimeMillis();
+        var ports = DeckPortCollection.get().getDeckPortMap();
+        var currentTime = System.currentTimeMillis();
 
-        for (DeckPort port : ports.values()) {
+        for (var port : ports.values()) {
             // 0=未出撃, 1=遠征中, 2=遠征帰還, 3=遠征中止
-            int state = port.getMission().get(0).intValue();
+            var state = port.getMission().get(0).intValue();
             // 帰還時間
-            long time = port.getMission().get(2);
+            var time = port.getMission().get(2);
 
             if (0 == state) {
                 timeStampMission.put(port.getId(), 0L);
@@ -77,7 +76,7 @@ public class NotificationController implements StartUp {
                 // 残り時間を計算
                 Duration now = Duration.ofMillis(time - currentTime);
                 // 前回の通知の時間
-                long timeStamp = timeStampMission.getOrDefault(port.getId(), 0L);
+                var timeStamp = timeStampMission.getOrDefault(port.getId(), 0L);
                 if (requireNotify(now, timeStamp)) {
                     timeStampMission.put(port.getId(), System.currentTimeMillis());
                     slackNotifyMission(port);
@@ -93,8 +92,8 @@ public class NotificationController implements StartUp {
      * @param port 艦隊
      */
     private void slackNotifyMission(DeckPort port) {
-        String title = String.format("遠征完了 #%d", port.getId());
-        String message = Messages.getString("mission.complete", port.getName());
+        var title = String.format("遠征完了 #%d", port.getId());
+        var message = Messages.getString("mission.complete", port.getName());
         slackNotify(title, message);
     }
 
@@ -102,13 +101,12 @@ public class NotificationController implements StartUp {
      * 入渠ドックの通知をチェックします
      */
     private void checkNotifyNdock() {
-        Map<Integer, Ndock> ndockMap = NdockCollection.get()
-                .getNdockMap();
-        long currentTime = System.currentTimeMillis();
+        var ndockMap = NdockCollection.get().getNdockMap();
+        var currentTime = System.currentTimeMillis();
 
         for (Ndock ndock : ndockMap.values()) {
             // 完了時間
-            long time = ndock.getCompleteTime();
+            var time = ndock.getCompleteTime();
 
             if (1 > time) {
                 timeStampNdock.put(ndock.getId(), 0L);
@@ -116,7 +114,7 @@ public class NotificationController implements StartUp {
                 // 残り時間を計算
                 Duration now = Duration.ofMillis(time - currentTime);
                 // 前回の通知の時間
-                long timeStamp = timeStampNdock.getOrDefault(ndock.getId(), 0L);
+                var timeStamp = timeStampNdock.getOrDefault(ndock.getId(), 0L);
 
                 if (requireNotify(now, timeStamp)) {
                     timeStampNdock.put(ndock.getId(), currentTime);
@@ -132,14 +130,14 @@ public class NotificationController implements StartUp {
      * @param ndock 入渠ドック
      */
     private void slackNotifyNdock(Ndock ndock) {
-        String title = String.format("修復完了 #%d", ndock.getId());
-        Ship ship = ShipCollection.get()
+        var title = String.format("修復完了 #%d", ndock.getId());
+        var ship = ShipCollection.get()
                 .getShipMap()
                 .get(ndock.getShipId());
-        String name = Ships.shipMst(ship)
+        var name = Ships.shipMst(ship)
                 .map(ShipMst::getName)
                 .orElse("");
-        String message = Messages.getString("ship.ndock", name, ship.getLv()); //$NON-NLS-1$
+        var message = Messages.getString("ship.ndock", name, ship.getLv()); //$NON-NLS-1$
 
         slackNotify(title, message);
     }
@@ -153,9 +151,9 @@ public class NotificationController implements StartUp {
     private boolean requireNotify(Duration now, long timeStamp) {
         if (now.compareTo(NOTIFY) <= 0) {
             // 前回の通知からの経過時間
-            Duration course = Duration.ofMillis(System.currentTimeMillis() - timeStamp);
+            var course = Duration.ofMillis(System.currentTimeMillis() - timeStamp);
             // リマインド間隔
-            Duration interval = Duration.ofSeconds(AppConfig.get().getRemind());
+            var interval = Duration.ofSeconds(AppConfig.get().getRemind());
             if (course.compareTo(interval) >= 0) {
                 if (timeStamp == 0L) {
                     return true;
@@ -172,8 +170,8 @@ public class NotificationController implements StartUp {
      * @param message String
      */
     private void slackNotify(String title, String message) {
-        SlackConfig config = SlackConfig.get();
-        String incomingWebhookUrl = config.getIncomingWebhookUrl();
+        var config = SlackConfig.get();
+        var incomingWebhookUrl = config.getIncomingWebhookUrl();
         if (incomingWebhookUrl != null && !incomingWebhookUrl.isEmpty()) {
             new Pusher(incomingWebhookUrl).push(title, message);
         }

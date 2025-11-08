@@ -9,7 +9,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.FileChooser;
@@ -33,11 +32,9 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.stream.Collectors;
 
 public class RankingChartController extends WindowController {
@@ -145,7 +142,7 @@ public class RankingChartController extends WindowController {
     void initialize() {
         // チャートを初期化
         chart.setData(series.rankingSeriesObservable());
-        ObservableList<XYChart.Series<Number, Number>> areaChartData = FXCollections.observableArrayList();
+        var areaChartData = FXCollections.<XYChart.Series<Number, Number>>observableArrayList();
         areaChartData.addAll(series2.rankingSeriesObservable());
         areaChartData.addAll(series1.rankingSeriesObservable());
         chart2.setData(areaChartData);
@@ -161,7 +158,7 @@ public class RankingChartController extends WindowController {
 
         // テーブルセルのファクトリをセット
         dateCol.setCellFactory(new DateTimeFormatCell.Factory());
-        NumberCellFactory numberFormatCellFactory = new NumberFormatCell.Factory();
+        var numberFormatCellFactory = new NumberFormatCell.Factory();
         rank1Col.setCellFactory(numberFormatCellFactory);
         rank5Col.setCellFactory(numberFormatCellFactory);
         rank20Col.setCellFactory(numberFormatCellFactory);
@@ -194,7 +191,7 @@ public class RankingChartController extends WindowController {
         yAxis2.setForceZeroInRange(true);
 
         // 表示期間を初期化
-        List<Period> periods = rankingPeriods();
+        var periods = rankingPeriods();
         periodChoice.setItems(FXCollections.observableList(periods));
         modeChoice.setItems(FXCollections.observableArrayList(ChartMode.values()));
         if (!periods.isEmpty()) {
@@ -214,8 +211,8 @@ public class RankingChartController extends WindowController {
 
     @FXML
     void change() {
-        Period period = periodChoice.getValue();
-        ChartMode mode = modeChoice.getValue();
+        var period = periodChoice.getValue();
+        var mode = modeChoice.getValue();
         if (period != null && mode != null) {
             if (mode == ChartMode.SINGLE) {
                 updateRankingLinearChart(period);
@@ -279,34 +276,34 @@ public class RankingChartController extends WindowController {
     private void addAllItems(RankingSeries series, List<LogItem> items) {
         rows.addAll(items);
 
-        ListIterator<LogItem> li = items.listIterator(items.size());
+        var li = items.listIterator(items.size());
         while (li.hasPrevious()) {
             series.add(li.previous());
         }
     }
 
     private void setContextMenu(Chart node) {
-        final MenuItem item = new MenuItem("画像ファイルとして保存");
+        final var item = new MenuItem("画像ファイルとして保存");
         item.setOnAction(event -> saveSnapshotAsPNG(node));
 
-        final ContextMenu menu = new ContextMenu(item);
+        final var menu = new ContextMenu(item);
 
         node.setOnContextMenuRequested(event -> menu.show(getWindow(), event.getScreenX(), event.getScreenY()));
     }
 
     private void saveSnapshotAsPNG(Node node) {
-        FileChooser chooser = new FileChooser();
+        var chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png"));
         chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
 
-        File file = chooser.showSaveDialog(getWindow());
+        var file = chooser.showSaveDialog(getWindow());
         if (file != null){
             saveSnapshotAsPNG(node, file);
         }
     }
 
     private void saveSnapshotAsPNG(Node node, File file) {
-        WritableImage image = node.snapshot(new SnapshotParameters(), null);
+        var image = node.snapshot(new SnapshotParameters(), null);
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
         } catch (IOException e) {
@@ -316,26 +313,26 @@ public class RankingChartController extends WindowController {
 
     @FXML
     void copyRowAsTSV() {
-        LogItem item = table.getSelectionModel().getSelectedItem();
-        ClipboardContent content = new ClipboardContent();
+        var item = table.getSelectionModel().getSelectedItem();
+        var content = new ClipboardContent();
         content.putString(item.toTSV());
         Clipboard.getSystemClipboard().setContent(content);
     }
 
     @FXML
     void saveTableAsCSV() {
-        FileChooser chooser = new FileChooser();
+        var chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
         chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
 
-        File file = chooser.showSaveDialog(getWindow());
+        var file = chooser.showSaveDialog(getWindow());
         if (file != null){
             saveTableAsCSV(file);
         }
     }
 
     private void saveTableAsCSV(File file) {
-        StringBuffer sb = new StringBuffer();
+        var sb = new StringBuffer();
 
         table.getItems()
                 .sorted(Comparator.comparing(LogItem::getDateTime))
@@ -371,7 +368,7 @@ public class RankingChartController extends WindowController {
     }
 
     private List<Period> rankingPeriods() {
-        final TemporalAdjuster firstDayOfMonthAdjuster = TemporalAdjusters.firstDayOfMonth();
+        final var firstDayOfMonthAdjuster = TemporalAdjusters.firstDayOfMonth();
 
         return Database.getDefault()
                 .allDateTime()
@@ -411,8 +408,8 @@ public class RankingChartController extends WindowController {
     private static class ElapsedDaysStringConverter extends NumberToStringConverter {
         @Override
         public String toString(Number delta) {
-            long seconds = delta.longValue();
-            String ampm = (seconds % 86400 < 43200) ? "AM" : "PM";
+            var seconds = delta.longValue();
+            var ampm = (seconds % 86400 < 43200) ? "AM" : "PM";
             return String.format("%d日%s", seconds / 86400 + 1, ampm);
         }
     }

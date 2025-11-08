@@ -37,7 +37,7 @@ public class DiscordConfigController extends WindowController {
     @SuppressWarnings("unused")
     @FXML
     void initialize() {
-        DiscordConfig config = DiscordConfig.get();
+        var config = DiscordConfig.get();
         incomingWebhookUrl.setText(config.getIncomingWebhookUrl());
         notifyMissionCompleted.setSelected(config.isNotifyMissionCompleted());
         notifyNdockCompleted.setSelected(config.isNotifyNdockCompleted());
@@ -56,7 +56,7 @@ public class DiscordConfigController extends WindowController {
      */
     @FXML
     void ok() {
-        DiscordConfig config = DiscordConfig.get();
+        var config = DiscordConfig.get();
         config.setIncomingWebhookUrl(incomingWebhookUrl.getText());
         config.setNotifyMissionCompleted(notifyMissionCompleted.isSelected());
         config.setNotifyNdockCompleted(notifyNdockCompleted.isSelected());
@@ -86,7 +86,7 @@ public class DiscordConfigController extends WindowController {
     }
 
     private void showAlert(Alert.AlertType alertType, String contentText) {
-        Alert alert = new Alert(alertType, contentText, ButtonType.OK);
+        var alert = new Alert(alertType, contentText, ButtonType.OK);
         alert.initOwner(getWindow().getOwner());
         alert.show();
     }
