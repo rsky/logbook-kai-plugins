@@ -1,6 +1,6 @@
 ## logbook-kai-plugins
 
-sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirotaka/logbook-kai)) へのプラグイン集。
+航海日誌 ([logbook-kai](https://github.com/rsky/logbook-kai)) へのプラグイン集。
 
 ## Slackプラグイン
 
@@ -20,10 +20,6 @@ sanaehirotakaさんの航海日誌 ([logbook-kai](https://github.com/sanaehirota
 ### 使用ライブラリとライセンス
 
 以下のライブラリを使用しています。
-
-#### [Slack SDK for Java](https://github.com/slackapi/java-slack-sdk)
-
-- [MIT License](https://github.com/slackapi/java-slack-sdk/blob/main/LICENSE)
 
 #### [RxJava](https://github.com/ReactiveX/RxJava) & [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
 

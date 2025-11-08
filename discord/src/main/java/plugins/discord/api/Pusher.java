@@ -8,7 +8,7 @@ import javax.json.Json;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse.BodyHandlers;
+import java.net.http.HttpResponse;
 
 public class Pusher {
     private final String incomingWebhookUrl;
@@ -51,7 +51,7 @@ public class Pusher {
                     .setHeader("Content-Type", "application/json")
                     .build();
             try {
-                var res = client.send(req, BodyHandlers.ofString());
+                var res = client.send(req, HttpResponse.BodyHandlers.ofString());
                 if (res.statusCode() == 200 && onSuccess != null) {
                     onSuccess.accept(res.body());
                 }

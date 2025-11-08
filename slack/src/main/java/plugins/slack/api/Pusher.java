@@ -1,11 +1,14 @@
 package plugins.slack.api;
 
-import com.slack.api.Slack;
-import com.slack.api.webhook.Payload;
-import com.slack.api.webhook.WebhookResponse;
 import io.reactivex.functions.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.json.Json;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class Pusher {
     private final String incomingWebhookUrl;
@@ -23,34 +26,40 @@ public class Pusher {
     }
 
     /**
-     * @param title String
-     * @param message String
-     * @param onSuccess Consumer&lt;WebhookResponse&gt;
-     * @param onError Consumer&lt;Throwable&gt;
+     * @param title     String
+     * @param message   String
+     * @param onSuccess Consumer&lt;String&gt;
+     * @param onError   Consumer&lt;Throwable&gt;
      */
     public void push(String title,
                      String message,
-                     Consumer<WebhookResponse> onSuccess,
+                     Consumer<String> onSuccess,
                      Consumer<Throwable> onError) {
-        var slack = Slack.getInstance();
-        var payload = Payload.builder()
-                .text("*" + title + "*\n" + message)
-                .build();
+        var body = Json.createObjectBuilder()
+                .add("text", "*" + title + "*\n" + message)
+                .build()
+                .toString();
 
-        try {
-            var response = slack.send(this.incomingWebhookUrl, payload);
-            if (onSuccess != null) {
-                onSuccess.accept(response);
-            }
-        } catch (Exception e) {
-            if (onError != null) {
-                try {
-                    onError.accept(e);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+        try (var client = HttpClient.newHttpClient()) {
+            var req = HttpRequest.newBuilder(URI.create(this.incomingWebhookUrl))
+                    .POST(HttpRequest.BodyPublishers.ofString(body))
+                    .setHeader("Content-Type", "application/json")
+                    .build();
+            try {
+                var res = client.send(req, HttpResponse.BodyHandlers.ofString());
+                if (res.statusCode() == 200 && onSuccess != null) {
+                    onSuccess.accept(res.body());
                 }
-            } else {
-                LoggerHolder.logError(e);
+            } catch (Exception e) {
+                if (onError != null) {
+                    try {
+                        onError.accept(e);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else {
+                    LoggerHolder.logError(e);
+                }
             }
         }
     }

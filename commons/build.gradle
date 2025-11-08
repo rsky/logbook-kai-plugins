@@ -1,5 +1,5 @@
 description = 'logbook-kai-plugin-commons'
-version = '25.9.1'
+version = '25.11.1'
 
 dependencies {
 }
