@@ -1,6 +1,5 @@
 package plugins.slack.api;
 
-import io.reactivex.functions.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.function.Consumer;
 
 public class Pusher {
     private final String incomingWebhookUrl;
@@ -52,11 +52,7 @@ public class Pusher {
                 }
             } catch (Exception e) {
                 if (onError != null) {
-                    try {
-                        onError.accept(e);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
+                    onError.accept(e);
                 } else {
                     LoggerHolder.logError(e);
                 }

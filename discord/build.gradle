@@ -2,12 +2,11 @@ description = 'Discord Plugin'
 version = '1.0.1'
 
 def bundleName = description
-def rxJavaVersion = '2.2.21'
-def reactiveStreamsVersion = '1.0.4'
+def reactorVersion = '3.7.12'
 
 dependencies {
     implementation project(':commons')
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.projectreactor:reactor-core:$reactorVersion"
 }
 
 jar {
