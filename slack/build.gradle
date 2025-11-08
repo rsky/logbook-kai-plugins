@@ -2,15 +2,11 @@ description = 'Slack Plugin'
 version = '1.4.0'
 
 def bundleName = description
-def rxJavaVersion = '2.2.21'
-def rxJavaFXVersion = '2.2.2'
-def reactiveStreamsVersion = '1.0.4'
+def reactorVersion = '3.7.12'
 
 dependencies {
     implementation project(':commons')
-    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
-    implementation "io.reactivex.rxjava2:rxjavafx:$rxJavaFXVersion"
-    implementation "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+    implementation "io.projectreactor:reactor-core:$reactorVersion"
 }
 
 jar {

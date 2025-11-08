@@ -74,7 +74,7 @@ public class DiscordConfigController extends WindowController {
         new Pusher(incomingWebhookUrl.getText()).push(
                 "送信テスト",
                 "航海日誌 Discord Plugin より",
-                pushes -> Platform.runLater(() ->
+                response -> Platform.runLater(() ->
                         showAlert(Alert.AlertType.INFORMATION, "テスト通知を送信しました")
                 ),
                 throwable -> {

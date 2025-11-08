@@ -1,7 +1,5 @@
 package plugins.discord;
 
-import io.reactivex.Flowable;
-import io.reactivex.schedulers.Schedulers;
 import logbook.Messages;
 import logbook.bean.*;
 import logbook.internal.Ships;
@@ -10,11 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import plugins.discord.api.Pusher;
 import plugins.discord.bean.DiscordConfig;
+import reactor.core.publisher.Flux;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * プッシュ通知コントローラ
@@ -33,8 +31,7 @@ public class NotificationController implements StartUp {
     @Override
     public void run() {
         // 起動時には通知を飛ばさないように1分待ってから監視を始める
-        Flowable.interval(60, 1, TimeUnit.SECONDS)
-                .observeOn(Schedulers.computation())
+        Flux.interval(Duration.ofSeconds(60), Duration.ofSeconds(1))
                 .subscribe(l -> update(), LoggerHolder::logError);
     }
 

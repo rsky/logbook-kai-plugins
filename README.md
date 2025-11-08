@@ -21,10 +21,9 @@
 
 以下のライブラリを使用しています。
 
-#### [RxJava](https://github.com/ReactiveX/RxJava) & [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
+#### [Reactor Core](https://github.com/reactor/reactor-core)
 
-- [Apache License 2.0](https://github.com/ReactiveX/RxJava/blob/3.x/LICENSE) (RxJava)
-- [Apache License 2.0](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE) (RxJavaFx)
+- [Apache License 2.0](https://github.com/reactor/reactor-core/blob/main/LICENSE)
 
 #### [Lombok](https://projectlombok.org/)
 
@@ -49,10 +48,9 @@
 
 以下のライブラリを使用しています。
 
-#### [RxJava](https://github.com/ReactiveX/RxJava) & [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
+#### [Reactor Core](https://github.com/reactor/reactor-core)
 
-- [Apache License 2.0](https://github.com/ReactiveX/RxJava/blob/3.x/LICENSE) (RxJava)
-- [Apache License 2.0](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE) (RxJavaFx)
+- [Apache License 2.0](https://github.com/reactor/reactor-core/blob/main/LICENSE)
 
 #### [Lombok](https://projectlombok.org/)
 
