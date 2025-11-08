@@ -24,7 +24,6 @@
 #### [RxJava](https://github.com/ReactiveX/RxJava) & [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
 
 - [Apache License 2.0](https://github.com/ReactiveX/RxJava/blob/3.x/LICENSE) (RxJava)
-- [Apache License 2.0](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE) (RxJavaFx)
 
 #### [Lombok](https://projectlombok.org/)
 
@@ -52,7 +51,6 @@
 #### [RxJava](https://github.com/ReactiveX/RxJava) & [RxJavaFX](https://github.com/ReactiveX/RxJavaFX)
 
 - [Apache License 2.0](https://github.com/ReactiveX/RxJava/blob/3.x/LICENSE) (RxJava)
-- [Apache License 2.0](https://github.com/ReactiveX/RxJavaFX/blob/2.x/LICENSE) (RxJavaFx)
 
 #### [Lombok](https://projectlombok.org/)
 
