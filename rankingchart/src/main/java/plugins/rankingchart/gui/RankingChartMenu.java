@@ -9,7 +9,7 @@ import plugins.util.StageUtil;
 public class RankingChartMenu implements MainExtMenu {
     @Override
     public MenuItem getContent() {
-        MenuItem item = new MenuItem("戦果チャート");
+        var item = new MenuItem("戦果チャート");
         item.setOnAction(event -> {
             try {
                 StageUtil.show(

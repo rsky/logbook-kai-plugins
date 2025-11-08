@@ -154,7 +154,7 @@ public class RankingSeries {
      * @param item ランキングログ
      */
     public void add(LogItem item) {
-        Long delta = item.getDateTime().toEpochSecond() - fromEpoch;
+        var delta = item.getDateTime().toEpochSecond() - fromEpoch;
         Integer value;
 
         value = item.getRank1();

@@ -38,7 +38,7 @@ public class SlackConfigController extends WindowController {
     @SuppressWarnings("unused")
     @FXML
     void initialize() {
-        SlackConfig config = SlackConfig.get();
+        var config = SlackConfig.get();
         incomingWebhookUrl.setText(config.getIncomingWebhookUrl());
         notifyMissionCompleted.setSelected(config.isNotifyMissionCompleted());
         notifyNdockCompleted.setSelected(config.isNotifyNdockCompleted());
@@ -57,7 +57,7 @@ public class SlackConfigController extends WindowController {
      */
     @FXML
     void ok() {
-        SlackConfig config = SlackConfig.get();
+        var config = SlackConfig.get();
         config.setIncomingWebhookUrl(incomingWebhookUrl.getText());
         config.setNotifyMissionCompleted(notifyMissionCompleted.isSelected());
         config.setNotifyNdockCompleted(notifyNdockCompleted.isSelected());
@@ -87,7 +87,7 @@ public class SlackConfigController extends WindowController {
     }
 
     private void showAlert(Alert.AlertType alertType, String contentText) {
-        Alert alert = new Alert(alertType, contentText, ButtonType.OK);
+        var alert = new Alert(alertType, contentText, ButtonType.OK);
         alert.initOwner(getWindow().getOwner());
         alert.show();
     }

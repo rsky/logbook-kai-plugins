@@ -9,7 +9,7 @@ import plugins.util.StageUtil;
 public class DiscordConfigMenu implements MainExtMenu {
     @Override
     public MenuItem getContent() {
-        MenuItem item = new MenuItem("Discord");
+        var item = new MenuItem("Discord");
         item.setOnAction(event -> {
             try {
                 StageUtil.show(

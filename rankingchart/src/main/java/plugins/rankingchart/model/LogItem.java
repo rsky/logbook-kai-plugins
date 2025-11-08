@@ -33,7 +33,7 @@ public class LogItem {
     private final Property<Integer> rankNo = new SimpleObjectProperty<>();
 
     public static LogItem withDateTime(ZonedDateTime dateTime) {
-        LogItem row = new LogItem();
+        var row = new LogItem();
         row.setDateTime(dateTime);
         return row;
     }
@@ -64,30 +64,34 @@ public class LogItem {
     }
 
     private String integerPropertyToString(Property<Integer> property) {
-        Integer value = property.getValue();
+        var value = property.getValue();
         return (value == null) ? "" : value.toString();
     }
 
     public boolean put(int rankNo, int rate) {
-        switch (rankNo) {
-            case 1:
+        return switch (rankNo) {
+            case 1 -> {
                 setRank1(rate);
-                return true;
-            case 5:
+                yield true;
+            }
+            case 5 -> {
                 setRank5(rate);
-                return true;
-            case 20:
+                yield true;
+            }
+            case 20 -> {
                 setRank20(rate);
-                return true;
-            case 100:
+                yield true;
+            }
+            case 100 -> {
                 setRank100(rate);
-                return true;
-            case 500:
+                yield true;
+            }
+            case 500 -> {
                 setRank500(rate);
-                return true;
-            default:
-                return false;
-        }
+                yield true;
+            }
+            default -> false;
+        };
     }
 
     public Property<ZonedDateTime> dateTimeProperty() {

@@ -32,13 +32,13 @@ public class Pusher {
                      String message,
                      Consumer<WebhookResponse> onSuccess,
                      Consumer<Throwable> onError) {
-        Slack slack = Slack.getInstance();
-        Payload payload = Payload.builder()
+        var slack = Slack.getInstance();
+        var payload = Payload.builder()
                 .text("*" + title + "*\n" + message)
                 .build();
 
         try {
-            WebhookResponse response = slack.send(this.incomingWebhookUrl, payload);
+            var response = slack.send(this.incomingWebhookUrl, payload);
             if (onSuccess != null) {
                 onSuccess.accept(response);
             }

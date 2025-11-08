@@ -57,7 +57,7 @@ public class RankingChartConfigController extends WindowController {
 
     @FXML
     void calc(@SuppressWarnings("unused") ActionEvent event) {
-        String actualRateStr = rate2.getText();
+        var actualRateStr = rate2.getText();
         if (actualRateStr.isEmpty()) {
             showAlert(Alert.AlertType.WARNING, "実戦果を入力してください");
             return;
@@ -71,7 +71,7 @@ public class RankingChartConfigController extends WindowController {
             return;
         }
 
-        int userRateFactor = Calculator.detectUserRateFactor(
+        var userRateFactor = Calculator.detectUserRateFactor(
                 config.getLastRankNo(), config.getLastObfuscatedRate(), actualRate);
 
         if (userRateFactor > 0) {
@@ -80,7 +80,7 @@ public class RankingChartConfigController extends WindowController {
             showAlert(Alert.AlertType.INFORMATION, String.format("戦果係数は%dです", userRateFactor));
 
             // 戦果係数を更新・保存
-            RankingChartConfig currentConfig = RankingChartConfig.get();
+            var currentConfig = RankingChartConfig.get();
             currentConfig.setUserRateFactor(userRateFactor);
             ThreadManager.getExecutorService().execute(Config.getDefault()::store);
         } else {
@@ -89,7 +89,7 @@ public class RankingChartConfigController extends WindowController {
     }
 
     private void showAlert(Alert.AlertType alertType, String contentText) {
-        Alert alert = new Alert(alertType, contentText, ButtonType.OK);
+        var alert = new Alert(alertType, contentText, ButtonType.OK);
         alert.initOwner(getWindow().getOwner());
         alert.show();
     }
