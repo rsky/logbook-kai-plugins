@@ -100,8 +100,8 @@ public class RankingListener implements APIListenerSpi {
             }
 
             final var entry = new Entry(jsonObj);
-            final var rankNo = entry.getNo();
-            final var obfuscatedRate = entry.getObfuscatedRate();
+            final var rankNo = entry.no();
+            final var obfuscatedRate = entry.obfuscatedRate();
             final var rate = Calculator.calcRate(rankNo, obfuscatedRate, userRateFactor);
 
             // 戦果係数がセットされており、戦果のデコードに成功した場合
@@ -112,7 +112,7 @@ public class RankingListener implements APIListenerSpi {
                 }
 
                 // 自分の戦果が含まれていれば更新する
-                if (nickname != null && nickname.equals(entry.getNickname())) {
+                if (nickname != null && nickname.equals(entry.nickname())) {
                     ranking.setRankNo(rankNo);
                     ranking.setRate(rate);
                     rankingUpdated = true;
@@ -120,7 +120,7 @@ public class RankingListener implements APIListenerSpi {
             }
 
             // 戦果係数を手動で導出するために自分の順位と難読化された戦果を保存する
-            if (nickname != null && nickname.equals(entry.getNickname())) {
+            if (nickname != null && nickname.equals(entry.nickname())) {
                 if (rankNo != config.getLastRankNo() || obfuscatedRate != lastObfuscatedRate) {
                     config.setLastRankNo(rankNo);
                     config.setLastObfuscatedRate(obfuscatedRate);
@@ -209,24 +209,25 @@ public class RankingListener implements APIListenerSpi {
         return jsonObject.get("api_data");
     }
 
-    @Value
-    private static class Entry {
-        int no;
-        String nickname;
-        int flag;
-        int rank;
-        String comment;
-        long obfuscatedMedals;
-        long obfuscatedRate;
-
+    private record Entry(
+            int no,
+            String nickname,
+            int flag,
+            int rank,
+            String comment,
+            long obfuscatedMedals,
+            long obfuscatedRate
+    ) {
         Entry(JsonObject jo) {
-            no = jo.getInt("api_mxltvkpyuklh");
-            nickname = jo.getString("api_mtjmdcwtvhdr");
-            flag = jo.getInt("api_pbgkfylkbjuy");
-            rank = jo.getInt("api_pcumlrymlujh");
-            comment = jo.getString("api_itbrdpdbkynm");
-            obfuscatedMedals = jo.getJsonNumber("api_itslcqtmrxtf").longValue();
-            obfuscatedRate = jo.getJsonNumber("api_wuhnhojjxmke").longValue();
+            this(
+                    jo.getInt("api_mxltvkpyuklh"),
+                    jo.getString("api_mtjmdcwtvhdr"),
+                    jo.getInt("api_pbgkfylkbjuy"),
+                    jo.getInt("api_pcumlrymlujh"),
+                    jo.getString("api_itbrdpdbkynm"),
+                    jo.getJsonNumber("api_itslcqtmrxtf").longValue(),
+                    jo.getJsonNumber("api_wuhnhojjxmke").longValue()
+            );
         }
     }
 

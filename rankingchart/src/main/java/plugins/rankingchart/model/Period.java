@@ -1,5 +1,6 @@
 package plugins.rankingchart.model;
 
+import lombok.NonNull;
 import plugins.rankingchart.util.DateTimeUtil;
 
 import java.time.ZonedDateTime;
@@ -8,17 +9,7 @@ import java.time.temporal.TemporalAdjusters;
 /**
  * ランキング期間
  */
-public class Period {
-    private String name;
-    private ZonedDateTime from;
-    private ZonedDateTime to;
-
-    public Period(String name, ZonedDateTime from, ZonedDateTime to) {
-        this.name = name;
-        this.from = from;
-        this.to = to;
-    }
-
+public record Period(@NonNull String name, @NonNull ZonedDateTime from, @NonNull ZonedDateTime to) {
     public Period(ZonedDateTime from) {
         this(
                 DateTimeUtil.formatMonth(from),
@@ -39,19 +30,8 @@ public class Period {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public ZonedDateTime getFrom() {
-        return from;
-    }
-
-    public ZonedDateTime getTo() {
-        return to;
     }
 }

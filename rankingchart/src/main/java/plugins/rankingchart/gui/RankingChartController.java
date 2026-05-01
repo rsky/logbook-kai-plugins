@@ -195,7 +195,7 @@ public class RankingChartController extends WindowController {
         periodChoice.setItems(FXCollections.observableList(periods));
         modeChoice.setItems(FXCollections.observableArrayList(ChartMode.values()));
         if (!periods.isEmpty()) {
-            periodChoice.setValue(periods.get(0));
+            periodChoice.setValue(periods.getFirst());
         }
         modeChoice.setValue(ChartMode.SINGLE);
     }
@@ -237,11 +237,11 @@ public class RankingChartController extends WindowController {
 
         series.updateVisibilities();
 
-        xAxis.setTickLabelFormatter(new DateStringConverter(period.getFrom()));
+        xAxis.setTickLabelFormatter(new DateStringConverter(period.from()));
 
-        series.setFrom(period.getFrom());
+        series.setFrom(period.from());
 
-        addAllItems(series, Database.getDefault().load(period.getFrom(), period.getTo()));
+        addAllItems(series, Database.getDefault().load(period.from(), period.to()));
     }
 
     /**
@@ -266,20 +266,16 @@ public class RankingChartController extends WindowController {
         series1.setSeriesNameSuffix(suffix1);
         series2.setSeriesNameSuffix(suffix2);
 
-        series1.setFrom(period1.getFrom());
-        series2.setFrom(period2.getFrom());
+        series1.setFrom(period1.from());
+        series2.setFrom(period2.from());
 
-        addAllItems(series1, Database.getDefault().load(period1.getFrom(), period1.getTo()));
-        addAllItems(series2, Database.getDefault().load(period2.getFrom(), period2.getTo()));
+        addAllItems(series1, Database.getDefault().load(period1.from(), period1.to()));
+        addAllItems(series2, Database.getDefault().load(period2.from(), period2.to()));
     }
 
     private void addAllItems(RankingSeries series, List<LogItem> items) {
         rows.addAll(items);
-
-        var li = items.listIterator(items.size());
-        while (li.hasPrevious()) {
-            series.add(li.previous());
-        }
+        items.reversed().forEach(series::add);
     }
 
     private void setContextMenu(Chart node) {
@@ -294,7 +290,7 @@ public class RankingChartController extends WindowController {
     private void saveSnapshotAsPNG(Node node) {
         var chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG files (*.png)", "*.png"));
-        chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
+        chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().name());
 
         var file = chooser.showSaveDialog(getWindow());
         if (file != null){
@@ -323,7 +319,7 @@ public class RankingChartController extends WindowController {
     void saveTableAsCSV() {
         var chooser = new FileChooser();
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"));
-        chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().getName());
+        chooser.setInitialFileName(periodChoice.getSelectionModel().getSelectedItem().name());
 
         var file = chooser.showSaveDialog(getWindow());
         if (file != null){
