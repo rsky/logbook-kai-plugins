@@ -1,14 +1,14 @@
 buildscript {
     repositories {
         maven {
-            url 'https://plugins.gradle.org/m2/'
+            url = 'https://plugins.gradle.org/m2/'
         }
     }
 }
 
 plugins {
     id 'java-library'
-    id 'com.gradleup.shadow' version '9.2.2'
+    id 'com.gradleup.shadow' version '9.4.1'
 }
 
 allprojects  {
@@ -26,17 +26,17 @@ subprojects {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
 
-    def lombokVersion = '1.18.42'
-    def jUnitVersion = '5.13.4'
-    def jUnitPlatformVersion = '1.13.4'
+    def lombokVersion = '1.18.46'
+    def jUnitVersion = '5.14.4'
+    def jUnitPlatformVersion = '1.14.4'
     def mockitoVersion = '2.28.2'
     def powerMockVersion = '2.0.9'
 
