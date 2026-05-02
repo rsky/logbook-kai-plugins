@@ -1,8 +1,8 @@
 description = 'Slack Plugin'
-version = '1.4.0'
+version = '1.25.0'
 
 def bundleName = description
-def reactorVersion = '3.7.12'
+def reactorVersion = '3.8.5'
 
 dependencies {
     implementation project(':commons')

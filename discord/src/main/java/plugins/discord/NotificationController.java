@@ -63,7 +63,7 @@ public class NotificationController implements StartUp {
 
         for (DeckPort port : ports.values()) {
             // 0=未出撃, 1=遠征中, 2=遠征帰還, 3=遠征中止
-            var state = port.getMission().get(0).intValue();
+            var state = port.getMission().getFirst().intValue();
             // 帰還時間
             var time = port.getMission().get(2);
 
